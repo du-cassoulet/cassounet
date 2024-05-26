@@ -1,3 +1,19 @@
-# CSPT (Cassou Script)
+# CassouScript
 
-CSPT is a scripting language that is used to define the behavior of a CassouNet application. It is a simple language that is easy to read and write. It is used to define the behavior of the application, the logic of the elements and the interaction between the elements.
+This is the CassouScript project.
+
+# Building and installing
+
+See the [BUILDING](BUILDING.md) document.
+
+# Contributing
+
+See the [CONTRIBUTING](CONTRIBUTING.md) document.
+
+# Licensing
+
+<!--
+Please go to https://choosealicense.com/licenses/ and choose a license that
+fits your needs. The recommended license for a project of this type is the
+GNU AGPLv3.
+-->
