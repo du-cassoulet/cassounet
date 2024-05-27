@@ -184,13 +184,19 @@ void Lexer::make_tokens()
     }
   }
 
-  tokens.push_back(Token(TokenType::TT_EOF, position.copy()));
+  advance();
+  
+  tokens.push_back(Token(TokenType::TT_EOF, position.copy(), position.copy()));
 }
 
 void Lexer::print_tokens()
 {
+  std::cout << "Tokens(" << std::endl;
+
   for (Token token : tokens)
   {
-    std::cout << token.to_string() << std::endl;
+    std::cout << "  " + token.to_string() << std::endl;
   }
+
+  std::cout << ")" << std::endl;
 }

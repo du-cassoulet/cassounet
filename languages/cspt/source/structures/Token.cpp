@@ -73,10 +73,21 @@ std::string Token::to_string()
       break;
   }
 
-  if (value == "")
+  std::string interval = "";
+
+  if (start == end)
   {
-    return "Token(" + type_name + ", " + start.to_string() + " - " + end.to_string() + ")";
+    interval = start.to_string();
+  }
+  else
+  {
+    interval = start.to_string() + " - " + end.to_string();
   }
 
-  return "Token(" + type_name + ", " + value + ", " + start.to_string() + " - " + end.to_string() + ")";
+  if (value == "")
+  {
+    return "Token(" + type_name + ", " + interval + ")";
+  }
+
+  return "Token(" + type_name + ", " + value + ", " + interval + ")";
 }

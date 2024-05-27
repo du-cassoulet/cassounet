@@ -8,13 +8,13 @@
 
 int main()
 {
-  Lexer lexer = Lexer("if 11.5 + 2 == 13.5", FILE_NAME);
+  Lexer lexer = Lexer("1+1", FILE_NAME);
   lexer.make_tokens();
   lexer.print_tokens();
 
-  Parser parser = Parser(lexer.tokens);
-  parser.parse();
-  parser.print_nodes();
+  // Parser parser = Parser(lexer.tokens);
+  // parser.parse();
+  // parser.print_nodes();
 
   return 0;
 }

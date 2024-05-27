@@ -1,6 +1,6 @@
 #pragma once
 
-#include <iostream>
+#include <string>
 #include "../Position.hpp"
 
 struct Node
@@ -8,5 +8,7 @@ struct Node
   Position start;
   Position end;
 
-  std::string to_string();
+  Node(const Position& _start, const Position& _end);
+  
+  virtual std::string to_string() = 0;
 };
