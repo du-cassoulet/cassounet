@@ -1,15 +1,20 @@
 #pragma once
 
+#include <iostream>
 #include <string>
 #include <list>
 
 enum class KeywordType
 {
-  SET,
-  IF,
-  ELSE,
-  WHILE,
-  FOR,
+  KT_SET,
+  KT_IF,
+  KT_ELSE,
+  KT_WHILE,
+  KT_FOR,
+  KT_TRUE,
+  KT_FALSE,
+  KT_NULL,
+  KT_NAN
 };
 
 struct Keyword

@@ -3,18 +3,32 @@
 #include <string>
 #include <memory>
 
-#include "./nodes/Node.hpp"
-// #include "interpreter/Number.cpp"
+#include "SymbolTable.hpp"
+#include "nodes/Node.hpp"
+#include "interpreter/Value.hpp"
+#include "interpreter/Number.hpp"
+#include "interpreter/String.hpp"
+#include "interpreter/Boolean.hpp"
+#include "nodes/NumberNode.hpp"
+#include "nodes/StringNode.hpp"
+#include "nodes/BooleanNode.hpp"
+#include "nodes/BinaryOpNode.hpp"
+#include "nodes/UnaryOpNode.hpp"
 
 struct Interpreter
 {
 private:
-  std::string visit_number(std::shared_ptr<Node> node);
+  std::shared_ptr<Value> visit_number(NumberNode node);
+  std::shared_ptr<Value> visit_string(StringNode node);
+  std::shared_ptr<Value> visit_boolean(BooleanNode node);
+  std::shared_ptr<Value> visit_binary_op(BinaryOpNode node);
+  std::shared_ptr<Value> visit_unary_op(UnaryOpNode node);
 
 public:
+  SymbolTable* symbol_table;
+
+  Interpreter(SymbolTable* _symbol_table);
+
   std::shared_ptr<Node> node;
-
-  Interpreter(std::shared_ptr<Node> _node);
-
-  std::string visit();
+  std::shared_ptr<Value> visit(std::shared_ptr<Node> node);
 };

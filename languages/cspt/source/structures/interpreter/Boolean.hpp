@@ -6,11 +6,11 @@
 
 #include "./Value.hpp"
 
-struct Number : public virtual Value
+struct Boolean : public virtual Value
 {
-  double value;
+  bool value;
 
-  Number(double _value);
+  Boolean(bool _value);
 
   void to_positive() override;
   void to_negative() override;

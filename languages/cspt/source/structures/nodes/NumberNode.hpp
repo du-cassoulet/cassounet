@@ -8,7 +8,6 @@
 
 struct NumberNode : public virtual Node
 {
-  NodeType type = NodeType::Number;
   Token value_tok;
 
   NumberNode(const Token& _value_tok);

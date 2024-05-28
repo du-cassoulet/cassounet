@@ -2,6 +2,7 @@
 
 #include <iostream>
 #include <string>
+#include <list>
 
 #include "Position.hpp"
 
@@ -42,6 +43,9 @@ struct Token
   Token(TokenType _type, std::string _value, Position _start, Position _end);
   Token(TokenType _type, Position _start, Position _end);
   Token(TokenType _type, Position _pos);
+
+  bool match(TokenType correct_type, std::list<std::string> values = {});
+  bool match(std::list<TokenType> types);
 
   std::string to_string();
   std::string to_string_type();

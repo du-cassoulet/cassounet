@@ -1,6 +1,7 @@
 #include "Parser.hpp"
 #include "nodes/NumberNode.hpp"
 #include "nodes/StringNode.hpp"
+#include "nodes/BooleanNode.hpp"
 #include "nodes/UnaryOpNode.hpp"
 #include "nodes/BinaryOpNode.hpp"
 
@@ -18,14 +19,20 @@ Parser::Parser(std::vector<Token> _tokens)
 
 std::shared_ptr<Node> Parser::atom()
 {
-  if (current_token->type == TokenType::TT_NUMBER)
+  if (current_token->match(TokenType::TT_NUMBER))
   {
     std::shared_ptr<Node> node = std::make_shared<NumberNode>(*current_token);
     advance();
     return node;
-  } else if (current_token->type == TokenType::TT_STRING)
+  } else if (current_token->match(TokenType::TT_STRING))
   {
     std::shared_ptr<Node> node = std::make_shared<StringNode>(*current_token);
+    advance();
+    return node;
+  }
+  else if (current_token->match(TokenType::TT_KEYWORD, {"true", "false"}))
+  {
+    std::shared_ptr<Node> node = std::make_shared<BooleanNode>(*current_token);
     advance();
     return node;
   }
@@ -42,7 +49,7 @@ std::shared_ptr<Node> Parser::power()
 
 std::shared_ptr<Node> Parser::factor()
 {
-  if (current_token->type == TokenType::TT_NOT)
+  if (current_token->match(TokenType::TT_NOT))
   {
     Token op_tok = *current_token;
     advance();
@@ -50,7 +57,7 @@ std::shared_ptr<Node> Parser::factor()
     std::shared_ptr<Node> node = comp_expr();
     return std::make_shared<UnaryOpNode>(op_tok, node);
   }
-  else if (current_token->type == TokenType::TT_PLUS || current_token->type == TokenType::TT_MINUS)
+  else if (current_token->match({TokenType::TT_PLUS, TokenType::TT_MINUS}))
   {
     Token op_tok = *current_token;
     advance();
@@ -170,7 +177,7 @@ void Parser::print_node()
 
 void Parser::advance()
 {
-  if (current_token->type != TokenType::TT_EOF)
+  if (!current_token->match(TokenType::TT_EOF))
   {
     token_index++;
 

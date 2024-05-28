@@ -8,7 +8,6 @@
 
 struct BinaryOpNode : public virtual Node
 {
-  NodeType type = NodeType::BinaryOperation;
   std::shared_ptr<Node> left;
   Token op_tok;
   std::shared_ptr<Node> right;

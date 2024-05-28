@@ -8,9 +8,8 @@
 
 struct UnaryOpNode : public virtual Node
 {
-  NodeType type = NodeType::UnaryOperation;
   Token op_tok;
-  std::shared_ptr<Node> node;
+  std::shared_ptr<Node> operand;
 
   UnaryOpNode(const Token& _op_tok, std::shared_ptr<Node> _node);
 

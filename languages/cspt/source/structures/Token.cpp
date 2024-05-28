@@ -14,6 +14,42 @@ Token::Token(TokenType _type, Position _pos)
   end = _end;
 }
 
+bool Token::match(TokenType correct_type, std::list<std::string> values)
+{
+  if (type != correct_type)
+  {
+    return false;
+  }
+
+  if (values.size() == 0)
+  {
+    return true;
+  }
+
+  for (std::string correct_value : values)
+  {
+    if (value == correct_value)
+    {
+      return true;
+    }
+  }
+
+  return false;
+}
+
+bool Token::match(std::list<TokenType> types)
+{
+  for (TokenType correct_type : types)
+  {
+    if (type == correct_type)
+    {
+      return true;
+    }
+  }
+
+  return false;
+}
+
 std::string Token::to_string_type()
 {
   switch (type)

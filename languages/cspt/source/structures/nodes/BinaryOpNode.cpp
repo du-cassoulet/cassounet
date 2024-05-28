@@ -1,7 +1,7 @@
 #include "BinaryOpNode.hpp"
 
 BinaryOpNode::BinaryOpNode(std::shared_ptr<Node> _left, const Token& _op_tok, std::shared_ptr<Node> _right)
-: Node(_left->start, _right->end), left(_left), op_tok(_op_tok), right(_right) {}
+: Node(NodeType::BINARY_OPERATION, _left->start, _right->end), left(_left), op_tok(_op_tok), right(_right) {}
 
 std::string BinaryOpNode::to_string(int depth)
 {

@@ -36,8 +36,14 @@ void Lexer::make_number() {
   std::string number = "";
   bool dot = false;
 
-  while (position.index < input.length() && '0' <= input[position.index] && input[position.index] <= '9' || input[position.index] == '.')
+  while (position.index < input.length() && '0' <= input[position.index] && input[position.index] <= '9' || input[position.index] == '.' || input[position.index] == '_')
   {
+    if (input[position.index] == '_')
+    {
+      advance();
+      continue;
+    }
+
     if (input[position.index] == '.')
     {
       if (dot)

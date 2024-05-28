@@ -5,20 +5,21 @@
 
 enum class NodeType
 {
-  Unknown,
-  Number,
-  String,
-  BinaryOperation,
-  UnaryOperation
+  UNKNOWN,
+  NUMBER,
+  STRING,
+  BOOLEAN,
+  BINARY_OPERATION,
+  UNARY_OPERATION
 };
 
 struct Node
 {
-  NodeType type = NodeType::Unknown;
+  NodeType type;
   Position start;
   Position end;
 
-  Node(const Position& _start, const Position& _end);
+  Node(NodeType _type, const Position& _start, const Position& _end);
   
   virtual std::string to_string(int depth = 0) = 0;
 };

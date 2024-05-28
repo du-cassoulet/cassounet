@@ -6,11 +6,11 @@
 #include "Node.hpp"
 #include "../Token.hpp"
 
-struct StringNode : public virtual Node
+struct BooleanNode : public virtual Node
 {
   Token value_tok;
 
-  StringNode(const Token& _value_tok);
+  BooleanNode(const Token& _value_tok);
 
   std::string to_string(int depth = 0) override;
 };

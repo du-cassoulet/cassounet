@@ -1,4 +1,4 @@
 #include "Node.hpp"
 
-Node::Node(const Position& _start, const Position& _end)
-: start(_start), end(_end) {}
+Node::Node(NodeType _type, const Position& _start, const Position& _end)
+: type(_type), start(_start), end(_end) {}
