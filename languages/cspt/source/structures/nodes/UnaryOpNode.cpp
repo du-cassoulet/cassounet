@@ -1,9 +1,18 @@
 #include "UnaryOpNode.hpp"
 
-UnaryOpNode::UnaryOpNode(const Token& _op_tok, Node* _node)
-: Node(_node->start, _op_tok.end), op_tok(_op_tok), node(_node) {}
+UnaryOpNode::UnaryOpNode(const Token& _op_tok, std::shared_ptr<Node> _node)
+: Node(_op_tok.start, _node->end), op_tok(_op_tok), node(_node) {}
 
-std::string UnaryOpNode::to_string()
+std::string UnaryOpNode::to_string(int depth)
 {
-  return "UnaryOpNode(" + op_tok.to_string() + ", " + node->to_string() + ")";
+  depth++;
+  std::string res = "";
+  
+  res += "UnaryOpNode(\n";
+  res += std::string(2 * depth, ' ') + op_tok.to_string() + ",\n";
+  res += std::string(2 * depth, ' ') + node->to_string(depth) + ",\n";
+  res += std::string(2 * depth, ' ') + start.to_string() + " - " + end.to_string() + "\n";
+  res += std::string(2 * (depth - 1), ' ') + ")";
+
+  return res;
 }

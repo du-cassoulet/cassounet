@@ -27,3 +27,8 @@ std::string Position::to_string()
 {
   return filename + ":" + std::to_string(line + 1) + ":" + std::to_string(column + 1);
 }
+
+bool Position::operator==(const Position& other) const
+{
+  return index == other.index && line == other.line && column == other.column && filename == other.filename;
+}

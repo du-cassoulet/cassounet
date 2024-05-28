@@ -2,7 +2,7 @@
 
 #include <iostream>
 #include <string>
-#include <list>
+#include <vector>
 
 #include "Position.hpp"
 #include "Token.hpp"
@@ -14,11 +14,16 @@ private:
   void make_number();
   void make_string();
   void make_equals();
+  void make_or();
+  void make_and();
+  void make_not();
+  void make_lower_than();
+  void make_greater_than();
 
 public:
   std::string input;
   Position position;
-  std::list<Token> tokens = {};
+  std::vector<Token> tokens = {};
 
   Lexer(std::string _input, std::string _filename);
 

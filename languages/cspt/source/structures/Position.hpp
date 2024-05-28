@@ -19,4 +19,6 @@ public:
   void advance();
   Position copy();
   std::string to_string();
+
+  bool operator==(const Position& other) const;
 };

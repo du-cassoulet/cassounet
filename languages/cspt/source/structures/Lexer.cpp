@@ -122,6 +122,81 @@ void Lexer::make_equals() {
   }
 }
 
+void Lexer::make_or() {
+  Position start = position.copy();
+  advance();
+
+  if (position.index < input.length() && input[position.index] == '|')
+  {
+    advance();
+    tokens.push_back(Token(TokenType::TT_OR, start, position.copy()));
+  }
+  else
+  {
+    throw std::invalid_argument("Invalid character: '|'");
+  }
+}
+
+void Lexer::make_and() {
+  Position start = position.copy();
+  advance();
+
+  if (position.index < input.length() && input[position.index] == '&')
+  {
+    advance();
+    tokens.push_back(Token(TokenType::TT_AND, start, position.copy()));
+  }
+  else
+  {
+    throw std::invalid_argument("Invalid character: '&'");
+  }
+}
+
+void Lexer::make_not() {
+  Position start = position.copy();
+  advance();
+
+  if (position.index < input.length() && input[position.index] == '=')
+  {
+    advance();
+    tokens.push_back(Token(TokenType::TT_NEQUALS, start, position.copy()));
+  }
+  else
+  {
+    tokens.push_back(Token(TokenType::TT_NOT, start, position.copy()));
+  }
+}
+
+void Lexer::make_lower_than() {
+  Position start = position.copy();
+  advance();
+
+  if (position.index < input.length() && input[position.index] == '=')
+  {
+    advance();
+    tokens.push_back(Token(TokenType::TT_LTE, start, position.copy()));
+  }
+  else
+  {
+    tokens.push_back(Token(TokenType::TT_LT, start, position.copy()));
+  }
+}
+
+void Lexer::make_greater_than() {
+  Position start = position.copy();
+  advance();
+
+  if (position.index < input.length() && input[position.index] == '=')
+  {
+    advance();
+    tokens.push_back(Token(TokenType::TT_GTE, start, position.copy()));
+  }
+  else
+  {
+    tokens.push_back(Token(TokenType::TT_GT, start, position.copy()));
+  }
+}
+
 void Lexer::make_tokens()
 {
   while (position.index < input.length())
@@ -147,6 +222,24 @@ void Lexer::make_tokens()
     else if (current_char == '=')
     {
       make_equals();
+    } else if (current_char == '|')
+    {
+      make_or();
+    } else if (current_char == '&')
+    {
+      make_and();
+    }
+    else if (current_char == '!')
+    {
+      make_not();
+    }
+    else if (current_char == '<')
+    {
+      make_lower_than();
+    }
+    else if (current_char == '>')
+    {
+      make_greater_than();
     }
     else if (current_char == '+')
     {
@@ -168,6 +261,16 @@ void Lexer::make_tokens()
       tokens.push_back(Token(TokenType::TT_DIV, position.copy()));
       advance();
     }
+    else if (current_char == '%')
+    {
+      tokens.push_back(Token(TokenType::TT_MOD, position.copy()));
+      advance();
+    }
+    else if (current_char == '^')
+    {
+      tokens.push_back(Token(TokenType::TT_POW, position.copy()));
+      advance();
+    }
     else if (current_char == '(')
     {
       tokens.push_back(Token(TokenType::TT_LPAREN, position.copy()));
@@ -180,7 +283,7 @@ void Lexer::make_tokens()
     }
     else
     {
-      throw std::invalid_argument("Invalid character: " + std::string(1, current_char));
+      throw std::invalid_argument("Invalid character: '" + std::string(1, current_char) + "'");
     }
   }
 
@@ -193,9 +296,10 @@ void Lexer::print_tokens()
 {
   std::cout << "Tokens(" << std::endl;
 
-  for (Token token : tokens)
+  for (int i = 0; i < tokens.size(); i++)
   {
-    std::cout << "  " + token.to_string() << std::endl;
+    Token token = tokens[i];
+    std::cout << "  " + token.to_string() + (i < tokens.size() - 1 ? "," : "") << std::endl;
   }
 
   std::cout << ")" << std::endl;

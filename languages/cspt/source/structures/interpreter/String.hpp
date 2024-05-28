@@ -4,11 +4,11 @@
 
 #include "./Value.hpp"
 
-struct String : Value
+struct String : public virtual Value
 {
   std::string value;
 
   String(std::string _value);
 
-  std::string to_string();
+  std::string to_string() override;
 };

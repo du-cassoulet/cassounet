@@ -14,65 +14,83 @@ Token::Token(TokenType _type, Position _pos)
   end = _end;
 }
 
-std::string Token::to_string()
+std::string Token::to_string_type()
 {
-  std::string type_name = "";
-
   switch (type)
   {
     case TT_EOF:
-      type_name = "EOF";
-      break;
+      return "EOF";
 
     case TT_IDENTIFIER:
-      type_name = "IDENTIFIER";
-      break;
+      return "IDENTIFIER";
 
     case TT_KEYWORD:
-      type_name = "KEYWORD";
-      break;
+      return "KEYWORD";
 
     case TT_NUMBER:
-      type_name = "NUMBER";
-      break;
+      return "NUMBER";
 
     case TT_STRING:
-      type_name = "STRING";
-      break;
+      return "STRING";
 
     case TT_ASSIGN:
-      type_name = "ASSIGN";
-      break;
+      return "ASSIGN";
 
     case TT_EQUALS:
-      type_name = "EQUALS";
-      break;
+      return "EQUALS";
 
     case TT_PLUS:
-      type_name = "PLUS";
-      break;
+      return "PLUS";
 
     case TT_MINUS:
-      type_name = "MINUS";
-      break;
+      return "MINUS";
 
     case TT_MUL:
-      type_name = "MUL";
-      break;
+      return "MUL";
 
     case TT_DIV:
-      type_name = "DIV";
-      break;
+      return "DIV";
+
+    case TT_MOD:
+      return "MOD";
+
+    case TT_POW:
+      return "POW";
 
     case TT_LPAREN:
-      type_name = "LPAREN";
-      break;
+      return "LPAREN";
 
     case TT_RPAREN:
-      type_name = "RPAREN";
-      break;
-  }
+      return "RPAREN";
 
+    case TT_NOT:
+      return "NOT";
+
+    case TT_OR:
+      return "OR";
+
+    case TT_AND:
+      return "AND";
+
+    case TT_LT:
+      return "LT";
+
+    case TT_GT:
+      return "GT";
+
+    case TT_LTE:
+      return "LTE";
+
+    case TT_GTE:
+      return "GTE";
+
+    default: 
+      throw std::invalid_argument("Invalid token type");
+  }
+}
+
+std::string Token::to_string()
+{
   std::string interval = "";
 
   if (start == end)
@@ -86,8 +104,8 @@ std::string Token::to_string()
 
   if (value == "")
   {
-    return "Token(" + type_name + ", " + interval + ")";
+    return "Token(" + to_string_type() + ", " + interval + ")";
   }
 
-  return "Token(" + type_name + ", " + value + ", " + interval + ")";
+  return "Token(" + to_string_type() + ", " + value + ", " + interval + ")";
 }

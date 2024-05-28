@@ -5,5 +5,7 @@
 
 struct Value
 {
-  std::string to_string();
+  Value() {};
+
+  virtual std::string to_string() = 0;
 };

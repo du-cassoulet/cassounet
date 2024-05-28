@@ -1,6 +1,8 @@
 #pragma once
 
+#include <iostream>
 #include <string>
+
 #include "Position.hpp"
 
 enum TokenType
@@ -12,12 +14,22 @@ enum TokenType
   TT_STRING,
   TT_ASSIGN,
   TT_EQUALS,
+  TT_NEQUALS,
   TT_PLUS,
   TT_MINUS,
   TT_MUL,
   TT_DIV,
+  TT_MOD,
   TT_LPAREN,
   TT_RPAREN,
+  TT_NOT,
+  TT_OR,
+  TT_AND,
+  TT_LT,
+  TT_GT,
+  TT_LTE,
+  TT_GTE,
+  TT_POW
 };
 
 struct Token
@@ -32,4 +44,5 @@ struct Token
   Token(TokenType _type, Position _pos);
 
   std::string to_string();
+  std::string to_string_type();
 };
