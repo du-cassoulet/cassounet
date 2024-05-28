@@ -1,7 +1,7 @@
 #include "Number.hpp"
 
-Number::Number(double _value)
-: Value(ValueType::NUMBER), value(_value) {}
+Number::Number(double _value, Position _start, Position _end, SymbolTable* _symbol_table)
+: Value(ValueType::NUMBER, _start, _end, _symbol_table), value(_value) {}
 
 void Number::to_positive()
 {

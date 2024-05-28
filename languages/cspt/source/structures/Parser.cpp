@@ -4,6 +4,10 @@
 #include "nodes/BooleanNode.hpp"
 #include "nodes/UnaryOpNode.hpp"
 #include "nodes/BinaryOpNode.hpp"
+#include "nodes/VarAssignNode.hpp"
+#include "nodes/VarReAssignNode.hpp"
+#include "nodes/VarAccessNode.hpp"
+#include "nodes/CallNode.hpp"
 
 Parser::Parser(std::vector<Token> _tokens)
 : tokens(_tokens) {
@@ -36,22 +40,83 @@ std::shared_ptr<Node> Parser::atom()
     advance();
     return node;
   }
+  else if (current_token->match(TokenType::TT_LPAREN))
+  {
+    advance();
+    std::shared_ptr<Node> node = expr();
+
+    if (!current_token->match(TokenType::TT_RPAREN))
+    {
+      throw std::invalid_argument("Expected ')'");
+    }
+
+    advance();
+    return node;
+  }
+  else if (current_token->match(TokenType::TT_IDENTIFIER))
+  {
+    Token var_tok = current_token->copy();
+    advance();
+
+    if (current_token->match(TokenType::TT_EQUALS))
+    {
+      advance();
+      std::shared_ptr<Node> content = expr();
+      return std::make_shared<VarReAssignNode>(var_tok, content);
+    }
+    
+    return std::make_shared<VarAccessNode>(var_tok);
+  }
   else
   {
     throw std::invalid_argument("Invalid token: '" + current_token->to_string_type() + "'");
   }
 }
 
+std::shared_ptr<Node> Parser::atom()
+{
+  std::shared_ptr<Node> node = atom();
+
+  if (current_token->match(TokenType::TT_LPAREN))
+  {
+    advance();
+
+    std::vector<std::shared_ptr<Node>> args;
+
+    if (!current_token->match(TokenType::TT_RPAREN))
+    {
+      args.push_back(expr());
+
+      while (current_token->match(TokenType::TT_COMMA))
+      {
+        advance();
+        args.push_back(expr());
+      }
+
+      if (!current_token->match(TokenType::TT_RPAREN))
+      {
+        throw std::invalid_argument("Expected ')'");
+      }
+    }
+
+    advance();
+
+    return std::make_shared<CallNode>(node, args);
+  }
+
+  return node;
+}
+
 std::shared_ptr<Node> Parser::power()
 {
-  return bin_op(Function::ATOM, {TokenType::TT_POW}, Function::FACTOR);
+  return bin_op(Function::CALL, {TokenType::TT_POW}, Function::FACTOR);
 }
 
 std::shared_ptr<Node> Parser::factor()
 {
   if (current_token->match(TokenType::TT_NOT))
   {
-    Token op_tok = *current_token;
+    Token op_tok = current_token->copy();
     advance();
 
     std::shared_ptr<Node> node = comp_expr();
@@ -59,7 +124,7 @@ std::shared_ptr<Node> Parser::factor()
   }
   else if (current_token->match({TokenType::TT_PLUS, TokenType::TT_MINUS}))
   {
-    Token op_tok = *current_token;
+    Token op_tok = current_token->copy();
     advance();
 
     std::shared_ptr<Node> node = factor();
@@ -125,7 +190,7 @@ std::shared_ptr<Node> Parser::bin_op(Function funca, std::list<TokenType> ops, F
 
   while (std::find(ops.begin(), ops.end(), current_token->type) != ops.end())
   {
-    Token op_tok = *current_token;
+    Token op_tok = current_token->copy();
     advance();
 
     std::shared_ptr<Node> right;
@@ -165,9 +230,33 @@ std::shared_ptr<Node> Parser::bin_op(Function funca, std::list<TokenType> ops, F
   return left;
 }
 
+std::shared_ptr<Node> Parser::expr()
+{
+  if (current_token->match(TokenType::TT_KEYWORD, {"set"}))
+  {
+    advance();
+
+    Token var_tok = current_token->copy();
+    advance();
+
+    if (!current_token->match(TokenType::TT_EQUALS))
+    {
+      throw std::invalid_argument("Expected '='");
+    }
+
+    advance();
+
+    std::shared_ptr<Node> content = expr();
+
+    return std::make_shared<VarAssignNode>(var_tok, content);
+  }
+
+  return bin_op(Function::COMP_EXPR, {TokenType::TT_OR, TokenType::TT_AND}, Function::COMP_EXPR);
+}
+
 void Parser::parse()
 {
-  this->node = bin_op(Function::COMP_EXPR, {TokenType::TT_OR, TokenType::TT_AND}, Function::COMP_EXPR);
+  this->node = expr();
 }
 
 void Parser::print_node()

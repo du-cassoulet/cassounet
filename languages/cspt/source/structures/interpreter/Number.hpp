@@ -5,12 +5,14 @@
 #include <cmath>
 
 #include "./Value.hpp"
+#include "../Position.hpp"
+#include "../SymbolTable.hpp"
 
 struct Number : public virtual Value
 {
   double value;
 
-  Number(double _value);
+  Number(double _value, Position _start, Position _end, SymbolTable* _symbol_table);
 
   void to_positive() override;
   void to_negative() override;

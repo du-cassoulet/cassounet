@@ -15,7 +15,7 @@ void Lexer::make_identifier() {
   Position start = position.copy();
   std::string identifier = "";
 
-  while (position.index < input.length() && ('a' <= input[position.index] && input[position.index] <= 'z'))
+  while (position.index < input.length() && ('a' <= input[position.index] && input[position.index] <= 'z') &&  ('A' <= input[position.index] && input[position.index] <= 'Z') || input[position.index] == '_' || ('0' <= input[position.index] && input[position.index] <= '9'))
   {
     identifier += input[position.index];
     advance();
@@ -285,6 +285,11 @@ void Lexer::make_tokens()
     else if (current_char == ')')
     {
       tokens.push_back(Token(TokenType::TT_RPAREN, position.copy()));
+      advance();
+    }
+    else if (current_char == ',')
+    {
+      tokens.push_back(Token(TokenType::TT_COMMA, position.copy()));
       advance();
     }
     else

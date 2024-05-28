@@ -1,22 +1,22 @@
 #pragma once
 
-#include <map>
 #include <string>
-#include <optional>
 #include <memory>
+#include <map>
 
-#include "Value.hpp"
+#include "interpreter/Value.hpp"
 
 struct SymbolTable
 {
-public:
-  std::map<std::string, Value> symbols;
+  std::map<std::string, std::shared_ptr<Value>> table;
   SymbolTable* parent;
 
   SymbolTable(SymbolTable* _parent = nullptr);
 
-  std::shared_ptr<Value> get(const std::string& name);
-  bool has(const std::string& name);
-  void set(const std::string& name, const Value& value);
-  void remove(const std::string& name);
+  std::shared_ptr<Value> get(std::string key);
+  bool contains(std::string key);
+  void set(std::string key, std::shared_ptr<Value> value);
+  void remove(std::string key);
+
+  std::string to_string(int depth = 0);
 };

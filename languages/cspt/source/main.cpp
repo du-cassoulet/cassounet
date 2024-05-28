@@ -1,12 +1,57 @@
 #include <iostream>
 #include <string>
+#include <csignal>
+#include <fstream>
+
 #include "lib.hpp"
-#include "./structures/SymbolTable.hpp"
-#include "./structures/Lexer.hpp"
-#include "./structures/Parser.hpp"
-#include "./structures/Interpreter.hpp"
+#include "structures/SymbolTable.hpp"
+#include "structures/Lexer.hpp"
+#include "structures/Parser.hpp"
+#include "structures/Interpreter.hpp"
 
 #define FILE_NAME "<stdin>"
+#define VERSION "1.0.0"
+
+std::shared_ptr<Value> run_code(const std::string& code, SymbolTable* symbol_table, const std::string& filename = FILE_NAME)
+{
+  Lexer lexer = Lexer(code, filename);
+  lexer.make_tokens();
+  Parser parser = Parser(lexer.tokens);
+  parser.parse();
+
+  Interpreter interpreter = Interpreter(symbol_table);
+  return interpreter.visit(parser.node);
+}
+
+std::string read_file(const std::string& filename)
+{
+  std::fstream my_file;
+  std::string result;
+	my_file.open(filename, std::ios::in);
+
+	if (!my_file)
+  {
+		std::cout << "No such file";
+	}
+	else 
+  {
+		char ch;
+
+		while (1)
+    {
+			my_file >> ch;
+			if (my_file.eof())
+				break;
+
+			result += ch;
+		}
+
+	}
+
+	my_file.close();
+
+	return result;
+}
 
 int main(int argc, char *argv[])
 {
@@ -20,7 +65,7 @@ int main(int argc, char *argv[])
 
   if (option == "--version" || option == "-v")
   {
-    std::cout << "Version 1.0.0" << std::endl;
+    std::cout << "Version " << VERSION << std::endl;
     return 0;
   }
   else if (option == "--help" || option == "-h")
@@ -47,23 +92,23 @@ int main(int argc, char *argv[])
         break;
       }
 
-      Lexer lexer = Lexer(code, FILE_NAME);
-      lexer.make_tokens();
-      // lexer.print_tokens();
+      if (code.empty())
+      {
+        continue;
+      }
 
-      Parser parser = Parser(lexer.tokens);
-      parser.parse();
-      // parser.print_node();
-
-      Interpreter interpreter = Interpreter(&symbol_table);
-      std::cout << interpreter.visit(parser.node)->to_string() << std::endl;
+      std::shared_ptr<Value> result = run_code(code, &symbol_table);
+      std::cout << result->to_string() << std::endl;
+      symbol_table.set("_", result);
     }
     
     return 0;
   }
   else
   {
-    std::cerr << "Usage: " << argv[0] << " <filename>" << std::endl;
-    return 1;
+    SymbolTable symbol_table = SymbolTable();
+    std::string code = read_file(option);
+    run_code(code, &symbol_table, option);
+    return 0;
   }
 }

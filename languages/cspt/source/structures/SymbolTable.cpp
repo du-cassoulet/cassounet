@@ -1,42 +1,52 @@
 #include "SymbolTable.hpp"
 
 SymbolTable::SymbolTable(SymbolTable* _parent)
-  : parent(_parent) {}
+: parent(_parent) {}
 
-std::shared_ptr<Value> SymbolTable::get(const std::string& name)
+std::shared_ptr<Value> SymbolTable::get(std::string key)
 {
-  if (symbols.find(name) != symbols.end())
+  if (table.find(key) != table.end())
   {
-    return std::make_shared<Value>(symbols[name]);
+    return table[key];
   }
-  else if (parent != nullptr)
+  
+  if (parent != nullptr)
   {
-    return parent->get(name);
+    return parent->get(key);
   }
 
   return nullptr;
 }
 
-bool SymbolTable::has(const std::string& name)
+bool SymbolTable::contains(std::string key)
 {
-  if (symbols.find(name) != symbols.end())
-  {
-    return true;
-  }
-  else if (parent != nullptr)
-  {
-    return parent->has(name);
-  }
-
-  return false;
+  return get(key) != nullptr;
 }
 
-void SymbolTable::set(const std::string& name, const Value& value)
+void SymbolTable::set(std::string key, std::shared_ptr<Value> value)
 {
-  symbols[name] = value;
+  table.insert_or_assign(key, value);
 }
 
-void SymbolTable::remove(const std::string& name)
+void SymbolTable::remove(std::string key)
 {
-  symbols.erase(name);
+  if (table.find(key) != table.end())
+  {
+    table.erase(key);
+  }
+}
+
+std::string SymbolTable::to_string(int depth)
+{
+  depth++;
+  std::string res = "";
+  
+  res += "SymbolTable(\n";
+  for (auto& [key, value] : table)
+  {
+    res += std::string(2 * depth, ' ') + key + ": " + value->to_string() + ",\n";
+  }
+  res += std::string(2 * (depth - 1), ' ') + ")";
+
+  return res;
 }

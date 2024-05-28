@@ -110,6 +110,48 @@ std::shared_ptr<Value> Interpreter::visit_binary_op(BinaryOpNode node)
   }
 }
 
+std::shared_ptr<Value> Interpreter::visit_var_assign(VarAssignNode node)
+{
+  std::string var_name = node.var_name.value;
+  std::shared_ptr<Value> value = visit(node.value);
+
+  symbol_table->set(var_name, value);
+
+  return value;
+}
+
+std::shared_ptr<Value> Interpreter::visit_var_reassign(VarReAssignNode node)
+{
+  std::string var_name = node.var_name.value;
+  std::shared_ptr<Value> value = visit(node.value);
+
+  if (!symbol_table->contains(var_name))
+  {
+    throw std::invalid_argument("Variable '" + var_name + "' is not defined");
+  }
+
+  symbol_table->set(var_name, value);
+  return value;
+}
+
+std::shared_ptr<Value> Interpreter::visit_var_access(VarAccessNode node)
+{
+  std::string var_name = node.var_name.value;
+  std::shared_ptr<Value> value = symbol_table->get(var_name);
+
+  if (value == nullptr)
+  {
+    throw std::invalid_argument("Variable '" + var_name + "' is not defined");
+  }
+
+  return value;
+}
+
+std::shared_ptr<Value> Interpreter::visit_call(CallNode node)
+{
+  
+}
+
 std::shared_ptr<Value> Interpreter::visit(std::shared_ptr<Node> node)
 {
   switch (node->type)
@@ -128,6 +170,18 @@ std::shared_ptr<Value> Interpreter::visit(std::shared_ptr<Node> node)
 
     case NodeType::UNARY_OPERATION:
       return visit_unary_op(dynamic_cast<UnaryOpNode&>(*node));
+
+    case NodeType::VAR_ASSIGN:
+      return visit_var_assign(dynamic_cast<VarAssignNode&>(*node));
+
+    case NodeType::VAR_REASSIGN:
+      return visit_var_reassign(dynamic_cast<VarReAssignNode&>(*node));
+
+    case NodeType::VAR_ACCESS:
+      return visit_var_access(dynamic_cast<VarAccessNode&>(*node));
+
+    case NodeType::CALL:
+      throw visit_call(dynamic_cast<CallNode&>(*node));
 
     default:
       throw std::invalid_argument("Invalid node type: " + node->to_string(1));

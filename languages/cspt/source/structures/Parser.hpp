@@ -17,19 +17,22 @@ enum class Function
   FACTOR,
   TERM,
   ARITH_EXPR,
-  COMP_EXPR
+  COMP_EXPR,
+  CALL
 };
 
 struct Parser
 {
 private:
   std::shared_ptr<Node> atom();
+  std::shared_ptr<Node> call();
   std::shared_ptr<Node> power();
   std::shared_ptr<Node> factor();
   std::shared_ptr<Node> term();
   std::shared_ptr<Node> arith_expr();
   std::shared_ptr<Node> comp_expr();
   std::shared_ptr<Node> bin_op(Function funca, std::list<TokenType> ops, Function funcb);
+  std::shared_ptr<Node> expr();
 
 public:
   std::vector<Token> tokens;

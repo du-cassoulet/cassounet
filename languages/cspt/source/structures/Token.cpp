@@ -50,74 +50,79 @@ bool Token::match(std::list<TokenType> types)
   return false;
 }
 
+Token Token::copy()
+{
+  return Token(type, value, start, end);
+}
+
 std::string Token::to_string_type()
 {
   switch (type)
   {
-    case TT_EOF:
+    case TokenType::TT_EOF:
       return "EOF";
 
-    case TT_IDENTIFIER:
+    case TokenType::TT_IDENTIFIER:
       return "IDENTIFIER";
 
-    case TT_KEYWORD:
+    case TokenType::TT_KEYWORD:
       return "KEYWORD";
 
-    case TT_NUMBER:
+    case TokenType::TT_NUMBER:
       return "NUMBER";
 
-    case TT_STRING:
+    case TokenType::TT_STRING:
       return "STRING";
 
-    case TT_ASSIGN:
+    case TokenType::TT_ASSIGN:
       return "ASSIGN";
 
-    case TT_EQUALS:
+    case TokenType::TT_EQUALS:
       return "EQUALS";
 
-    case TT_PLUS:
+    case TokenType::TT_PLUS:
       return "PLUS";
 
-    case TT_MINUS:
+    case TokenType::TT_MINUS:
       return "MINUS";
 
-    case TT_MUL:
+    case TokenType::TT_MUL:
       return "MUL";
 
-    case TT_DIV:
+    case TokenType::TT_DIV:
       return "DIV";
 
-    case TT_MOD:
+    case TokenType::TT_MOD:
       return "MOD";
 
-    case TT_POW:
+    case TokenType::TT_POW:
       return "POW";
 
-    case TT_LPAREN:
+    case TokenType::TT_LPAREN:
       return "LPAREN";
 
-    case TT_RPAREN:
+    case TokenType::TT_RPAREN:
       return "RPAREN";
 
-    case TT_NOT:
+    case TokenType::TT_NOT:
       return "NOT";
 
-    case TT_OR:
+    case TokenType::TT_OR:
       return "OR";
 
-    case TT_AND:
+    case TokenType::TT_AND:
       return "AND";
 
-    case TT_LT:
+    case TokenType::TT_LT:
       return "LT";
 
-    case TT_GT:
+    case TokenType::TT_GT:
       return "GT";
 
-    case TT_LTE:
+    case TokenType::TT_LTE:
       return "LTE";
 
-    case TT_GTE:
+    case TokenType::TT_GTE:
       return "GTE";
 
     default: 

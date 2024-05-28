@@ -6,7 +6,7 @@
 
 #include "Position.hpp"
 
-enum TokenType
+enum class TokenType
 {
   TT_EOF,
   TT_IDENTIFIER,
@@ -30,7 +30,8 @@ enum TokenType
   TT_GT,
   TT_LTE,
   TT_GTE,
-  TT_POW
+  TT_POW,
+  TT_COMMA
 };
 
 struct Token
@@ -46,6 +47,8 @@ struct Token
 
   bool match(TokenType correct_type, std::list<std::string> values = {});
   bool match(std::list<TokenType> types);
+
+  Token copy();
 
   std::string to_string();
   std::string to_string_type();
