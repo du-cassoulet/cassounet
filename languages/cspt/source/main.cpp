@@ -19,6 +19,7 @@ std::shared_ptr<Value> run_code(const std::string& code, SymbolTable* symbol_tab
   Parser parser = Parser(lexer.tokens);
   parser.parse();
 
+
   Interpreter interpreter = Interpreter(symbol_table);
   return interpreter.visit(parser.node).value;
 }

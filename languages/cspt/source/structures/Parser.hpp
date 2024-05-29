@@ -9,6 +9,16 @@
 
 #include "Token.hpp"
 #include "nodes/Node.hpp"
+#include "nodes/NumberNode.hpp"
+#include "nodes/StringNode.hpp"
+#include "nodes/BooleanNode.hpp"
+#include "nodes/NullNode.hpp"
+#include "nodes/UnaryOpNode.hpp"
+#include "nodes/BinaryOpNode.hpp"
+#include "nodes/VarAssignNode.hpp"
+#include "nodes/VarReAssignNode.hpp"
+#include "nodes/VarAccessNode.hpp"
+#include "nodes/CallNode.hpp"
 
 enum class Function
 {

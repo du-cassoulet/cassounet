@@ -27,6 +27,14 @@ RTResult Interpreter::visit_boolean(BooleanNode node)
   return result.success(std::make_shared<Boolean>(value));
 }
 
+RTResult Interpreter::visit_null(NullNode node)
+{
+  RTResult result = RTResult();
+
+  Null value = Null(node.start, node.end, symbol_table);
+  return result.success(std::make_shared<Null>(value));
+}
+
 RTResult Interpreter::visit_unary_op(UnaryOpNode node)
 {
   RTResult result = RTResult();
@@ -165,7 +173,11 @@ RTResult Interpreter::visit_var_access(VarAccessNode node)
 
 RTResult Interpreter::visit_call(CallNode node)
 {
+  RTResult result = RTResult();
+
+  std::shared_ptr<Value> func_name = result.register_result(visit(node.func_name));
   
+  return result;
 }
 
 RTResult Interpreter::visit(std::shared_ptr<Node> node)
@@ -180,6 +192,9 @@ RTResult Interpreter::visit(std::shared_ptr<Node> node)
 
     case NodeType::BOOLEAN:
       return visit_boolean(dynamic_cast<BooleanNode&>(*node));
+
+    case NodeType::NULL_NODE:
+      return visit_null(dynamic_cast<NullNode&>(*node));
 
     case NodeType::BINARY_OPERATION:
       return visit_binary_op(dynamic_cast<BinaryOpNode&>(*node));

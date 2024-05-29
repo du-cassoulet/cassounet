@@ -1,13 +1,4 @@
 #include "Parser.hpp"
-#include "nodes/NumberNode.hpp"
-#include "nodes/StringNode.hpp"
-#include "nodes/BooleanNode.hpp"
-#include "nodes/UnaryOpNode.hpp"
-#include "nodes/BinaryOpNode.hpp"
-#include "nodes/VarAssignNode.hpp"
-#include "nodes/VarReAssignNode.hpp"
-#include "nodes/VarAccessNode.hpp"
-#include "nodes/CallNode.hpp"
 
 Parser::Parser(std::vector<Token> _tokens)
 : tokens(_tokens) {
@@ -37,6 +28,12 @@ std::shared_ptr<Node> Parser::atom()
   else if (current_token->match(TokenType::TT_KEYWORD, {"true", "false"}))
   {
     std::shared_ptr<Node> node = std::make_shared<BooleanNode>(*current_token);
+    advance();
+    return node;
+  }
+  else if (current_token->match(TokenType::TT_KEYWORD, {"null"}))
+  {
+    std::shared_ptr<Node> node = std::make_shared<NullNode>(*current_token);
     advance();
     return node;
   }
@@ -73,7 +70,7 @@ std::shared_ptr<Node> Parser::atom()
   }
 }
 
-std::shared_ptr<Node> Parser::atom()
+std::shared_ptr<Node> Parser::call()
 {
   std::shared_ptr<Node> node = atom();
 
@@ -166,6 +163,10 @@ std::shared_ptr<Node> Parser::bin_op(Function funca, std::list<TokenType> ops, F
   {
     case Function::ATOM:
       left = atom();
+      break;
+
+    case Function::CALL:
+      left = call();
       break;
 
     case Function::FACTOR:

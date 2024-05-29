@@ -4,7 +4,6 @@
 #include <string>
 #include <memory>
 
-#include "../SymbolTable.hpp"
 #include "../Position.hpp"
 
 enum class ValueType
@@ -12,19 +11,18 @@ enum class ValueType
   NUMBER,
   STRING,
   BOOLEAN,
-  FUNCTION
+  FUNCTION,
+  NULL_VALUE
 };
 
 struct Value
 {
   ValueType type;
+  bool symbol_valued;
   Position start;
   Position end;
-  SymbolTable* symbol_table;
 
-  Value(ValueType _type, Position _start, Position _end, SymbolTable* _symbol_table);
-
-  void set_symbol_table(SymbolTable* _symbol_table);
+  Value(ValueType _type, Position _start, Position _end, bool symbol_valued = false);
 
   virtual void to_positive() = 0;
   virtual void to_negative() = 0;

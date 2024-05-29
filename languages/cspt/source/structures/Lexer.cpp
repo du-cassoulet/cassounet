@@ -15,7 +15,15 @@ void Lexer::make_identifier() {
   Position start = position.copy();
   std::string identifier = "";
 
-  while (position.index < input.length() && ('a' <= input[position.index] && input[position.index] <= 'z') &&  ('A' <= input[position.index] && input[position.index] <= 'Z') || input[position.index] == '_' || ('0' <= input[position.index] && input[position.index] <= '9'))
+  while (
+    position.index < input.length() &&
+    (
+      ('a' <= input[position.index] && input[position.index] <= 'z') ||
+      ('A' <= input[position.index] && input[position.index] <= 'Z') ||
+      ('0' <= input[position.index] && input[position.index] <= '9') ||
+      input[position.index] == '_'
+    )
+  )
   {
     identifier += input[position.index];
     advance();
@@ -36,7 +44,7 @@ void Lexer::make_number() {
   std::string number = "";
   bool dot = false;
 
-  while (position.index < input.length() && '0' <= input[position.index] && input[position.index] <= '9' || input[position.index] == '.' || input[position.index] == '_')
+  while (position.index < input.length() && ('0' <= input[position.index] && input[position.index] <= '9' || input[position.index] == '.' || input[position.index] == '_'))
   {
     if (input[position.index] == '_')
     {

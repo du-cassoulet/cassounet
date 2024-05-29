@@ -13,8 +13,7 @@ enum class KeywordType
   KT_FOR,
   KT_TRUE,
   KT_FALSE,
-  KT_NULL,
-  KT_NAN
+  KT_NULL
 };
 
 struct Keyword

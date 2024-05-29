@@ -10,7 +10,8 @@ std::list<Keyword> Keyword::keywords = {
   Keyword(KeywordType::KT_IF, "if"),
   Keyword(KeywordType::KT_ELSE, "else"),
   Keyword(KeywordType::KT_WHILE, "while"),
-  Keyword(KeywordType::KT_FOR, "for")
+  Keyword(KeywordType::KT_FOR, "for"),
+  Keyword(KeywordType::KT_NULL, "null"),
 };
 
 Keyword Keyword::getKeyword(std::string value)
