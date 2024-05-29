@@ -22,7 +22,7 @@ struct Value
   Position end;
   SymbolTable* symbol_table;
 
-  Value(ValueType _type, Position _start, Position _end, SymbolTable* _symbol_table = nullptr);
+  Value(ValueType _type, Position _start, Position _end, SymbolTable* _symbol_table);
 
   void set_symbol_table(SymbolTable* _symbol_table);
 

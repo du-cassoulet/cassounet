@@ -3,127 +3,141 @@
 Interpreter::Interpreter(SymbolTable* _symbol_table)
 : symbol_table(_symbol_table) {}
 
-std::shared_ptr<Value> Interpreter::visit_number(NumberNode node)
+RTResult Interpreter::visit_number(NumberNode node)
 {
-  Number value = Number(std::stod(node.value_tok.value));
-  return std::make_shared<Number>(value);
+  RTResult result = RTResult();
+
+  Number value = Number(std::stod(node.value_tok.value), node.start, node.end, symbol_table);
+  return result.success(std::make_shared<Number>(value));
 }
 
-std::shared_ptr<Value> Interpreter::visit_string(StringNode node)
+RTResult Interpreter::visit_string(StringNode node)
 {
-  String value = String(node.value_tok.value);
-  return std::make_shared<String>(value);
+  RTResult result = RTResult();
+
+  String value = String(node.value_tok.value, node.start, node.end, symbol_table);
+  return result.success(std::make_shared<String>(value));
 }
 
-std::shared_ptr<Value> Interpreter::visit_boolean(BooleanNode node)
+RTResult Interpreter::visit_boolean(BooleanNode node)
 {
-  Boolean value = Boolean(node.value_tok.value == "true");
-  return std::make_shared<Boolean>(value);
+  RTResult result = RTResult();
+
+  Boolean value = Boolean(node.value_tok.value == "true", node.start, node.end, symbol_table);
+  return result.success(std::make_shared<Boolean>(value));
 }
 
-std::shared_ptr<Value> Interpreter::visit_unary_op(UnaryOpNode node)
+RTResult Interpreter::visit_unary_op(UnaryOpNode node)
 {
-  std::shared_ptr<Value> operand = visit(node.operand);
+  RTResult result = RTResult();
+
+  std::shared_ptr<Value> operand = result.register_result(visit(node.operand));
   TokenType op_type = node.op_tok.type;
 
   switch (op_type)
   {
     case TokenType::TT_PLUS:
       operand->to_positive();
-      return operand;
+      return result.success(operand);
 
     case TokenType::TT_MINUS:
       operand->to_negative();
-      return operand;
+      return result.success(operand);
 
     case TokenType::TT_NOT:
       operand->to_not();
-      return operand;
+      return result.success(operand);
 
     default:
       throw std::invalid_argument("Invalid unary operator: " + node.op_tok.to_string_type());
   }
 }
 
-std::shared_ptr<Value> Interpreter::visit_binary_op(BinaryOpNode node)
+RTResult Interpreter::visit_binary_op(BinaryOpNode node)
 {
-  std::shared_ptr<Value> left = visit(node.left);
-  std::shared_ptr<Value> right = visit(node.right);
+  RTResult result = RTResult();
+
+  std::shared_ptr<Value> left = result.register_result(visit(node.left));
+  std::shared_ptr<Value> right = result.register_result(visit(node.right));
   TokenType op_type = node.op_tok.type;
 
   switch (op_type)
   {
     case TokenType::TT_PLUS:
       left->add(right);
-      return left;
+      return result.success(left);
 
     case TokenType::TT_MINUS:
       left->subtract(right);
-      return left;
+      return result.success(left);
 
     case TokenType::TT_MUL:
       left->multiply(right);
-      return left;
+      return result.success(left);
 
     case TokenType::TT_DIV:
       left->divide(right);
-      return left;
+      return result.success(left);
 
     case TokenType::TT_POW:
       left->power(right);
-      return left;
+      return result.success(left);
 
     case TokenType::TT_EQUALS:
       left->equal(right);
-      return left;
+      return result.success(left);
 
     case TokenType::TT_NEQUALS:
       left->not_equal(right);
-      return left;
+      return result.success(left);
 
     case TokenType::TT_LT:
       left->less_than(right);
-      return left;
+      return result.success(left);
 
     case TokenType::TT_GT:
       left->greater_than(right);
-      return left;
+      return result.success(left);
 
     case TokenType::TT_LTE:
       left->less_than_or_equal(right);
-      return left;
+      return result.success(left);
 
     case TokenType::TT_GTE:
       left->greater_than_or_equal(right);
-      return left;
+      return result.success(left);
 
     case TokenType::TT_AND:
       left->and_op(right);
-      return left;
+      return result.success(left);
 
     case TokenType::TT_OR:
       left->or_op(right);
-      return left;
+      return result.success(left);
 
     default:
       throw std::invalid_argument("Invalid binary operator: " + node.op_tok.to_string_type());
   }
 }
 
-std::shared_ptr<Value> Interpreter::visit_var_assign(VarAssignNode node)
+RTResult Interpreter::visit_var_assign(VarAssignNode node)
 {
+  RTResult result = RTResult();
+
   std::string var_name = node.var_name.value;
-  std::shared_ptr<Value> value = visit(node.value);
+  std::shared_ptr<Value> value = result.register_result(visit(node.value));
 
   symbol_table->set(var_name, value);
 
-  return value;
+  return result.success(value);
 }
 
-std::shared_ptr<Value> Interpreter::visit_var_reassign(VarReAssignNode node)
+RTResult Interpreter::visit_var_reassign(VarReAssignNode node)
 {
+  RTResult result = RTResult();
+
   std::string var_name = node.var_name.value;
-  std::shared_ptr<Value> value = visit(node.value);
+  std::shared_ptr<Value> value = result.register_result(visit(node.value));
 
   if (!symbol_table->contains(var_name))
   {
@@ -131,11 +145,13 @@ std::shared_ptr<Value> Interpreter::visit_var_reassign(VarReAssignNode node)
   }
 
   symbol_table->set(var_name, value);
-  return value;
+  return result.success(value);
 }
 
-std::shared_ptr<Value> Interpreter::visit_var_access(VarAccessNode node)
+RTResult Interpreter::visit_var_access(VarAccessNode node)
 {
+  RTResult result = RTResult();
+
   std::string var_name = node.var_name.value;
   std::shared_ptr<Value> value = symbol_table->get(var_name);
 
@@ -144,15 +160,15 @@ std::shared_ptr<Value> Interpreter::visit_var_access(VarAccessNode node)
     throw std::invalid_argument("Variable '" + var_name + "' is not defined");
   }
 
-  return value;
+  return result.success(value);
 }
 
-std::shared_ptr<Value> Interpreter::visit_call(CallNode node)
+RTResult Interpreter::visit_call(CallNode node)
 {
   
 }
 
-std::shared_ptr<Value> Interpreter::visit(std::shared_ptr<Node> node)
+RTResult Interpreter::visit(std::shared_ptr<Node> node)
 {
   switch (node->type)
   {

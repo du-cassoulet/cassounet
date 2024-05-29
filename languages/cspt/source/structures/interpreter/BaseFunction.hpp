@@ -5,12 +5,13 @@
 
 #include "Value.hpp"
 #include "../SymbolTable.hpp"
+#include "../Position.hpp"
 
 struct BaseFunction : public virtual Value
 {
   std::string name;
 
-  BaseFunction(std::string _name = "anonymous", SymbolTable* _symbol_table = nullptr);
+  BaseFunction(std::string _name = "anonymous", Position _start, Position _end, SymbolTable* _symbol_table = nullptr);
 
   SymbolTable generate_new_symbol_table();
   void populate_args(std::vector<std::string> arg_names, std::vector<std::shared_ptr<Value>> args, SymbolTable& new_symbol_table);

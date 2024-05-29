@@ -3,6 +3,7 @@
 #include <string>
 #include <memory>
 
+#include "RTResult.hpp"
 #include "SymbolTable.hpp"
 #include "nodes/Node.hpp"
 #include "interpreter/Value.hpp"
@@ -22,15 +23,15 @@
 struct Interpreter
 {
 private:
-  std::shared_ptr<Value> visit_number(NumberNode node);
-  std::shared_ptr<Value> visit_string(StringNode node);
-  std::shared_ptr<Value> visit_boolean(BooleanNode node);
-  std::shared_ptr<Value> visit_binary_op(BinaryOpNode node);
-  std::shared_ptr<Value> visit_unary_op(UnaryOpNode node);
-  std::shared_ptr<Value> visit_var_assign(VarAssignNode node);
-  std::shared_ptr<Value> visit_var_reassign(VarReAssignNode node);
-  std::shared_ptr<Value> visit_var_access(VarAccessNode node);
-  std::shared_ptr<Value> visit_call(CallNode node);
+  RTResult visit_number(NumberNode node);
+  RTResult visit_string(StringNode node);
+  RTResult visit_boolean(BooleanNode node);
+  RTResult visit_binary_op(BinaryOpNode node);
+  RTResult visit_unary_op(UnaryOpNode node);
+  RTResult visit_var_assign(VarAssignNode node);
+  RTResult visit_var_reassign(VarReAssignNode node);
+  RTResult visit_var_access(VarAccessNode node);
+  RTResult visit_call(CallNode node);
 
 public:
   SymbolTable* symbol_table;
@@ -38,5 +39,5 @@ public:
   Interpreter(SymbolTable* _symbol_table);
 
   std::shared_ptr<Node> node;
-  std::shared_ptr<Value> visit(std::shared_ptr<Node> node);
+  RTResult visit(std::shared_ptr<Node> node);
 };

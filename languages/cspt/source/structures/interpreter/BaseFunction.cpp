@@ -1,7 +1,7 @@
 #include "BaseFunction.hpp"
 
-BaseFunction::BaseFunction(std::string _name, SymbolTable* _symbol_table)
-: Value(ValueType::FUNCTION, _symbol_table), name(_name) {}
+BaseFunction::BaseFunction(std::string _name, Position _start, Position _end, SymbolTable* _symbol_table)
+: Value(ValueType::FUNCTION, _start, _end, _symbol_table), name(_name) {}
 
 SymbolTable BaseFunction::generate_new_symbol_table()
 {

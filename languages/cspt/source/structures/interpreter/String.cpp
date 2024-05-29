@@ -1,7 +1,7 @@
 #include "String.hpp"
 
-String::String(std::string _value)
-: Value(ValueType::STRING), value(_value) {}
+String::String(std::string _value, Position _start, Position _end, SymbolTable* _symbol_table)
+: Value(ValueType::STRING, _start, end, _symbol_table), value(_value) {}
 
 void String::to_positive()
 {

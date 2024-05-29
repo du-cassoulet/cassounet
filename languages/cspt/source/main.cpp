@@ -20,7 +20,7 @@ std::shared_ptr<Value> run_code(const std::string& code, SymbolTable* symbol_tab
   parser.parse();
 
   Interpreter interpreter = Interpreter(symbol_table);
-  return interpreter.visit(parser.node);
+  return interpreter.visit(parser.node).value;
 }
 
 std::string read_file(const std::string& filename)
@@ -37,7 +37,7 @@ std::string read_file(const std::string& filename)
   {
 		char ch;
 
-		while (1)
+		while (true)
     {
 			my_file >> ch;
 			if (my_file.eof())

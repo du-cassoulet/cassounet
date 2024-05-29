@@ -5,12 +5,14 @@
 #include <cmath>
 
 #include "./Value.hpp"
+#include "../Position.hpp"
+#include "../SymbolTable.hpp"
 
 struct Boolean : public virtual Value
 {
   bool value;
 
-  Boolean(bool _value);
+  Boolean(bool _value, Position _start, Position _end, SymbolTable* _symbol_table = nullptr);
 
   void to_positive() override;
   void to_negative() override;

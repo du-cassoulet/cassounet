@@ -9,7 +9,7 @@ struct String : public virtual Value
 {
   std::string value;
 
-  String(std::string _value);
+  String(std::string _value, Position _start, Position _end, SymbolTable* _symbol_table = nullptr);
 
   void to_positive() override;
   void to_negative() override;
