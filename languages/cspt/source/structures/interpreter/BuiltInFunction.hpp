@@ -1,18 +1,22 @@
 #pragma once
 
-#include <string>
+#include <vector>
 #include <memory>
-#include <cmath>
 
-#include "./Value.hpp"
-#include "../Position.hpp"
-#include "../SymbolTable.hpp"
+#include "Value.hpp"
+#include "Null.hpp"
+#include "BaseFunction.hpp"
+#include "../RTResult.hpp"
 
-struct Boolean : public virtual Value
+struct BuiltInFunction : public virtual BaseFunction
 {
-  bool value;
+private:
+  RTResult log(SymbolTable* args);
 
-  Boolean(bool _value, Position _start, Position _end, SymbolTable* _symbol_table = nullptr);
+public:
+  BuiltInFunction(std::string _name, Position _start, Position _end, SymbolTable* _symbol_table = nullptr);
+
+  RTResult execute(std::vector<std::shared_ptr<Value>> args) override;
 
   std::shared_ptr<Value> to_positive() override;
   std::shared_ptr<Value> to_negative() override;
@@ -34,4 +38,5 @@ struct Boolean : public virtual Value
   std::shared_ptr<Value> or_op(std::shared_ptr<Value> other) override;
 
   std::string to_string() override;
+  BuiltInFunction copy();
 };

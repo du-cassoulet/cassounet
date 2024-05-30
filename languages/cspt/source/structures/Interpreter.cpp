@@ -5,34 +5,22 @@ Interpreter::Interpreter(SymbolTable* _symbol_table)
 
 RTResult Interpreter::visit_number(NumberNode node)
 {
-  RTResult result = RTResult();
-
-  Number value = Number(std::stod(node.value_tok.value), node.start, node.end, symbol_table);
-  return result.success(std::make_shared<Number>(value));
+  return RTResult().success(std::make_shared<Number>(std::stod(node.value_tok.value), node.start, node.end, symbol_table));
 }
 
 RTResult Interpreter::visit_string(StringNode node)
 {
-  RTResult result = RTResult();
-
-  String value = String(node.value_tok.value, node.start, node.end, symbol_table);
-  return result.success(std::make_shared<String>(value));
+  return RTResult().success(std::make_shared<String>(node.value_tok.value, node.start, node.end, symbol_table));
 }
 
 RTResult Interpreter::visit_boolean(BooleanNode node)
 {
-  RTResult result = RTResult();
-
-  Boolean value = Boolean(node.value_tok.value == "true", node.start, node.end, symbol_table);
-  return result.success(std::make_shared<Boolean>(value));
+  return RTResult().success(std::make_shared<Boolean>(node.value_tok.value == "true", node.start, node.end, symbol_table));
 }
 
 RTResult Interpreter::visit_null(NullNode node)
 {
-  RTResult result = RTResult();
-
-  Null value = Null(node.start, node.end, symbol_table);
-  return result.success(std::make_shared<Null>(value));
+  return RTResult().success(std::make_shared<Null>(node.start, node.end, symbol_table));
 }
 
 RTResult Interpreter::visit_unary_op(UnaryOpNode node)
@@ -40,21 +28,17 @@ RTResult Interpreter::visit_unary_op(UnaryOpNode node)
   RTResult result = RTResult();
 
   std::shared_ptr<Value> operand = result.register_result(visit(node.operand));
-  TokenType op_type = node.op_tok.type;
 
-  switch (op_type)
+  switch (node.op_tok.type)
   {
     case TokenType::TT_PLUS:
-      operand->to_positive();
-      return result.success(operand);
+      return result.success(operand->to_positive());
 
     case TokenType::TT_MINUS:
-      operand->to_negative();
-      return result.success(operand);
+      return result.success(operand->to_negative());
 
     case TokenType::TT_NOT:
-      operand->to_not();
-      return result.success(operand);
+      return result.success(operand->to_not());
 
     default:
       throw std::invalid_argument("Invalid unary operator: " + node.op_tok.to_string_type());
@@ -67,61 +51,47 @@ RTResult Interpreter::visit_binary_op(BinaryOpNode node)
 
   std::shared_ptr<Value> left = result.register_result(visit(node.left));
   std::shared_ptr<Value> right = result.register_result(visit(node.right));
-  TokenType op_type = node.op_tok.type;
 
-  switch (op_type)
+  switch (node.op_tok.type)
   {
     case TokenType::TT_PLUS:
-      left->add(right);
-      return result.success(left);
+      return result.success(left->add(right));
 
     case TokenType::TT_MINUS:
-      left->subtract(right);
-      return result.success(left);
+      return result.success(left->subtract(right));
 
     case TokenType::TT_MUL:
-      left->multiply(right);
-      return result.success(left);
+      return result.success(left->multiply(right));
 
     case TokenType::TT_DIV:
-      left->divide(right);
-      return result.success(left);
+      return result.success(left->divide(right));
 
     case TokenType::TT_POW:
-      left->power(right);
-      return result.success(left);
+      return result.success(left->power(right));
 
     case TokenType::TT_EQUALS:
-      left->equal(right);
-      return result.success(left);
+      return result.success(left->equal(right));
 
     case TokenType::TT_NEQUALS:
-      left->not_equal(right);
-      return result.success(left);
+      return result.success(left->not_equal(right));
 
     case TokenType::TT_LT:
-      left->less_than(right);
-      return result.success(left);
+      return result.success(left->less_than(right));
 
     case TokenType::TT_GT:
-      left->greater_than(right);
-      return result.success(left);
+      return result.success(left->greater_than(right));
 
     case TokenType::TT_LTE:
-      left->less_than_or_equal(right);
-      return result.success(left);
+      return result.success(left->less_than_or_equal(right));
 
     case TokenType::TT_GTE:
-      left->greater_than_or_equal(right);
-      return result.success(left);
+      return result.success(left->greater_than_or_equal(right));
 
     case TokenType::TT_AND:
-      left->and_op(right);
-      return result.success(left);
+      return result.success(left->and_op(right));
 
     case TokenType::TT_OR:
-      left->or_op(right);
-      return result.success(left);
+      return result.success(left->or_op(right));
 
     default:
       throw std::invalid_argument("Invalid binary operator: " + node.op_tok.to_string_type());
@@ -176,8 +146,28 @@ RTResult Interpreter::visit_call(CallNode node)
   RTResult result = RTResult();
 
   std::shared_ptr<Value> func_name = result.register_result(visit(node.func_name));
-  
-  return result;
+  std::vector<std::shared_ptr<Value>> args = {};
+
+  if (func_name->type != ValueType::FUNCTION)
+  {
+    throw std::invalid_argument("Variable '" + func_name->to_string() + "' is not a function");
+  }
+
+  for (std::shared_ptr<Node> arg_node : node.args)
+  {
+    args.push_back(result.register_result(visit(arg_node)));
+  }
+
+  Function func = dynamic_cast<BaseFunction&>(*func_name);
+  std::cout << "Function: " << func->to_string() << std::endl;
+  std::shared_ptr<Value> return_value = result.register_result(func.execute(args));
+
+  if (result.should_return())
+  {
+    return result;
+  }
+
+  return result.success(return_value);
 }
 
 RTResult Interpreter::visit(std::shared_ptr<Node> node)

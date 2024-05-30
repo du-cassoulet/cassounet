@@ -6,6 +6,9 @@ Position::Position(std::string _code, int _index, int _line, int _column, std::s
 Position::Position(std::string _code, std::string _filename)
 : code(_code), index(0), line(0), column(0), filename(_filename) {}
 
+Position::Position()
+: code(""), index(0), line(0), column(0), filename("<internal>") {}
+
 void Position::advance()
 {
   index++;

@@ -8,15 +8,15 @@ SymbolTable BaseFunction::generate_new_symbol_table()
   return SymbolTable(symbol_table);
 }
 
-void BaseFunction::populate_args(std::vector<std::string> arg_names, std::vector<std::shared_ptr<Value>> args, SymbolTable& new_symbol_table)
+void BaseFunction::populate_args(std::vector<std::string> arg_names, std::vector<std::shared_ptr<Value>> args, SymbolTable* new_symbol_table)
 {
   for (int i = 0; i < arg_names.size(); i++)
   {
     if (args[i]->symbol_valued)
     {
       SymbolValue& s_arg = dynamic_cast<SymbolValue&>(*args[i]);
-      s_arg.set_symbol_table(&new_symbol_table);
-      new_symbol_table.set(arg_names[i], args[i]);
+      s_arg.set_symbol_table(new_symbol_table);
+      new_symbol_table->set(arg_names[i], args[i]);
     }
   }
 }
@@ -29,7 +29,7 @@ void BaseFunction::check_arg_count(std::vector<std::string> arg_names, std::vect
   }
 }
 
-void BaseFunction::check_args(std::vector<std::string> arg_names, std::vector<std::shared_ptr<Value>> args, SymbolTable& symbol_table)
+void BaseFunction::check_args(std::vector<std::string> arg_names, std::vector<std::shared_ptr<Value>> args, SymbolTable* symbol_table)
 {
   check_arg_count(arg_names, args);
   populate_args(arg_names, args, symbol_table);

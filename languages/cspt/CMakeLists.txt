@@ -14,8 +14,10 @@ include(cmake/project-is-top-level.cmake)
 include(cmake/variables.cmake)
 
 file(GLOB_RECURSE cassouscript_SRC CONFIGURE_DEPENDS
-    "source/*[^lib].cpp"
+    "source/*.cpp"
 )
+
+list(FILTER cassouscript_SRC EXCLUDE REGEX "source/lib.cpp$")
 
 # ---- Declare library ----
 

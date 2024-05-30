@@ -106,7 +106,7 @@ std::shared_ptr<Node> Parser::call()
 
 std::shared_ptr<Node> Parser::power()
 {
-  return bin_op(Function::CALL, {TokenType::TT_POW}, Function::FACTOR);
+  return bin_op(FunctionType::CALL, {TokenType::TT_POW}, FunctionType::FACTOR);
 }
 
 std::shared_ptr<Node> Parser::factor()
@@ -135,53 +135,53 @@ std::shared_ptr<Node> Parser::factor()
 
 std::shared_ptr<Node> Parser::term()
 {
-  return bin_op(Function::FACTOR, {TokenType::TT_MUL, TokenType::TT_DIV, TokenType::TT_MOD}, Function::FACTOR);
+  return bin_op(FunctionType::FACTOR, {TokenType::TT_MUL, TokenType::TT_DIV, TokenType::TT_MOD}, FunctionType::FACTOR);
 }
 
 std::shared_ptr<Node> Parser::arith_expr()
 {
-  return bin_op(Function::TERM, {TokenType::TT_PLUS, TokenType::TT_MINUS}, Function::TERM);
+  return bin_op(FunctionType::TERM, {TokenType::TT_PLUS, TokenType::TT_MINUS}, FunctionType::TERM);
 }
 
 std::shared_ptr<Node> Parser::comp_expr()
 {
-  return bin_op(Function::ARITH_EXPR, {
+  return bin_op(FunctionType::ARITH_EXPR, {
     TokenType::TT_EQUALS,
     TokenType::TT_NEQUALS,
     TokenType::TT_LT,
     TokenType::TT_GT,
     TokenType::TT_LTE,
     TokenType::TT_GTE
-  }, Function::ARITH_EXPR);
+  }, FunctionType::ARITH_EXPR);
 }
 
-std::shared_ptr<Node> Parser::bin_op(Function funca, std::list<TokenType> ops, Function funcb)
+std::shared_ptr<Node> Parser::bin_op(FunctionType funca, std::list<TokenType> ops, FunctionType funcb)
 {
   std::shared_ptr<Node> left;
 
   switch (funca)
   {
-    case Function::ATOM:
+    case FunctionType::ATOM:
       left = atom();
       break;
 
-    case Function::CALL:
+    case FunctionType::CALL:
       left = call();
       break;
 
-    case Function::FACTOR:
+    case FunctionType::FACTOR:
       left = factor();
       break;
 
-    case Function::TERM:
+    case FunctionType::TERM:
       left = term();
       break;
 
-    case Function::ARITH_EXPR:
+    case FunctionType::ARITH_EXPR:
       left = arith_expr();
       break;
 
-    case Function::COMP_EXPR:
+    case FunctionType::COMP_EXPR:
       left = comp_expr();
       break;
 
@@ -198,27 +198,27 @@ std::shared_ptr<Node> Parser::bin_op(Function funca, std::list<TokenType> ops, F
 
     switch (funcb)
     {
-      case Function::ATOM:
+      case FunctionType::ATOM:
         right = atom();
         left = std::make_shared<BinaryOpNode>(left, op_tok, right);
         break;
 
-      case Function::FACTOR:
+      case FunctionType::FACTOR:
         right = factor();
         left = std::make_shared<BinaryOpNode>(left, op_tok, right);
         break;
 
-      case Function::TERM:
+      case FunctionType::TERM:
         right = term();
         left = std::make_shared<BinaryOpNode>(left, op_tok, right);
         break;
 
-      case Function::ARITH_EXPR:
+      case FunctionType::ARITH_EXPR:
         right = arith_expr();
         left = std::make_shared<BinaryOpNode>(left, op_tok, right);
         break;
 
-      case Function::COMP_EXPR:
+      case FunctionType::COMP_EXPR:
         right = comp_expr();
         left = std::make_shared<BinaryOpNode>(left, op_tok, right);
         break;
@@ -252,7 +252,7 @@ std::shared_ptr<Node> Parser::expr()
     return std::make_shared<VarAssignNode>(var_tok, content);
   }
 
-  return bin_op(Function::COMP_EXPR, {TokenType::TT_OR, TokenType::TT_AND}, Function::COMP_EXPR);
+  return bin_op(FunctionType::COMP_EXPR, {TokenType::TT_OR, TokenType::TT_AND}, FunctionType::COMP_EXPR);
 }
 
 void Parser::parse()

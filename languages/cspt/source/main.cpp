@@ -1,13 +1,15 @@
 #include <iostream>
 #include <string>
-#include <csignal>
 #include <fstream>
+#include <memory>
 
 #include "lib.hpp"
 #include "structures/SymbolTable.hpp"
 #include "structures/Lexer.hpp"
 #include "structures/Parser.hpp"
 #include "structures/Interpreter.hpp"
+#include "structures/Position.hpp"
+#include "structures/interpreter/BuiltInFunction.hpp"
 
 #define FILE_NAME "<stdin>"
 #define VERSION "1.0.0"
@@ -79,6 +81,8 @@ int main(int argc, char *argv[])
     std::cout << "Type 'exit' to exit the repo." << std::endl;
 
     SymbolTable symbol_table = SymbolTable();
+
+    symbol_table.set("log", std::make_shared<BuiltInFunction>("log", Position(), Position(), &symbol_table));
 
     while (true)
     {

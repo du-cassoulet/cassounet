@@ -20,7 +20,7 @@
 #include "nodes/VarAccessNode.hpp"
 #include "nodes/CallNode.hpp"
 
-enum class Function
+enum class FunctionType
 {
   ATOM,
   POWER,
@@ -41,7 +41,7 @@ private:
   std::shared_ptr<Node> term();
   std::shared_ptr<Node> arith_expr();
   std::shared_ptr<Node> comp_expr();
-  std::shared_ptr<Node> bin_op(Function funca, std::list<TokenType> ops, Function funcb);
+  std::shared_ptr<Node> bin_op(FunctionType funca, std::list<TokenType> ops, FunctionType funcb);
   std::shared_ptr<Node> expr();
 
 public:
