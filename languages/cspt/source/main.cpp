@@ -17,10 +17,16 @@
 std::shared_ptr<Value> run_code(const std::string& code, SymbolTable* symbol_table, const std::string& filename = FILE_NAME)
 {
   Lexer lexer = Lexer(code, filename);
-  lexer.make_tokens();
+  std::shared_ptr<IllegalCharError> illegal_char_error = lexer.make_tokens();
+
+  if (illegal_char_error != nullptr)
+  {
+    std::cerr << illegal_char_error->to_string() << std::endl;
+    return std::make_shared<Null>();
+  }
+
   Parser parser = Parser(lexer.tokens);
   parser.parse();
-
 
   Interpreter interpreter = Interpreter(symbol_table);
   return interpreter.visit(parser.node).value;
@@ -34,7 +40,8 @@ std::string read_file(const std::string& filename)
 
 	if (!my_file)
   {
-		std::cout << "No such file";
+		std::cerr << "No such file" << std::endl;
+    exit(1);
 	}
 	else 
   {
@@ -76,44 +83,45 @@ int main(int argc, char *argv[])
     std::cout << "Usage: " << argv[0] << " <filename>" << std::endl;
     return 0;
   }
-  else if (option == "repo")
-  {
-    std::cout << "Type 'exit' to exit the repo." << std::endl;
-
-    SymbolTable symbol_table = SymbolTable();
-
-    symbol_table.set("log", std::make_shared<BuiltInFunction>("log", Position(), Position(), &symbol_table));
-
-    while (true)
-    {
-      std::string code;
-      std::cout << ">>> ";
-
-      getline(std::cin, code, '\n');
-
-      if (code == "exit")
-      {
-        std::cout << "Exiting..." << std::endl;
-        break;
-      }
-
-      if (code.empty())
-      {
-        continue;
-      }
-
-      std::shared_ptr<Value> result = run_code(code, &symbol_table);
-      std::cout << result->to_string() << std::endl;
-      symbol_table.set("_", result);
-    }
-    
-    return 0;
-  }
   else
   {
     SymbolTable symbol_table = SymbolTable();
-    std::string code = read_file(option);
-    run_code(code, &symbol_table, option);
-    return 0;
+    symbol_table.set("log", std::make_shared<BuiltInFunction>("log", Position(), Position(), &symbol_table));
+
+    if (option == "repo")
+    {
+      std::cout << "Type 'exit' to exit the repo." << std::endl;
+
+      while (true)
+      {
+        std::string code;
+        std::cout << "\033[0;30m>>>\033[0m ";
+
+        getline(std::cin, code, '\n');
+
+        if (code == "exit")
+        {
+          std::cout << "Exiting..." << std::endl;
+          break;
+        }
+
+        if (code.empty())
+        {
+          continue;
+        }
+
+        std::shared_ptr<Value> result = run_code(code, &symbol_table);
+        std::cout << result->to_string() << std::endl;
+        symbol_table.set("_", result);
+      }
+      
+      return 0;
+    }
+    else
+    {
+      std::string code = read_file(option);
+      run_code(code, &symbol_table, option);
+      return 0;
+    }
   }
 }

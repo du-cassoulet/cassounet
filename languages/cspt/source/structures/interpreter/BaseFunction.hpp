@@ -13,7 +13,7 @@ struct BaseFunction : public virtual SymbolValue
 {
   std::string name;
 
-  BaseFunction(std::string _name, Position _start, Position _end, SymbolTable* _symbol_table = nullptr);
+  BaseFunction(ValueType _type, std::string _name, Position _start, Position _end, SymbolTable* _symbol_table = nullptr);
 
   SymbolTable generate_new_symbol_table();
   void populate_args(std::vector<std::string> arg_names, std::vector<std::shared_ptr<Value>> args, SymbolTable* new_symbol_table);

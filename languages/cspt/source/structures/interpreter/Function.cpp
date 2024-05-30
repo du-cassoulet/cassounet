@@ -1,7 +1,7 @@
 #include "Function.hpp"
 
 Function::Function(std::string _name, Position _start, Position _end, std::shared_ptr<Node> _body_node, std::vector<std::string> _arg_names, bool _should_auto_return, SymbolTable* _symbol_table)
-: Value(ValueType::FUNCTION, _start, _end), SymbolValue(ValueType::FUNCTION, _start, _end), BaseFunction(_name, _start, _end, _symbol_table), body_node(_body_node), arg_names(_arg_names), should_auto_return(_should_auto_return) {}
+: Value(ValueType::FUNCTION, _start, _end), SymbolValue(ValueType::FUNCTION, _start, _end), BaseFunction(ValueType::FUNCTION, _name, _start, _end, _symbol_table), body_node(_body_node), arg_names(_arg_names), should_auto_return(_should_auto_return) {}
 
 RTResult Function::execute(std::vector<std::shared_ptr<Value>> args)
 {

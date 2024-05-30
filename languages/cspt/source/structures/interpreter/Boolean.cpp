@@ -94,5 +94,5 @@ std::shared_ptr<Value> Boolean::or_op(std::shared_ptr<Value> other)
 
 std::string Boolean::to_string()
 {
-  return value ? "true" : "false";
+  return value ? "\033[0;33mtrue\033[0m" : "\033[0;33mfalse\033[0m";
 }

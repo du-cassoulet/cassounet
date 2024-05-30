@@ -1,14 +1,13 @@
 #include "BuiltInFunction.hpp"
 
 BuiltInFunction::BuiltInFunction(std::string _name, Position _start, Position _end, SymbolTable* _symbol_table)
-: Value(ValueType::FUNCTION, _start, _end), SymbolValue(ValueType::FUNCTION, _start, _end), BaseFunction(_name, _start, _end, _symbol_table) {}
+: Value(ValueType::BUILTIN_FUNCTION, _start, _end), SymbolValue(ValueType::BUILTIN_FUNCTION, _start, _end), BaseFunction(ValueType::BUILTIN_FUNCTION, _name, _start, _end, _symbol_table) {}
 
 RTResult BuiltInFunction::execute(std::vector<std::shared_ptr<Value>> args)
 {
   RTResult result = RTResult();
   SymbolTable exec_symbol_table = generate_new_symbol_table();
 
-  
 
   if (name == "log")
   {
@@ -17,7 +16,8 @@ RTResult BuiltInFunction::execute(std::vector<std::shared_ptr<Value>> args)
     if (result.should_return()) return result;
     return result.success(return_value);
   }
-  else {
+  else
+  {
     throw std::runtime_error("BuiltInFunction '" + name + "' does not support this operation");
   }
 
@@ -31,7 +31,7 @@ RTResult BuiltInFunction::log(SymbolTable* symbol_table)
 
   std::cout << value->to_string() << std::endl;
 
-  return result.success(std::make_shared<Null>(start, end, symbol_table));
+  return result.success(std::make_shared<Null>(start, end));
 }
 
 std::shared_ptr<Value> BuiltInFunction::to_positive() {

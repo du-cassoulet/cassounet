@@ -97,5 +97,5 @@ std::shared_ptr<Value> String::or_op(std::shared_ptr<Value> other)
 
 std::string String::to_string()
 {
-  return value;
+  return "\033[0;32m\"" + value + "\"\033[0m";
 }

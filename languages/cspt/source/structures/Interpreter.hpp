@@ -13,6 +13,7 @@
 #include "interpreter/Null.hpp"
 #include "interpreter/SymbolValue.hpp"
 #include "interpreter/Function.hpp"
+#include "interpreter/BuiltInFunction.hpp"
 #include "nodes/NumberNode.hpp"
 #include "nodes/StringNode.hpp"
 #include "nodes/BooleanNode.hpp"

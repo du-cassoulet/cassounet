@@ -3,6 +3,9 @@
 Null::Null(Position _start, Position _end, SymbolTable* _symbol_table)
 : Value(ValueType::NULL_VALUE, _start, _end, false) {}
 
+Null::Null()
+: Value(ValueType::NULL_VALUE, Position(), Position(), false) {}
+
 std::shared_ptr<Value> Null::to_positive() {
   throw std::runtime_error("Cannot convert null to a number");
 }
@@ -72,5 +75,5 @@ std::shared_ptr<Value> Null::or_op(std::shared_ptr<Value> other) {
 }
 
 std::string Null::to_string() {
-  return "null";
+  return "\033[0;30mnull\033[0m";
 }

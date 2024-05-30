@@ -3,9 +3,12 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <memory>
 
 #include "Position.hpp"
 #include "Token.hpp"
+#include "../constants/Keyword.hpp"
+#include "Error.hpp"
 
 struct Lexer
 {
@@ -28,6 +31,6 @@ public:
   Lexer(std::string _input, std::string _filename);
 
   void advance();
-  void make_tokens();
+  std::shared_ptr<IllegalCharError> make_tokens();
   void print_tokens();
 };

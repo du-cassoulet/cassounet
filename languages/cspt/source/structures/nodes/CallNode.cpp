@@ -9,7 +9,7 @@ std::string CallNode::to_string(int depth)
   std::string res = "";
   
   res += "CallNode(\n";
-  res += std::string(2 * depth, ' ') + func_name->to_string() + ",\n";
+  res += std::string(2 * depth, ' ') + func_name->to_string(depth) + ",\n";
   res += std::string(2 * depth, ' ') + "[\n";
   for (auto& arg : args)
   {

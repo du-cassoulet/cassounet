@@ -12,6 +12,7 @@ enum class ValueType
   STRING,
   BOOLEAN,
   FUNCTION,
+  BUILTIN_FUNCTION,
   NULL_VALUE
 };
 

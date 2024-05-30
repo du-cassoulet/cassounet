@@ -1,7 +1,4 @@
 #include "Lexer.hpp"
-#include "Position.hpp"
-#include "Token.hpp"
-#include "../constants/Keyword.hpp"
 
 Lexer::Lexer(std::string _input, std::string _filename)
 : input(_input), position(_input, _filename) {}
@@ -211,7 +208,7 @@ void Lexer::make_greater_than() {
   }
 }
 
-void Lexer::make_tokens()
+std::shared_ptr<IllegalCharError> Lexer::make_tokens()
 {
   while (position.index < input.length())
   {
@@ -302,13 +299,15 @@ void Lexer::make_tokens()
     }
     else
     {
-      throw std::invalid_argument("Invalid character: '" + std::string(1, current_char) + "'");
+      return std::make_shared<IllegalCharError>("Unexpected token '" + std::string(1, current_char) + "'", position.copy());
     }
   }
 
   advance();
   
   tokens.push_back(Token(TokenType::TT_EOF, position.copy(), position.copy()));
+
+  return nullptr;
 }
 
 void Lexer::print_tokens()

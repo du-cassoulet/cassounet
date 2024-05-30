@@ -9,6 +9,7 @@
 struct Null : public virtual Value
 {
   Null(Position _start, Position _end, SymbolTable* _symbol_table = nullptr);
+  Null();
 
   std::shared_ptr<Value> to_positive() override;
   std::shared_ptr<Value> to_negative() override;

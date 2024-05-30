@@ -148,19 +148,27 @@ RTResult Interpreter::visit_call(CallNode node)
   std::shared_ptr<Value> func_name = result.register_result(visit(node.func_name));
   std::vector<std::shared_ptr<Value>> args = {};
 
-  if (func_name->type != ValueType::FUNCTION)
-  {
-    throw std::invalid_argument("Variable '" + func_name->to_string() + "' is not a function");
-  }
-
   for (std::shared_ptr<Node> arg_node : node.args)
   {
     args.push_back(result.register_result(visit(arg_node)));
   }
 
-  Function func = dynamic_cast<BaseFunction&>(*func_name);
-  std::cout << "Function: " << func->to_string() << std::endl;
-  std::shared_ptr<Value> return_value = result.register_result(func.execute(args));
+  std::shared_ptr<Value> return_value;
+
+  if (func_name->type == ValueType::FUNCTION)
+  {
+    Function func = dynamic_cast<Function&>(*func_name);
+    return_value = result.register_result(func.execute(args));
+  }
+  else if (func_name->type == ValueType::BUILTIN_FUNCTION)
+  {
+    BuiltInFunction func = dynamic_cast<BuiltInFunction&>(*func_name);
+    return_value = result.register_result(func.execute(args));
+  }
+  else
+  {
+    throw std::invalid_argument("Variable '" + func_name->to_string() + "' is not a function");
+  }
 
   if (result.should_return())
   {
@@ -202,7 +210,7 @@ RTResult Interpreter::visit(std::shared_ptr<Node> node)
       return visit_var_access(dynamic_cast<VarAccessNode&>(*node));
 
     case NodeType::CALL:
-      throw visit_call(dynamic_cast<CallNode&>(*node));
+      return visit_call(dynamic_cast<CallNode&>(*node));
 
     default:
       throw std::invalid_argument("Invalid node type: " + node->to_string(1));
