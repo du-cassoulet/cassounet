@@ -13,15 +13,16 @@
 struct Lexer
 {
 private:
-  void make_identifier();
-  void make_number();
-  void make_string();
-  void make_equals();
-  void make_or();
-  void make_and();
-  void make_not();
-  void make_lower_than();
-  void make_greater_than();
+  std::shared_ptr<IllegalCharError> make_identifier();
+  std::shared_ptr<IllegalCharError> make_number();
+  std::shared_ptr<IllegalCharError> make_string();
+  std::shared_ptr<IllegalCharError> make_equals();
+  std::shared_ptr<IllegalCharError> make_or();
+  std::shared_ptr<IllegalCharError> make_and();
+  std::shared_ptr<IllegalCharError> make_not();
+  std::shared_ptr<IllegalCharError> make_lower_than();
+  std::shared_ptr<IllegalCharError> make_greater_than();
+  std::shared_ptr<IllegalCharError> make_arrow_or_minus();
 
 public:
   std::string input;

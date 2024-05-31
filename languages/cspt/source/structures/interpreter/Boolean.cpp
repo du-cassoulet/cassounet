@@ -3,6 +3,11 @@
 Boolean::Boolean(bool _value, Position _start, Position _end, SymbolTable* _symbol_table)
 : Value(ValueType::BOOLEAN, _start, _end, _symbol_table), value(_value) {}
 
+bool Boolean::is_true()
+{
+  return value;
+}
+
 std::shared_ptr<Value> Boolean::to_positive()
 {
   throw std::runtime_error("Cannot convert boolean to positive");

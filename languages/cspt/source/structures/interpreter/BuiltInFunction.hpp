@@ -18,6 +18,8 @@ public:
 
   RTResult execute(std::vector<std::shared_ptr<Value>> args) override;
 
+  bool is_true() override;
+
   std::shared_ptr<Value> to_positive() override;
   std::shared_ptr<Value> to_negative() override;
   std::shared_ptr<Value> to_not() override;

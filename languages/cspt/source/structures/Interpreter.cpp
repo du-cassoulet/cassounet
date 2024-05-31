@@ -18,6 +18,22 @@ RTResult Interpreter::visit_boolean(BooleanNode node)
   return RTResult().success(std::make_shared<Boolean>(node.value_tok.value == "true", node.start, node.end, symbol_table));
 }
 
+RTResult Interpreter::visit_list(ListNode node)
+{
+  RTResult result = RTResult();
+  std::vector<std::shared_ptr<Value>> values = {};
+
+  for (auto& elem_node : node.nodes)
+  { 
+    std::shared_ptr<Value> value = result.register_result(visit(elem_node));
+    if (result.should_return()) return result;
+
+    values.push_back(value);
+  }
+
+  return result.success(std::make_shared<List>(values, node.start, node.end, symbol_table));
+}
+
 RTResult Interpreter::visit_null(NullNode node)
 {
   return RTResult().success(std::make_shared<Null>(node.start, node.end, symbol_table));
@@ -119,7 +135,7 @@ RTResult Interpreter::visit_var_reassign(VarReAssignNode node)
 
   if (!symbol_table->contains(var_name))
   {
-    throw std::invalid_argument("Variable '" + var_name + "' is not defined");
+    result.failure(std::make_shared<RTError>("Variable '" + var_name + "' is not defined", node.start, node.end));
   }
 
   symbol_table->set(var_name, value);
@@ -135,7 +151,7 @@ RTResult Interpreter::visit_var_access(VarAccessNode node)
 
   if (value == nullptr)
   {
-    throw std::invalid_argument("Variable '" + var_name + "' is not defined");
+    return result.failure(std::make_shared<RTError>("Variable '" + var_name + "' is not defined", node.start, node.end));
   }
 
   return result.success(value);
@@ -167,15 +183,50 @@ RTResult Interpreter::visit_call(CallNode node)
   }
   else
   {
-    throw std::invalid_argument("Variable '" + func_name->to_string() + "' is not a function");
+    return result.failure(std::make_shared<RTError>("Variable '" + func_name->to_string() + "' is not function", node.func_name->start, node.func_name->end));
   }
 
-  if (result.should_return())
-  {
-    return result;
-  }
+  if (result.should_return()) return result;
 
   return result.success(return_value);
+}
+
+RTResult Interpreter::visit_return(ReturnNode node)
+{
+  RTResult result = RTResult();
+  std::shared_ptr<Value> value = std::make_shared<Null>(node.start, node.end, symbol_table);
+
+  if (node.node)
+  {
+    value = result.register_result(visit(node.node));
+    if (result.should_return()) return result;
+  }
+
+  return result.success_return(value);
+}
+
+RTResult Interpreter::visit_if(IfNode node)
+{
+  RTResult result = RTResult();
+
+  std::shared_ptr<Value> condition = result.register_result(visit(node.if_cond));
+
+  if (condition->is_true())
+  {
+    std::shared_ptr<Value> value = result.register_result(visit(node.if_body));
+    if (result.should_return()) return result;
+
+    return result.success(value);
+  }
+  else if (node.else_body != nullptr)
+  {
+    std::shared_ptr<Value> value = result.register_result(visit(node.else_body));
+    if (result.should_return()) return result;
+
+    return result.success(value);
+  }
+
+  return result.success(std::make_shared<Null>(node.start, node.end, symbol_table));
 }
 
 RTResult Interpreter::visit(std::shared_ptr<Node> node)
@@ -190,6 +241,9 @@ RTResult Interpreter::visit(std::shared_ptr<Node> node)
 
     case NodeType::BOOLEAN:
       return visit_boolean(dynamic_cast<BooleanNode&>(*node));
+
+    case NodeType::LIST:
+      return visit_list(dynamic_cast<ListNode&>(*node));
 
     case NodeType::NULL_NODE:
       return visit_null(dynamic_cast<NullNode&>(*node));
@@ -211,6 +265,12 @@ RTResult Interpreter::visit(std::shared_ptr<Node> node)
 
     case NodeType::CALL:
       return visit_call(dynamic_cast<CallNode&>(*node));
+
+    case NodeType::RETURN:
+      return visit_return(dynamic_cast<ReturnNode&>(*node));
+
+    case NodeType::IF:
+      return visit_if(dynamic_cast<IfNode&>(*node));
 
     default:
       throw std::invalid_argument("Invalid node type: " + node->to_string(1));

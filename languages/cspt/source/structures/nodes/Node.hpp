@@ -16,6 +16,9 @@ enum class NodeType
   VAR_REASSIGN,
   VAR_ACCESS,
   CALL,
+  RETURN,
+  LIST,
+  IF
 };
 
 struct Node

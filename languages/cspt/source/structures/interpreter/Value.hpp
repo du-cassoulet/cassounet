@@ -13,6 +13,7 @@ enum class ValueType
   BOOLEAN,
   FUNCTION,
   BUILTIN_FUNCTION,
+  LIST,
   NULL_VALUE
 };
 
@@ -25,6 +26,8 @@ struct Value
 
   Value(ValueType _type, Position _start, Position _end, bool symbol_valued = false);
   virtual ~Value() = default;
+
+  virtual bool is_true() = 0;
 
   virtual std::shared_ptr<Value> to_positive() = 0;
   virtual std::shared_ptr<Value> to_negative() = 0;

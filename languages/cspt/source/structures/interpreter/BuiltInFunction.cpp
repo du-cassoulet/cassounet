@@ -34,6 +34,10 @@ RTResult BuiltInFunction::log(SymbolTable* symbol_table)
   return result.success(std::make_shared<Null>(start, end));
 }
 
+bool BuiltInFunction::is_true() {
+  return true;
+}
+
 std::shared_ptr<Value> BuiltInFunction::to_positive() {
   throw std::runtime_error("BuiltInFunction '" + name + "' does not support this operation");
 }

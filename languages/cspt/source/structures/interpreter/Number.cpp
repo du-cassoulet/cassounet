@@ -3,6 +3,11 @@
 Number::Number(double _value, Position _start, Position _end, SymbolTable* _symbol_table)
 : Value(ValueType::NUMBER, _start, _end, _symbol_table), value(_value) {}
 
+bool Number::is_true()
+{
+  return value != 0;
+}
+
 std::shared_ptr<Value> Number::to_positive()
 {
   return std::make_shared<Number>(value, start, end);

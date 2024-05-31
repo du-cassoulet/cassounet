@@ -12,7 +12,6 @@ std::string BinaryOpNode::to_string(int depth)
   res += std::string(2 * depth, ' ') + left->to_string(depth) + ",\n";
   res += std::string(2 * depth, ' ') + op_tok.to_string() + ",\n";
   res += std::string(2 * depth, ' ') + right->to_string(depth) + ",\n";
-  res += std::string(2 * depth, ' ') + start.to_string() + " - " + end.to_string() + "\n";
   res += std::string(2 * (depth - 1), ' ') + ")";
 
   return res;

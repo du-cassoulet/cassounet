@@ -10,8 +10,7 @@ std::string UnaryOpNode::to_string(int depth)
   
   res += "UnaryOpNode(\n";
   res += std::string(2 * depth, ' ') + op_tok.to_string() + ",\n";
-  res += std::string(2 * depth, ' ') + operand->to_string(depth) + ",\n";
-  res += std::string(2 * depth, ' ') + start.to_string() + " - " + end.to_string() + "\n";
+  res += std::string(2 * depth, ' ') + operand->to_string(depth) + "\n";
   res += std::string(2 * (depth - 1), ' ') + ")";
 
   return res;

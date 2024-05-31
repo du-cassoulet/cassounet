@@ -10,13 +10,10 @@ std::string CallNode::to_string(int depth)
   
   res += "CallNode(\n";
   res += std::string(2 * depth, ' ') + func_name->to_string(depth) + ",\n";
-  res += std::string(2 * depth, ' ') + "[\n";
   for (auto& arg : args)
   {
-    res += std::string(2 * (depth + 1), ' ') + arg->to_string(depth + 1) + ",\n";
+    res += std::string(2 * depth, ' ') + arg->to_string(depth + 1) + ",\n";
   }
-  res += std::string(2 * depth, ' ') + "],\n";
-  res += std::string(2 * depth, ' ') + start.to_string() + " - " + end.to_string() + "\n";
   res += std::string(2 * (depth - 1), ' ') + ")";
 
   return res;

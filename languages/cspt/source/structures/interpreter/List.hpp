@@ -1,29 +1,20 @@
 #pragma once
 
-#include <vector>
 #include <memory>
+#include <vector>
 
-#include "BaseFunction.hpp"
 #include "Value.hpp"
-#include "Null.hpp"
-#include "../nodes/Node.hpp"
-#include "../SymbolTable.hpp"
 #include "../Position.hpp"
-#include "../RTResult.hpp"
-#include "../Interpreter.hpp"
+#include "../SymbolTable.hpp"
 
-struct Function : public virtual BaseFunction
+struct List : public virtual Value
 {
-  std::shared_ptr<Node> body_node;
-  std::vector<std::string> arg_names;
-  bool should_auto_return;
+  std::vector<std::shared_ptr<Value>> values = {};
 
-  Function(std::string _name, Position _start, Position _end, std::shared_ptr<Node> _body_node, std::vector<std::string> _arg_names, bool _should_auto_return = false, SymbolTable* _symbol_table = nullptr);
-
-  RTResult execute(std::vector<std::shared_ptr<Value>> args) override;
+  List(std::vector<std::shared_ptr<Value>> _values, Position _start, Position _end, SymbolTable* _symbol_table);
 
   bool is_true() override;
-  
+
   std::shared_ptr<Value> to_positive() override;
   std::shared_ptr<Value> to_negative() override;
   std::shared_ptr<Value> to_not() override;
@@ -44,5 +35,4 @@ struct Function : public virtual BaseFunction
   std::shared_ptr<Value> or_op(std::shared_ptr<Value> other) override;
 
   std::string to_string() override;
-  Function copy();
 };

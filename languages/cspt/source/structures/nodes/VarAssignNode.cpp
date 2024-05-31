@@ -10,8 +10,7 @@ std::string VarAssignNode::to_string(int depth)
   
   res += "VarAssignNode(\n";
   res += std::string(2 * depth, ' ') + var_name.to_string() + ",\n";
-  res += std::string(2 * depth, ' ') + value->to_string(depth) + ",\n";
-  res += std::string(2 * depth, ' ') + start.to_string() + " - " + end.to_string() + "\n";
+  res += std::string(2 * depth, ' ') + value->to_string(depth) + "\n";
   res += std::string(2 * (depth - 1), ' ') + ")";
 
   return res;

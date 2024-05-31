@@ -10,6 +10,7 @@
 #include "interpreter/Number.hpp"
 #include "interpreter/String.hpp"
 #include "interpreter/Boolean.hpp"
+#include "interpreter/List.hpp"
 #include "interpreter/Null.hpp"
 #include "interpreter/SymbolValue.hpp"
 #include "interpreter/Function.hpp"
@@ -25,6 +26,9 @@
 #include "nodes/VarAccessNode.hpp"
 #include "nodes/CallNode.hpp"
 #include "nodes/NullNode.hpp"
+#include "nodes/ReturnNode.hpp"
+#include "nodes/ListNode.hpp"
+#include "nodes/IfNode.hpp"
 
 struct Interpreter
 {
@@ -39,6 +43,9 @@ private:
   RTResult visit_var_reassign(VarReAssignNode node);
   RTResult visit_var_access(VarAccessNode node);
   RTResult visit_call(CallNode node);
+  RTResult visit_return(ReturnNode node);
+  RTResult visit_list(ListNode node);
+  RTResult visit_if(IfNode node);
 
 public:
   SymbolTable* symbol_table;

@@ -8,7 +8,7 @@ void Lexer::advance()
   position.advance();
 }
 
-void Lexer::make_identifier() {
+std::shared_ptr<IllegalCharError> Lexer::make_identifier() {
   Position start = position.copy();
   std::string identifier = "";
 
@@ -34,9 +34,11 @@ void Lexer::make_identifier() {
   {
     tokens.push_back(Token(TokenType::TT_IDENTIFIER, identifier, start, position.copy()));
   }
+
+  return nullptr;
 }
 
-void Lexer::make_number() {
+std::shared_ptr<IllegalCharError> Lexer::make_number() {
   Position start = position.copy();
   std::string number = "";
   bool dot = false;
@@ -53,7 +55,7 @@ void Lexer::make_number() {
     {
       if (dot)
       {
-        throw std::invalid_argument("Invalid number: " + number + ".");
+        return std::make_shared<IllegalCharError>("Unexpected token '.'", position.copy());
       }
 
       dot = true;
@@ -68,9 +70,11 @@ void Lexer::make_number() {
   }
 
   tokens.push_back(Token(TokenType::TT_NUMBER, number, start, position.copy()));
+
+  return nullptr;
 }
 
-void Lexer::make_string() {
+std::shared_ptr<IllegalCharError> Lexer::make_string() {
   Position start = position.copy();
   std::string string = "";
   char quote = input[position.index];
@@ -116,9 +120,11 @@ void Lexer::make_string() {
   advance();
 
   tokens.push_back(Token(TokenType::TT_STRING, string, start, position.copy()));
+
+  return nullptr;
 }
 
-void Lexer::make_equals() {
+std::shared_ptr<IllegalCharError> Lexer::make_equals() {
   Position start = position.copy();
   advance();
 
@@ -131,9 +137,11 @@ void Lexer::make_equals() {
   {
     tokens.push_back(Token(TokenType::TT_EQUALS, start, position.copy()));
   }
+
+  return nullptr;
 }
 
-void Lexer::make_or() {
+std::shared_ptr<IllegalCharError> Lexer::make_or() {
   Position start = position.copy();
   advance();
 
@@ -144,11 +152,13 @@ void Lexer::make_or() {
   }
   else
   {
-    throw std::invalid_argument("Invalid character: '|'");
+    return std::make_shared<IllegalCharError>("Unexpected token '|'", position.copy());
   }
+
+  return nullptr;
 }
 
-void Lexer::make_and() {
+std::shared_ptr<IllegalCharError> Lexer::make_and() {
   Position start = position.copy();
   advance();
 
@@ -159,11 +169,13 @@ void Lexer::make_and() {
   }
   else
   {
-    throw std::invalid_argument("Invalid character: '&'");
+    return std::make_shared<IllegalCharError>("Unexpected token '&'", position.copy());
   }
+
+  return nullptr;
 }
 
-void Lexer::make_not() {
+std::shared_ptr<IllegalCharError> Lexer::make_not() {
   Position start = position.copy();
   advance();
 
@@ -176,9 +188,11 @@ void Lexer::make_not() {
   {
     tokens.push_back(Token(TokenType::TT_NOT, start, position.copy()));
   }
+
+  return nullptr;
 }
 
-void Lexer::make_lower_than() {
+std::shared_ptr<IllegalCharError> Lexer::make_lower_than() {
   Position start = position.copy();
   advance();
 
@@ -191,9 +205,11 @@ void Lexer::make_lower_than() {
   {
     tokens.push_back(Token(TokenType::TT_LT, start, position.copy()));
   }
+
+  return nullptr;
 }
 
-void Lexer::make_greater_than() {
+std::shared_ptr<IllegalCharError> Lexer::make_greater_than() {
   Position start = position.copy();
   advance();
 
@@ -206,6 +222,25 @@ void Lexer::make_greater_than() {
   {
     tokens.push_back(Token(TokenType::TT_GT, start, position.copy()));
   }
+
+  return nullptr;
+}
+
+std::shared_ptr<IllegalCharError> Lexer::make_arrow_or_minus() {
+  Position start = position.copy();
+  advance();
+
+  if (position.index < input.length() && input[position.index] == '>')
+  {
+    advance();
+    tokens.push_back(Token(TokenType::TT_ARROW, start, position.copy()));
+  }
+  else
+  {
+    tokens.push_back(Token(TokenType::TT_MINUS, start, position.copy()));
+  }
+
+  return nullptr;
 }
 
 std::shared_ptr<IllegalCharError> Lexer::make_tokens()
@@ -221,36 +256,44 @@ std::shared_ptr<IllegalCharError> Lexer::make_tokens()
     }
     else if (('a' <= current_char && current_char <= 'z') || ('A' <= current_char && current_char <= 'Z') || current_char == '_')
     {
-      make_identifier();
+      std::shared_ptr<IllegalCharError> error = make_identifier();
+      if (error != nullptr) return error;
     }
     else if ('0' <= current_char && current_char <= '9')
     {
-      make_number();
+      std::shared_ptr<IllegalCharError> error = make_number();
+      if (error != nullptr) return error;
     }
     else if (current_char == '"'|| current_char == '\'') {
-      make_string();
+      std::shared_ptr<IllegalCharError> error = make_string();
+      if (error != nullptr) return error;
     }
     else if (current_char == '=')
     {
-      make_equals();
+      std::shared_ptr<IllegalCharError> error = make_equals();
+      if (error != nullptr) return error;
     } else if (current_char == '|')
     {
-      make_or();
+      std::shared_ptr<IllegalCharError> error = make_or();
     } else if (current_char == '&')
     {
-      make_and();
+      std::shared_ptr<IllegalCharError> error = make_and();
+      if (error != nullptr) return error;
     }
     else if (current_char == '!')
     {
-      make_not();
+      std::shared_ptr<IllegalCharError> error = make_not();
+      if (error != nullptr) return error;
     }
     else if (current_char == '<')
     {
-      make_lower_than();
+      std::shared_ptr<IllegalCharError> error = make_lower_than();
+      if (error != nullptr) return error;
     }
     else if (current_char == '>')
     {
-      make_greater_than();
+      std::shared_ptr<IllegalCharError> error = make_greater_than();
+      if (error != nullptr) return error;
     }
     else if (current_char == '+')
     {
@@ -259,8 +302,8 @@ std::shared_ptr<IllegalCharError> Lexer::make_tokens()
     }
     else if (current_char == '-')
     {
-      tokens.push_back(Token(TokenType::TT_MINUS, position.copy()));
-      advance();
+      std::shared_ptr<IllegalCharError> error = make_arrow_or_minus();
+      if (error != nullptr) return error;
     }
     else if (current_char == '*')
     {
@@ -292,9 +335,24 @@ std::shared_ptr<IllegalCharError> Lexer::make_tokens()
       tokens.push_back(Token(TokenType::TT_RPAREN, position.copy()));
       advance();
     }
+    else if (current_char == '{')
+    {
+      tokens.push_back(Token(TokenType::TT_LBRACKET, position.copy()));
+      advance();
+    }
+    else if (current_char == '}')
+    {
+      tokens.push_back(Token(TokenType::TT_RBRACKET, position.copy()));
+      advance();
+    }
     else if (current_char == ',')
     {
       tokens.push_back(Token(TokenType::TT_COMMA, position.copy()));
+      advance();
+    }
+    else if (current_char == ';')
+    {
+      tokens.push_back(Token(TokenType::TT_SEMICOLON, position.copy()));
       advance();
     }
     else

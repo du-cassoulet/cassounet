@@ -31,7 +31,11 @@ enum class TokenType
   TT_LTE,
   TT_GTE,
   TT_POW,
-  TT_COMMA
+  TT_COMMA,
+  TT_SEMICOLON,
+  TT_LBRACKET,
+  TT_RBRACKET,
+  TT_ARROW
 };
 
 struct Token

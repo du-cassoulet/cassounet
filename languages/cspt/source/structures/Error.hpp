@@ -22,10 +22,10 @@ struct IllegalCharError : public Error
   IllegalCharError(std::string _details, Position _pos);
 };
 
-struct SyntaxError : public Error
+struct InvalidSyntaxError : public Error
 {
-  SyntaxError(std::string _details, Position _start, Position _end);
-  SyntaxError(std::string _details, Position _pos);
+  InvalidSyntaxError(std::string _details, Position _start, Position _end);
+  InvalidSyntaxError(std::string _details, Position _pos);
 };
 
 struct RTError : public Error

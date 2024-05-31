@@ -14,6 +14,8 @@ struct Boolean : public virtual Value
 
   Boolean(bool _value, Position _start, Position _end, SymbolTable* _symbol_table = nullptr);
 
+  bool is_true() override;
+
   std::shared_ptr<Value> to_positive() override;
   std::shared_ptr<Value> to_negative() override;
   std::shared_ptr<Value> to_not() override;

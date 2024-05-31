@@ -8,6 +8,8 @@
 #include <algorithm>
 
 #include "Token.hpp"
+#include "Error.hpp"
+#include "ParseResult.hpp"
 #include "nodes/Node.hpp"
 #include "nodes/NumberNode.hpp"
 #include "nodes/StringNode.hpp"
@@ -19,6 +21,9 @@
 #include "nodes/VarReAssignNode.hpp"
 #include "nodes/VarAccessNode.hpp"
 #include "nodes/CallNode.hpp"
+#include "nodes/ReturnNode.hpp"
+#include "nodes/ListNode.hpp"
+#include "nodes/IfNode.hpp"
 
 enum class FunctionType
 {
@@ -34,17 +39,22 @@ enum class FunctionType
 struct Parser
 {
 private:
-  std::shared_ptr<Node> atom();
-  std::shared_ptr<Node> call();
-  std::shared_ptr<Node> power();
-  std::shared_ptr<Node> factor();
-  std::shared_ptr<Node> term();
-  std::shared_ptr<Node> arith_expr();
-  std::shared_ptr<Node> comp_expr();
-  std::shared_ptr<Node> bin_op(FunctionType funca, std::list<TokenType> ops, FunctionType funcb);
-  std::shared_ptr<Node> expr();
+  ParseResult atom();
+  ParseResult call();
+  ParseResult power();
+  ParseResult factor();
+  ParseResult term();
+  ParseResult arith_expr();
+  ParseResult comp_expr();
+  ParseResult bin_op(FunctionType funca, std::list<TokenType> ops, FunctionType funcb);
+  ParseResult if_expr();
+  ParseResult expr();
+  ParseResult statement();
+  ParseResult statements();
 
 public:
+  static void print_node(ParseResult* result);
+
   std::vector<Token> tokens;
   std::shared_ptr<Node> node = nullptr;
   std::optional<Token> current_token = std::nullopt;
@@ -52,7 +62,7 @@ public:
 
   Parser(std::vector<Token> _tokens);
 
-  void parse();
-  void print_node();
+  ParseResult parse();
   void advance();
+  void reverse(int num = 1);
 };

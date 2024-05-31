@@ -6,6 +6,10 @@ Null::Null(Position _start, Position _end, SymbolTable* _symbol_table)
 Null::Null()
 : Value(ValueType::NULL_VALUE, Position(), Position(), false) {}
 
+bool Null::is_true() {
+  return false;
+}
+
 std::shared_ptr<Value> Null::to_positive() {
   throw std::runtime_error("Cannot convert null to a number");
 }

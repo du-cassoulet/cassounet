@@ -9,8 +9,7 @@ std::string VarAccessNode::to_string(int depth)
   std::string res = "";
   
   res += "VarAccessNode(\n";
-  res += std::string(2 * depth, ' ') + var_name.to_string() + ",\n";
-  res += std::string(2 * depth, ' ') + start.to_string() + " - " + end.to_string() + "\n";
+  res += std::string(2 * depth, ' ') + var_name.to_string() + "\n";
   res += std::string(2 * (depth - 1), ' ') + ")";
 
   return res;

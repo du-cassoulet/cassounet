@@ -35,6 +35,11 @@ RTResult Function::execute(std::vector<std::shared_ptr<Value>> args)
   return result.success(return_value);
 }
 
+bool Function::is_true()
+{
+  return true;
+}
+
 std::shared_ptr<Value> Function::to_positive() {
   throw std::runtime_error("Function '" + name + "' does not support this operation");
 }
