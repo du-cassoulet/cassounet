@@ -11,7 +11,7 @@ struct List : public virtual Value
 {
   std::vector<std::shared_ptr<Value>> values = {};
 
-  List(std::vector<std::shared_ptr<Value>> _values, Position _start, Position _end, SymbolTable* _symbol_table);
+  List(std::vector<std::shared_ptr<Value>> _values, Position _start, Position _end, Context* _context);
 
   bool is_true() override;
 

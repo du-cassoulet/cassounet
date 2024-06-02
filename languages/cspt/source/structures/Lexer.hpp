@@ -21,7 +21,7 @@ private:
   std::shared_ptr<IllegalCharError> make_and();
   std::shared_ptr<IllegalCharError> make_not();
   std::shared_ptr<IllegalCharError> make_lower_than();
-  std::shared_ptr<IllegalCharError> make_greater_than();
+  std::shared_ptr<IllegalCharError> make_greater_than_or_comment();
   std::shared_ptr<IllegalCharError> make_arrow_or_minus();
 
 public:

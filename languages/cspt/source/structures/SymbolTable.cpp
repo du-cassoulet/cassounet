@@ -20,7 +20,7 @@ std::shared_ptr<Value> SymbolTable::get(std::string key)
 
 bool SymbolTable::contains(std::string key)
 {
-  return get(key) != nullptr;
+  return table.find(key) != table.end();
 }
 
 void SymbolTable::set(std::string key, std::shared_ptr<Value> value)

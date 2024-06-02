@@ -5,5 +5,5 @@ ReturnNode::ReturnNode(std::shared_ptr<Node> _node)
 
 std::string ReturnNode::to_string(int depth)
 {
-  return "ReturnNode(" + node->to_string() + ")";
+  return "ReturnNode(" + node->to_string(depth) + ")";
 }

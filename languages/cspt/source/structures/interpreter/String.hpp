@@ -10,7 +10,7 @@ struct String : public virtual Value
 {
   std::string value;
 
-  String(std::string _value, Position _start, Position _end, SymbolTable* _symbol_table = nullptr);
+  String(std::string _value, Position _start, Position _end, Context* _context);
 
   bool is_true() override;
 

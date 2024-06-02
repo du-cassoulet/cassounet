@@ -12,7 +12,7 @@ std::string ListNode::to_string(int depth)
   
   for (auto& node : nodes)
   {
-    res += std::string(2 * depth, ' ') + node->to_string() + ",\n";
+    res += std::string(2 * depth, ' ') + node->to_string(depth) + ",\n";
   }
 
   res += std::string(2 * (depth - 1), ' ') + ")";

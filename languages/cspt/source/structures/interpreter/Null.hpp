@@ -8,8 +8,7 @@
 
 struct Null : public virtual Value
 {
-  Null(Position _start, Position _end, SymbolTable* _symbol_table = nullptr);
-  Null();
+  Null(Position _start, Position _end, Context* _context);
 
   bool is_true() override;
   

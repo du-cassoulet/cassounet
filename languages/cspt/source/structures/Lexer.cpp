@@ -8,7 +8,8 @@ void Lexer::advance()
   position.advance();
 }
 
-std::shared_ptr<IllegalCharError> Lexer::make_identifier() {
+std::shared_ptr<IllegalCharError> Lexer::make_identifier()
+{
   Position start = position.copy();
   std::string identifier = "";
 
@@ -38,7 +39,8 @@ std::shared_ptr<IllegalCharError> Lexer::make_identifier() {
   return nullptr;
 }
 
-std::shared_ptr<IllegalCharError> Lexer::make_number() {
+std::shared_ptr<IllegalCharError> Lexer::make_number()
+{
   Position start = position.copy();
   std::string number = "";
   bool dot = false;
@@ -74,7 +76,8 @@ std::shared_ptr<IllegalCharError> Lexer::make_number() {
   return nullptr;
 }
 
-std::shared_ptr<IllegalCharError> Lexer::make_string() {
+std::shared_ptr<IllegalCharError> Lexer::make_string()
+{
   Position start = position.copy();
   std::string string = "";
   char quote = input[position.index];
@@ -124,7 +127,8 @@ std::shared_ptr<IllegalCharError> Lexer::make_string() {
   return nullptr;
 }
 
-std::shared_ptr<IllegalCharError> Lexer::make_equals() {
+std::shared_ptr<IllegalCharError> Lexer::make_equals()
+{
   Position start = position.copy();
   advance();
 
@@ -135,13 +139,14 @@ std::shared_ptr<IllegalCharError> Lexer::make_equals() {
   }
   else
   {
-    tokens.push_back(Token(TokenType::TT_EQUALS, start, position.copy()));
+    tokens.push_back(Token(TokenType::TT_ASSIGN, start, position.copy()));
   }
 
   return nullptr;
 }
 
-std::shared_ptr<IllegalCharError> Lexer::make_or() {
+std::shared_ptr<IllegalCharError> Lexer::make_or()
+{
   Position start = position.copy();
   advance();
 
@@ -158,7 +163,8 @@ std::shared_ptr<IllegalCharError> Lexer::make_or() {
   return nullptr;
 }
 
-std::shared_ptr<IllegalCharError> Lexer::make_and() {
+std::shared_ptr<IllegalCharError> Lexer::make_and()
+{
   Position start = position.copy();
   advance();
 
@@ -175,7 +181,9 @@ std::shared_ptr<IllegalCharError> Lexer::make_and() {
   return nullptr;
 }
 
-std::shared_ptr<IllegalCharError> Lexer::make_not() {
+std::shared_ptr<IllegalCharError> Lexer::make_not()
+
+{
   Position start = position.copy();
   advance();
 
@@ -192,7 +200,8 @@ std::shared_ptr<IllegalCharError> Lexer::make_not() {
   return nullptr;
 }
 
-std::shared_ptr<IllegalCharError> Lexer::make_lower_than() {
+std::shared_ptr<IllegalCharError> Lexer::make_lower_than()
+{
   Position start = position.copy();
   advance();
 
@@ -209,7 +218,8 @@ std::shared_ptr<IllegalCharError> Lexer::make_lower_than() {
   return nullptr;
 }
 
-std::shared_ptr<IllegalCharError> Lexer::make_greater_than() {
+std::shared_ptr<IllegalCharError> Lexer::make_greater_than_or_comment()
+{
   Position start = position.copy();
   advance();
 
@@ -217,6 +227,17 @@ std::shared_ptr<IllegalCharError> Lexer::make_greater_than() {
   {
     advance();
     tokens.push_back(Token(TokenType::TT_GTE, start, position.copy()));
+  }
+  else if (position.index < input.length() && input[position.index] == '>')
+  {
+    advance();
+    
+    while (position.index < input.length() && input[position.index] != '\n')
+    {
+      advance();
+    }
+
+    advance();
   }
   else
   {
@@ -226,7 +247,8 @@ std::shared_ptr<IllegalCharError> Lexer::make_greater_than() {
   return nullptr;
 }
 
-std::shared_ptr<IllegalCharError> Lexer::make_arrow_or_minus() {
+std::shared_ptr<IllegalCharError> Lexer::make_arrow_or_minus()
+{
   Position start = position.copy();
   advance();
 
@@ -264,7 +286,8 @@ std::shared_ptr<IllegalCharError> Lexer::make_tokens()
       std::shared_ptr<IllegalCharError> error = make_number();
       if (error != nullptr) return error;
     }
-    else if (current_char == '"'|| current_char == '\'') {
+    else if (current_char == '"'|| current_char == '\'')
+    {
       std::shared_ptr<IllegalCharError> error = make_string();
       if (error != nullptr) return error;
     }
@@ -292,7 +315,7 @@ std::shared_ptr<IllegalCharError> Lexer::make_tokens()
     }
     else if (current_char == '>')
     {
-      std::shared_ptr<IllegalCharError> error = make_greater_than();
+      std::shared_ptr<IllegalCharError> error = make_greater_than_or_comment();
       if (error != nullptr) return error;
     }
     else if (current_char == '+')

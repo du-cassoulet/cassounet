@@ -125,7 +125,22 @@ std::string Token::to_string_type()
     case TokenType::TT_GTE:
       return "GTE";
 
-    default: 
+    case TokenType::TT_COMMA:
+      return "COMMA";
+
+    case TokenType::TT_SEMICOLON:
+      return "SEMICOLON";
+
+    case TokenType::TT_LBRACKET:
+      return "LBRACKET";
+
+    case TokenType::TT_RBRACKET:
+      return "RBRACKET";
+
+    case TokenType::TT_ARROW:
+      return "ARROW";
+
+    default:
       throw std::invalid_argument("Invalid token type");
   }
 }
@@ -134,19 +149,10 @@ std::string Token::to_string()
 {
   std::string interval = "";
 
-  if (start == end)
-  {
-    interval = start.to_string();
-  }
-  else
-  {
-    interval = start.to_string() + " - " + end.to_string();
-  }
-
   if (value == "")
   {
-    return "Token(" + to_string_type() + ", " + interval + ")";
+    return "Token(" + to_string_type() + ", " + start.to_string() + ")";
   }
 
-  return "Token(" + to_string_type() + ", " + value + ", " + interval + ")";
+  return "Token(" + to_string_type() + ", " + value + ", " + start.to_string() + ")";
 }

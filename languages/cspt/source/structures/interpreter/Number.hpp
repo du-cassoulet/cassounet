@@ -13,7 +13,7 @@ struct Number : public virtual Value
 {
   double value;
 
-  Number(double _value, Position _start, Position _end, SymbolTable* _symbol_table = nullptr);
+  Number(double _value, Position _start, Position _end, Context* _context);
 
   bool is_true() override;
 

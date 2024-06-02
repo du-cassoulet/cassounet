@@ -4,6 +4,8 @@
 #include <memory>
 #include <map>
 
+struct Value;
+
 #include "interpreter/Value.hpp"
 
 struct SymbolTable

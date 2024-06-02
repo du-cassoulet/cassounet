@@ -18,7 +18,7 @@ struct Function : public virtual BaseFunction
   std::vector<std::string> arg_names;
   bool should_auto_return;
 
-  Function(std::string _name, Position _start, Position _end, std::shared_ptr<Node> _body_node, std::vector<std::string> _arg_names, bool _should_auto_return = false, SymbolTable* _symbol_table = nullptr);
+  Function(std::string _name, Position _start, Position _end, std::shared_ptr<Node> _body_node, std::vector<std::string> _arg_names, bool _should_auto_return, Context* _context);
 
   RTResult execute(std::vector<std::shared_ptr<Value>> args) override;
 

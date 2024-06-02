@@ -4,7 +4,10 @@
 #include <string>
 #include <memory>
 
+struct Context;
+
 #include "../Position.hpp"
+#include "../Context.hpp"
 
 enum class ValueType
 {
@@ -20,12 +23,14 @@ enum class ValueType
 struct Value
 {
   ValueType type;
-  bool symbol_valued;
   Position start;
   Position end;
+  Context* context = nullptr;
 
-  Value(ValueType _type, Position _start, Position _end, bool symbol_valued = false);
+  Value(ValueType _type, Position _start, Position _end);
   virtual ~Value() = default;
+
+  void set_context(Context* _context);
 
   virtual bool is_true() = 0;
 

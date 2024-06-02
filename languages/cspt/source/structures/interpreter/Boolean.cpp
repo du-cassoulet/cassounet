@@ -1,7 +1,10 @@
 #include "Boolean.hpp"
 
-Boolean::Boolean(bool _value, Position _start, Position _end, SymbolTable* _symbol_table)
-: Value(ValueType::BOOLEAN, _start, _end, _symbol_table), value(_value) {}
+Boolean::Boolean(bool _value, Position _start, Position _end, Context* _context)
+: Value(ValueType::BOOLEAN, _start, _end), value(_value)
+{
+  set_context(_context);
+}
 
 bool Boolean::is_true()
 {
@@ -20,7 +23,7 @@ std::shared_ptr<Value> Boolean::to_negative()
 
 std::shared_ptr<Value> Boolean::to_not()
 {
-  return std::make_shared<Boolean>(!value, start, end);
+  return std::make_shared<Boolean>(!value, start, end, context);
 }
 
 std::shared_ptr<Value> Boolean::add(std::shared_ptr<Value> other)
@@ -56,13 +59,13 @@ std::shared_ptr<Value> Boolean::power(std::shared_ptr<Value> other)
 std::shared_ptr<Value> Boolean::equal(std::shared_ptr<Value> other)
 {
   Boolean boolean = dynamic_cast<Boolean&>(*other);
-  return std::make_shared<Boolean>(value == boolean.value, start, end);
+  return std::make_shared<Boolean>(value == boolean.value, start, end, context);
 }
 
 std::shared_ptr<Value> Boolean::not_equal(std::shared_ptr<Value> other)
 {
   Boolean boolean = dynamic_cast<Boolean&>(*other);
-  return std::make_shared<Boolean>(value != boolean.value, start, end);
+  return std::make_shared<Boolean>(value != boolean.value, start, end, context);
 }
 
 std::shared_ptr<Value> Boolean::greater_than(std::shared_ptr<Value> other)
@@ -88,13 +91,13 @@ std::shared_ptr<Value> Boolean::less_than_or_equal(std::shared_ptr<Value> other)
 std::shared_ptr<Value> Boolean::and_op(std::shared_ptr<Value> other)
 {
   Boolean boolean = dynamic_cast<Boolean&>(*other);
-  return std::make_shared<Boolean>(value && boolean.value, start, end);
+  return std::make_shared<Boolean>(value && boolean.value, start, end, context);
 }
 
 std::shared_ptr<Value> Boolean::or_op(std::shared_ptr<Value> other)
 {
   Boolean boolean = dynamic_cast<Boolean&>(*other);
-  return std::make_shared<Boolean>(value || boolean.value, start, end);
+  return std::make_shared<Boolean>(value || boolean.value, start, end, context);
 }
 
 std::string Boolean::to_string()

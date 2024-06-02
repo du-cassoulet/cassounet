@@ -12,6 +12,12 @@ std::list<Keyword> Keyword::keywords = {
   Keyword(KeywordType::KT_WHILE, "while"),
   Keyword(KeywordType::KT_FOR, "for"),
   Keyword(KeywordType::KT_NULL, "null"),
+  Keyword(KeywordType::KT_BREAK, "break"),
+  Keyword(KeywordType::KT_CONTINUE, "continue"),
+  Keyword(KeywordType::KT_RETURN, "return"),
+  Keyword(KeywordType::KT_FROM, "from"),
+  Keyword(KeywordType::KT_TO, "to"),
+  Keyword(KeywordType::KT_STEP, "step"),
 };
 
 Keyword Keyword::getKeyword(std::string value)

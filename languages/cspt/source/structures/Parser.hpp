@@ -24,6 +24,12 @@
 #include "nodes/ReturnNode.hpp"
 #include "nodes/ListNode.hpp"
 #include "nodes/IfNode.hpp"
+#include "nodes/NumListNode.hpp"
+#include "nodes/WhileNode.hpp"
+#include "nodes/ForNode.hpp"
+#include "nodes/BreakNode.hpp"
+#include "nodes/ContinueNode.hpp"
+#include "nodes/FuncDefNode.hpp"
 
 enum class FunctionType
 {
@@ -48,6 +54,9 @@ private:
   ParseResult comp_expr();
   ParseResult bin_op(FunctionType funca, std::list<TokenType> ops, FunctionType funcb);
   ParseResult if_expr();
+  ParseResult for_expr();
+  ParseResult while_expr();
+  ParseResult num_list_expr();
   ParseResult expr();
   ParseResult statement();
   ParseResult statements();

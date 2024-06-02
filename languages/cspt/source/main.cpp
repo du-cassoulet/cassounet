@@ -3,8 +3,10 @@
 #include <fstream>
 #include <memory>
 #include <filesystem>
+#include <chrono>
 
 #include "lib.hpp"
+#include "structures/Context.hpp"
 #include "structures/SymbolTable.hpp"
 #include "structures/Lexer.hpp"
 #include "structures/Parser.hpp"
@@ -33,45 +35,92 @@ std::string global_file_path(std::string filename)
     filename = filename.substr(2);
   }
 
-  std::string path = fs::current_path();
+  std::string path = fs::current_path().string();
   path += "/" + filename;
   return path; 
 }
 
-ReturnValue run_code(const std::string& code, SymbolTable* symbol_table, const std::string& filename = FILE_NAME)
+std::string get_memory_usage()
+{
+  std::string line;
+  std::string name;
+  std::string value;
+  std::ifstream file("/proc/self/status");
+
+  while (std::getline(file, line))
+  {
+    if (line.find("VmRSS") != std::string::npos)
+    {
+      name = line.substr(0, line.find(":"));
+      value = line.substr(line.find(":") + 1);
+      value.erase(std::remove(value.begin(), value.end(), ' '), value.end());
+      value.erase(std::remove(value.begin(), value.end(), '\t'), value.end());
+      break;
+    }
+  }
+
+  file.close();
+  return value;
+}
+
+ReturnValue run_code(const std::string& code, Context* context, bool verbose, const std::string& filename = FILE_NAME)
 {
   Lexer lexer = Lexer(code, filename);
   std::shared_ptr<IllegalCharError> illegal_char_error = lexer.make_tokens();
+
+  if (verbose)
+  {
+    std::cout << "Lexing: OK" << std::endl;
+  }
 
   if (illegal_char_error != nullptr)
   {
     return ReturnValue(nullptr, illegal_char_error);
   }
 
+  if (lexer.tokens.front().match(TokenType::TT_EOF))
+  {
+    exit(0);
+  }
+
   Parser parser = Parser(lexer.tokens);
   ParseResult result = parser.parse();
+
+  if (verbose)
+  {
+    std::cout << "Parsing: OK" << std::endl;
+  }
 
   if (result.error != nullptr)
   {
     return ReturnValue(nullptr, result.error);
   }
 
-  Interpreter interpreter = Interpreter(symbol_table);
-  RTResult return_value = interpreter.visit(result.node);
+  Interpreter interpreter = Interpreter();
+  RTResult return_value = interpreter.visit(result.node, context);
+
+  if (verbose)
+  {
+    std::cout << "Interpreting: OK" << std::endl;
+  }
+
   return ReturnValue(return_value.value, return_value.error);
 }
 
 std::string read_file(const std::string& filename)
 {
   std::ifstream file(filename);
-  if (!file.is_open()) {
+  if (!file.is_open())
+  {
     std::cerr << "Could not open the file" << std::endl;
     exit(1);
   }
   
   std::string line;
   std::string result = "";
-  while (std::getline(file, line)) {
+
+  while (std::getline(file, line))
+  {
     result += line + "\n";
   }
   
@@ -102,8 +151,20 @@ int main(int argc, char *argv[])
   }
   else
   { 
+    std::vector<std::string> exec_options = {};
+
+    for (int i = 2; i < argc; i++)
+    {
+      exec_options.push_back(argv[i]);
+    }
+
+    bool verbose = std::find(exec_options.begin(), exec_options.end(), "--verbose") != exec_options.end() || std::find(exec_options.begin(), exec_options.end(), "-V") != exec_options.end();
+
+    Context global_context = Context("<global>", nullptr, nullptr);
     SymbolTable symbol_table = SymbolTable();
-    symbol_table.set("log", std::make_shared<BuiltInFunction>("log", Position(), Position(), &symbol_table));
+    symbol_table.set("log", std::make_shared<BuiltInFunction>("log", &global_context));
+    symbol_table.set("ask", std::make_shared<BuiltInFunction>("ask", &global_context));
+    global_context.set_symbol_table(&symbol_table);
 
     if (option == "repo")
     {
@@ -127,7 +188,7 @@ int main(int argc, char *argv[])
           continue;
         }
 
-        ReturnValue result = run_code(code, &symbol_table);
+        ReturnValue result = run_code(code, &global_context, verbose);
         if (result.error != nullptr)
         {
           std::cerr << result.error->to_string() << std::endl;
@@ -147,11 +208,11 @@ int main(int argc, char *argv[])
 
       if (code.empty())
       {
-        return 0;
+        exit(0);
       }
 
       auto begin = std::chrono::high_resolution_clock::now();
-      ReturnValue result = run_code(code, &symbol_table, filename);
+      ReturnValue result = run_code(code, &global_context, verbose, filename);
       auto end = std::chrono::high_resolution_clock::now();
 
       if (result.error != nullptr)
@@ -163,7 +224,21 @@ int main(int argc, char *argv[])
       double delay = std::chrono::duration_cast<std::chrono::nanoseconds>(end - begin).count();
       double milliseconds = delay / 1000000;
 
-      std::cout << "\033[0;30mExecuted in " << milliseconds << " ms\033[0m" << std::endl;
+      if (
+        std::find(exec_options.begin(), exec_options.end(), "--time") != exec_options.end() ||
+        std::find(exec_options.begin(), exec_options.end(), "-t") != exec_options.end()
+      )
+      {
+        std::cout << "\033[0;30mExecution time: " + std::to_string(milliseconds) + "ms\033[0m" << std::endl;
+      }
+
+      if (
+        std::find(exec_options.begin(), exec_options.end(), "--memory") != exec_options.end() ||
+        std::find(exec_options.begin(), exec_options.end(), "-m") != exec_options.end()
+      )
+      {
+        std::cout << "\033[0;30mMemory usage: " + get_memory_usage() + "\033[0m" << std::endl;
+      }
 
       return 0;
     }

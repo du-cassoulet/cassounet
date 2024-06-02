@@ -12,7 +12,6 @@
 #include "interpreter/Boolean.hpp"
 #include "interpreter/List.hpp"
 #include "interpreter/Null.hpp"
-#include "interpreter/SymbolValue.hpp"
 #include "interpreter/Function.hpp"
 #include "interpreter/BuiltInFunction.hpp"
 #include "nodes/NumberNode.hpp"
@@ -29,29 +28,35 @@
 #include "nodes/ReturnNode.hpp"
 #include "nodes/ListNode.hpp"
 #include "nodes/IfNode.hpp"
+#include "nodes/NumListNode.hpp"
+#include "nodes/WhileNode.hpp"
+#include "nodes/ForNode.hpp"
+#include "nodes/FuncDefNode.hpp"
 
 struct Interpreter
 {
 private:
-  RTResult visit_number(NumberNode node);
-  RTResult visit_string(StringNode node);
-  RTResult visit_boolean(BooleanNode node);
-  RTResult visit_null(NullNode node);
-  RTResult visit_binary_op(BinaryOpNode node);
-  RTResult visit_unary_op(UnaryOpNode node);
-  RTResult visit_var_assign(VarAssignNode node);
-  RTResult visit_var_reassign(VarReAssignNode node);
-  RTResult visit_var_access(VarAccessNode node);
-  RTResult visit_call(CallNode node);
-  RTResult visit_return(ReturnNode node);
-  RTResult visit_list(ListNode node);
-  RTResult visit_if(IfNode node);
+  RTResult visit_number(NumberNode node, Context* context);
+  RTResult visit_string(StringNode node, Context* context);
+  RTResult visit_boolean(BooleanNode node, Context* context);
+  RTResult visit_null(NullNode node, Context* context);
+  RTResult visit_binary_op(BinaryOpNode node, Context* context);
+  RTResult visit_unary_op(UnaryOpNode node, Context* context);
+  RTResult visit_var_assign(VarAssignNode node, Context* context);
+  RTResult visit_var_reassign(VarReAssignNode node, Context* context);
+  RTResult visit_var_access(VarAccessNode node, Context* context);
+  RTResult visit_call(CallNode node, Context* context);
+  RTResult visit_return(ReturnNode node, Context* context);
+  RTResult visit_list(ListNode node, Context* context);
+  RTResult visit_if(IfNode node, Context* context);
+  RTResult visit_num_list(NumListNode node, Context* context);
+  RTResult visit_while(WhileNode node, Context* context);
+  RTResult visit_for(ForNode node, Context* context);
+  RTResult visit_func_def(FuncDefNode node, Context* context);
 
 public:
-  SymbolTable* symbol_table;
-
-  Interpreter(SymbolTable* _symbol_table);
+  Context* context;
 
   std::shared_ptr<Node> node;
-  RTResult visit(std::shared_ptr<Node> node);
+  RTResult visit(std::shared_ptr<Node> node, Context* context);
 };

@@ -1,7 +1,8 @@
 #include "Parser.hpp"
 
 Parser::Parser(std::vector<Token> _tokens)
-: tokens(_tokens) {
+: tokens(_tokens)
+{
   if (!tokens.empty())
   {
     current_token = tokens[token_index];
@@ -66,7 +67,7 @@ ParseResult Parser::atom()
     result.register_advancement();
     advance();
 
-    if (current_token->match(TokenType::TT_EQUALS))
+    if (current_token->match(TokenType::TT_ASSIGN))
     {
       result.register_advancement();
       advance();
@@ -82,6 +83,24 @@ ParseResult Parser::atom()
   else if (current_token->match(TokenType::TT_KEYWORD, {"if"}))
   {
     std::shared_ptr<Node> expression = result.register_result(if_expr());
+    if (result.error != nullptr) return result;
+    return result.success(expression);
+  }
+  else if (current_token->match(TokenType::TT_KEYWORD, {"for"}))
+  {
+    std::shared_ptr<Node> expression = result.register_result(for_expr());
+    if (result.error != nullptr) return result;
+    return result.success(expression);
+  }
+  else if (current_token->match(TokenType::TT_KEYWORD, {"while"}))
+  {
+    std::shared_ptr<Node> expression = result.register_result(while_expr());
+    if (result.error != nullptr) return result;
+    return result.success(expression);
+  }
+  else if (current_token->match(TokenType::TT_KEYWORD, {"from"}))
+  {
+    std::shared_ptr<Node> expression = result.register_result(num_list_expr());
     if (result.error != nullptr) return result;
     return result.success(expression);
   }
@@ -380,6 +399,165 @@ ParseResult Parser::if_expr()
   return result.success(std::make_shared<IfNode>(condition, if_body, else_body));
 }
 
+ParseResult Parser::for_expr()
+{
+  ParseResult result = ParseResult();
+
+  if (!current_token->match(TokenType::TT_KEYWORD, {"for"}))
+  {
+    return result.failure(std::make_shared<InvalidSyntaxError>("Expected 'for'", current_token->start, current_token->end));
+  }
+
+  result.register_advancement();
+  advance();
+
+  if (!current_token->match(TokenType::TT_IDENTIFIER))
+  {
+    return result.failure(std::make_shared<InvalidSyntaxError>("Expected identifier", current_token->start, current_token->end));
+  }
+
+  Token var_name = current_token->copy();
+  result.register_advancement();
+  advance();
+
+  if (!current_token->match(TokenType::TT_ASSIGN))
+  {
+    return result.failure(std::make_shared<InvalidSyntaxError>("Expected '='", current_token->start, current_token->end));
+  }
+  
+  result.register_advancement();
+  advance();
+
+  std::shared_ptr<Node> iterable = result.register_result(expr());
+  if (result.error != nullptr) return result;
+
+  std::shared_ptr<Node> body;
+  bool should_return_null = true;
+
+  if (current_token->match(TokenType::TT_LBRACKET))
+  {
+    result.register_advancement();
+    advance();
+
+    body = result.register_result(statements());
+    if (result.error != nullptr) return result;
+
+    if (!current_token->match(TokenType::TT_RBRACKET))
+    {
+      return result.failure(std::make_shared<InvalidSyntaxError>("Expected '}'", current_token->start, current_token->end));
+    }
+
+    result.register_advancement();
+    advance();
+  }
+  else if (current_token->match(TokenType::TT_ARROW))
+  {
+    result.register_advancement();
+    advance();
+
+    body = result.register_result(statement());
+    should_return_null = false;
+    if (result.error != nullptr) return result;
+  }
+  else
+  {
+    return result.failure(std::make_shared<InvalidSyntaxError>("Expected '{' or '->'", current_token->start, current_token->end));
+  }
+
+  return result.success(std::make_shared<ForNode>(var_name, iterable, body, should_return_null));
+}
+
+ParseResult Parser::while_expr()
+{
+  ParseResult result = ParseResult();
+
+  if (!current_token->match(TokenType::TT_KEYWORD, {"while"}))
+  {
+    return result.failure(std::make_shared<InvalidSyntaxError>("Expected 'while'", current_token->start, current_token->end));
+  }
+
+  result.register_advancement();
+  advance();
+
+  std::shared_ptr<Node> condition = result.register_result(expr());
+  if (result.error != nullptr) return result;
+  
+  std::shared_ptr<Node> body;
+  bool should_return_null = true;
+
+  if (current_token->match(TokenType::TT_LBRACKET))
+  {
+    result.register_advancement();
+    advance();
+
+    body = result.register_result(statements());
+    if (result.error != nullptr) return result;
+
+    if (!current_token->match(TokenType::TT_RBRACKET))
+    {
+      return result.failure(std::make_shared<InvalidSyntaxError>("Expected '}'", current_token->start, current_token->end));
+    }
+
+    result.register_advancement();
+    advance();
+  }
+  else if (current_token->match(TokenType::TT_ARROW))
+  {
+    result.register_advancement();
+    advance();
+
+    body = result.register_result(statement());
+    should_return_null = false;
+    if (result.error != nullptr) return result;
+  }
+  else
+  {
+    return result.failure(std::make_shared<InvalidSyntaxError>("Expected '{' or '->'", current_token->start, current_token->end));
+  }
+
+  return result.success(std::make_shared<WhileNode>(condition, body, should_return_null));
+}
+
+ParseResult Parser::num_list_expr()
+{
+  ParseResult result = ParseResult();
+
+  if (!current_token->match(TokenType::TT_KEYWORD, {"from"}))
+  {
+    return result.failure(std::make_shared<InvalidSyntaxError>("Expected 'from'", current_token->start, current_token->end));
+  }
+  
+  result.register_advancement();
+  advance();
+
+  std::shared_ptr<Node> start = result.register_result(expr());
+  if (result.error != nullptr) return result;
+
+  if (!current_token->match(TokenType::TT_KEYWORD, {"to"}))
+  {
+    return result.failure(std::make_shared<InvalidSyntaxError>("Expected 'to'", current_token->start, current_token->end));
+  }
+
+  result.register_advancement();
+  advance();
+
+  std::shared_ptr<Node> end = result.register_result(expr());
+  if (result.error != nullptr) return result;
+
+  std::shared_ptr<Node> step = nullptr;
+
+  if (current_token->match(TokenType::TT_KEYWORD, {"step"}))
+  {
+    result.register_advancement();
+    advance();
+
+    step = result.register_result(expr());
+    if (result.error != nullptr) return result;
+  }
+
+  return result.success(std::make_shared<NumListNode>(start, end, step));
+}
+
 ParseResult Parser::expr()
 {
   ParseResult result = ParseResult();
@@ -393,18 +571,87 @@ ParseResult Parser::expr()
     result.register_advancement();
     advance();
 
-    if (!current_token->match(TokenType::TT_EQUALS))
+    if (current_token->match(TokenType::TT_LPAREN))
     {
-      return result.failure(std::make_shared<InvalidSyntaxError>("Expected '='", current_token->start, current_token->end));
+      result.register_advancement();
+      advance();
+
+      std::vector<Token> args = {};
+
+      if (!current_token->match(TokenType::TT_RPAREN))
+      {
+        args.push_back(current_token->copy());
+        result.register_advancement();
+        advance();
+
+        while (current_token->match(TokenType::TT_COMMA))
+        {
+          result.register_advancement();
+          advance();
+
+          args.push_back(current_token->copy());
+          result.register_advancement();
+          advance();
+        }
+
+        if (!current_token->match(TokenType::TT_RPAREN))
+        {
+          return result.failure(std::make_shared<InvalidSyntaxError>("Expected ')'", current_token->start, current_token->end));
+        }
+      }
+
+      result.register_advancement();
+      advance();
+
+      std::shared_ptr<Node> body;
+      bool should_auto_return = false;
+
+      if (current_token->match(TokenType::TT_LBRACKET))
+      {
+        result.register_advancement();
+        advance();
+
+        body = result.register_result(statements());
+        if (result.error != nullptr) return result;
+
+        if (!current_token->match(TokenType::TT_RBRACKET))
+        {
+          return result.failure(std::make_shared<InvalidSyntaxError>("Expected '}'", current_token->start, current_token->end));
+        }
+
+        result.register_advancement();
+        advance();
+      }
+      else if (current_token->match(TokenType::TT_ARROW))
+      {
+        result.register_advancement();
+        advance();
+
+        body = result.register_result(statement());
+        should_auto_return = true;
+        if (result.error != nullptr) return result;
+      }
+      else
+      {
+        return result.failure(std::make_shared<InvalidSyntaxError>("Expected '{' or '->'", current_token->start, current_token->end));
+      }
+
+      return result.success(std::make_shared<FuncDefNode>(var_tok, args, body, should_auto_return));
     }
+    else if (current_token->match(TokenType::TT_ASSIGN))
+    {
+      result.register_advancement();
+      advance();
 
-    result.register_advancement();
-    advance();
+      std::shared_ptr<Node> content = result.register_result(expr());
+      if (result.error != nullptr) return result;
 
-    std::shared_ptr<Node> content = result.register_result(expr());
-    if (result.error != nullptr) return result;
-
-    return result.success(std::make_shared<VarAssignNode>(var_tok, content));
+      return result.success(std::make_shared<VarAssignNode>(var_tok, content));
+    }
+    else
+    {
+      return result.failure(std::make_shared<InvalidSyntaxError>("Expected '=' or '('", current_token->start, current_token->end));
+    }
   }
 
   return bin_op(FunctionType::COMP_EXPR, {TokenType::TT_OR, TokenType::TT_AND}, FunctionType::COMP_EXPR);
@@ -413,6 +660,24 @@ ParseResult Parser::expr()
 ParseResult Parser::statement()
 {
   ParseResult result = ParseResult();
+
+  if (current_token->match(TokenType::TT_KEYWORD, {"break"}))
+  {
+    Position start = current_token->start.copy();
+    Position end = current_token->end.copy();
+    result.register_advancement();
+    advance();
+    return result.success(std::make_shared<BreakNode>(start, end));
+  }
+
+  if (current_token->match(TokenType::TT_KEYWORD, {"continue"}))
+  {
+    Position start = current_token->start.copy();
+    Position end = current_token->end.copy();
+    result.register_advancement();
+    advance();
+    return result.success(std::make_shared<ContinueNode>(start, end));
+  }
 
   if (current_token->match(TokenType::TT_KEYWORD, {"return"}))
   {

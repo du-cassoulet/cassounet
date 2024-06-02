@@ -1,7 +1,10 @@
 #include "String.hpp"
 
-String::String(std::string _value, Position _start, Position _end, SymbolTable* _symbol_table)
-: Value(ValueType::STRING, _start, _end, _symbol_table), value(_value) {}
+String::String(std::string _value, Position _start, Position _end, Context* _context)
+: Value(ValueType::STRING, _start, _end), value(_value)
+{
+  set_context(_context);
+}
 
 bool String::is_true()
 {
@@ -32,7 +35,7 @@ std::shared_ptr<Value> String::add(std::shared_ptr<Value> other)
 
   String string = dynamic_cast<String&>(*other);
   
-  return std::make_shared<String>(value + string.value, start, end);
+  return std::make_shared<String>(value + string.value, start, end, context);
 }
 
 std::shared_ptr<Value> String::subtract(std::shared_ptr<Value> other)
@@ -102,5 +105,5 @@ std::shared_ptr<Value> String::or_op(std::shared_ptr<Value> other)
 
 std::string String::to_string()
 {
-  return "\033[0;92m\"" + value + "\"\033[0m";
+  return value;
 }

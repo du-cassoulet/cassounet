@@ -5,16 +5,19 @@
 
 #include "Value.hpp"
 #include "Null.hpp"
+#include "String.hpp"
 #include "BaseFunction.hpp"
 #include "../RTResult.hpp"
 
 struct BuiltInFunction : public virtual BaseFunction
 {
 private:
-  RTResult log(SymbolTable* args);
+  RTResult log(Context* context);
+  RTResult ask(Context* context);
 
 public:
-  BuiltInFunction(std::string _name, Position _start, Position _end, SymbolTable* _symbol_table = nullptr);
+  BuiltInFunction(std::string _name, Position _start, Position _end, Context* _context);
+  BuiltInFunction(std::string _name, Context* _context);
 
   RTResult execute(std::vector<std::shared_ptr<Value>> args) override;
 

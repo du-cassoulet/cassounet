@@ -1,31 +1,51 @@
 #include "BaseFunction.hpp"
 
-BaseFunction::BaseFunction(ValueType _type, std::string _name, Position _start, Position _end, SymbolTable* _symbol_table)
-: Value(_type, _start, _end), SymbolValue(_type, _start, _end), name(_name) {}
+BaseFunction::BaseFunction(ValueType _type, std::string _name, Position _start, Position _end)
+: Value(_type, _start, _end), name(_name) {}
 
-SymbolTable BaseFunction::generate_new_symbol_table()
+Context BaseFunction::generate_new_context()
 {
-  return SymbolTable(symbol_table);
+  Context new_context = Context(name, context, &start);
+  new_context.set_symbol_table(new SymbolTable(new_context.parent->symbol_table));
+
+  return new_context;
 }
 
-void BaseFunction::populate_args(std::vector<std::string> arg_names, std::vector<std::shared_ptr<Value>> args, SymbolTable* new_symbol_table)
+void BaseFunction::populate_args(std::vector<std::string> arg_names, std::vector<std::shared_ptr<Value>> args, Context* new_context)
 {
   for (int i = 0; i < arg_names.size(); i++)
   {
-    new_symbol_table->set(arg_names[i], args[i]);
+    std::string arg_name = arg_names[i];
+    std::shared_ptr<Value> arg_value = args[i];
+
+    arg_value->set_context(new_context);
+    new_context->symbol_table->set(arg_name, arg_value);
   }
 }
 
-void BaseFunction::check_arg_count(std::vector<std::string> arg_names, std::vector<std::shared_ptr<Value>> args)
+RTResult BaseFunction::check_arg_count(std::vector<std::string> arg_names, std::vector<std::shared_ptr<Value>> args)
 {
+  RTResult result = RTResult();
+
   if (arg_names.size() != args.size())
   {
-    throw std::runtime_error("Function '" + name + "' expected " + std::to_string(arg_names.size()) + " arguments, but got " + std::to_string(args.size()));
+    return result.failure(std::make_shared<RTError>(
+      "Expected " + std::to_string(arg_names.size()) + " arguments, got " + std::to_string(args.size()),
+      start,
+      end
+    ));
   }
+
+  return result.success(nullptr);
 }
 
-void BaseFunction::check_args(std::vector<std::string> arg_names, std::vector<std::shared_ptr<Value>> args, SymbolTable* symbol_table)
+RTResult BaseFunction::check_args(std::vector<std::string> arg_names, std::vector<std::shared_ptr<Value>> args, Context* context)
 {
-  check_arg_count(arg_names, args);
-  populate_args(arg_names, args, symbol_table);
+  RTResult result = RTResult();
+
+  result.register_result(check_arg_count(arg_names, args));
+  if (result.should_return()) return result;
+
+  populate_args(arg_names, args, context);
+  return result.success(nullptr);
 }

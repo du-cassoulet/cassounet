@@ -18,7 +18,13 @@ enum class NodeType
   CALL,
   RETURN,
   LIST,
-  IF
+  IF,
+  WHILE,
+  FOR,
+  NUM_LIST,
+  BREAK,
+  CONTINUE,
+  FUNC_DEF
 };
 
 struct Node

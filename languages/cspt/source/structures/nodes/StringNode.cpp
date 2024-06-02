@@ -1,8 +1,12 @@
 #include "StringNode.hpp"
 
 StringNode::StringNode(const Token& _value_tok)
-: Node(NodeType::STRING, _value_tok.start, _value_tok.end), value_tok(_value_tok) {
-  if (!value_tok.match(TokenType::TT_STRING)) {
+: Node(NodeType::STRING, _value_tok.start, _value_tok.end), value_tok(_value_tok)
+{
+
+  if (!value_tok.match(TokenType::TT_STRING))
+{
+
     throw std::runtime_error("Invalid token type");
   }
 }
