@@ -87,94 +87,94 @@ bool BuiltInFunction::is_true()
   return true;
 }
 
-std::shared_ptr<Value> BuiltInFunction::to_positive()
+RTResult BuiltInFunction::to_positive()
 {
-  throw std::runtime_error("BuiltInFunction '" + name + "' does not support this operation");
+  return RTResult().failure(std::make_shared<RTError>("Cannot convert function to positive", start, end));
 }
 
-std::shared_ptr<Value> BuiltInFunction::to_negative()
+RTResult BuiltInFunction::to_negative()
 {
-  throw std::runtime_error("BuiltInFunction '" + name + "' does not support this operation");
+  return RTResult().failure(std::make_shared<RTError>("Cannot convert function to negative", start, end));
 }
 
-std::shared_ptr<Value> BuiltInFunction::to_not()
+RTResult BuiltInFunction::to_not()
 {
-  throw std::runtime_error("BuiltInFunction '" + name + "' does not support this operation");
+  return RTResult().success(std::make_shared<Boolean>(false, start, end, context));
 }
 
-std::shared_ptr<Value> BuiltInFunction::add(std::shared_ptr<Value> other)
+RTResult BuiltInFunction::add(std::shared_ptr<Value> other)
 {
-  throw std::runtime_error("BuiltInFunction '" + name + "' does not support this operation");
+  return RTResult().failure(std::make_shared<RTError>("Cannot add function", start, end));
 }
 
-std::shared_ptr<Value> BuiltInFunction::subtract(std::shared_ptr<Value> other)
+RTResult BuiltInFunction::subtract(std::shared_ptr<Value> other)
 {
-  throw std::runtime_error("BuiltInFunction '" + name + "' does not support this operation");
+  return RTResult().failure(std::make_shared<RTError>("Cannot subtract function", start, end));
 }
 
-std::shared_ptr<Value> BuiltInFunction::multiply(std::shared_ptr<Value> other)
+RTResult BuiltInFunction::multiply(std::shared_ptr<Value> other)
 {
-  throw std::runtime_error("BuiltInFunction '" + name + "' does not support this operation");
+  return RTResult().failure(std::make_shared<RTError>("Cannot multiply function", start, end));
 }
 
-std::shared_ptr<Value> BuiltInFunction::divide(std::shared_ptr<Value> other)
+RTResult BuiltInFunction::divide(std::shared_ptr<Value> other)
 {
-  throw std::runtime_error("BuiltInFunction '" + name + "' does not support this operation");
+  return RTResult().failure(std::make_shared<RTError>("Cannot divide function", start, end));
 }
 
-std::shared_ptr<Value> BuiltInFunction::modulo(std::shared_ptr<Value> other)
+RTResult BuiltInFunction::modulo(std::shared_ptr<Value> other)
 {
-  throw std::runtime_error("BuiltInFunction '" + name + "' does not support this operation");
+  return RTResult().failure(std::make_shared<RTError>("Cannot modulo function", start, end));
 }
 
-std::shared_ptr<Value> BuiltInFunction::power(std::shared_ptr<Value> other)
+RTResult BuiltInFunction::power(std::shared_ptr<Value> other)
 {
-  throw std::runtime_error("BuiltInFunction '" + name + "' does not support this operation");
+  return RTResult().failure(std::make_shared<RTError>("Cannot power function", start, end));
 }
 
-std::shared_ptr<Value> BuiltInFunction::equal(std::shared_ptr<Value> other)
+RTResult BuiltInFunction::equal(std::shared_ptr<Value> other)
 {
-  throw std::runtime_error("BuiltInFunction '" + name + "' does not support this operation");
+  return RTResult().success(std::make_shared<Boolean>(false, start, end, context));
 }
 
-std::shared_ptr<Value> BuiltInFunction::not_equal(std::shared_ptr<Value> other)
+RTResult BuiltInFunction::not_equal(std::shared_ptr<Value> other)
 {
-  throw std::runtime_error("BuiltInFunction '" + name + "' does not support this operation");
+  return RTResult().success(std::make_shared<Boolean>(true, start, end, context));
 }
 
-std::shared_ptr<Value> BuiltInFunction::greater_than(std::shared_ptr<Value> other)
+RTResult BuiltInFunction::greater_than(std::shared_ptr<Value> other)
 {
-  throw std::runtime_error("BuiltInFunction '" + name + "' does not support this operation");
+  return RTResult().failure(std::make_shared<RTError>("Cannot compare function", start, end));
 }
 
-std::shared_ptr<Value> BuiltInFunction::less_than(std::shared_ptr<Value> other)
+RTResult BuiltInFunction::less_than(std::shared_ptr<Value> other)
 {
-  throw std::runtime_error("BuiltInFunction '" + name + "' does not support this operation");
+  return RTResult().failure(std::make_shared<RTError>("Cannot compare function", start, end));
 }
 
-std::shared_ptr<Value> BuiltInFunction::greater_than_or_equal(std::shared_ptr<Value> other)
+RTResult BuiltInFunction::greater_than_or_equal(std::shared_ptr<Value> other)
 {
-  throw std::runtime_error("BuiltInFunction '" + name + "' does not support this operation");
+  return RTResult().failure(std::make_shared<RTError>("Cannot compare function", start, end));
 }
 
-std::shared_ptr<Value> BuiltInFunction::less_than_or_equal(std::shared_ptr<Value> other)
+RTResult BuiltInFunction::less_than_or_equal(std::shared_ptr<Value> other)
 {
-  throw std::runtime_error("BuiltInFunction '" + name + "' does not support this operation");
+  return RTResult().failure(std::make_shared<RTError>("Cannot compare function", start, end));
 }
 
-std::shared_ptr<Value> BuiltInFunction::and_op(std::shared_ptr<Value> other)
+RTResult BuiltInFunction::and_op(std::shared_ptr<Value> other)
 {
-  throw std::runtime_error("BuiltInFunction '" + name + "' does not support this operation");
+  return RTResult().success(std::make_shared<Boolean>(false, start, end, context));
 }
 
-std::shared_ptr<Value> BuiltInFunction::or_op(std::shared_ptr<Value> other)
+RTResult BuiltInFunction::or_op(std::shared_ptr<Value> other)
 {
-  throw std::runtime_error("BuiltInFunction '" + name + "' does not support this operation");
+  return RTResult().success(std::make_shared<Boolean>(other->is_true(), start, end, context));
 }
 
 std::string BuiltInFunction::to_string(int depth)
 {
-  return "<built-in function " + name + ">";
+  return util::color::colorize("<built-in function " + name + ">", util::color::cyan);
 }
 
 BuiltInFunction BuiltInFunction::copy()

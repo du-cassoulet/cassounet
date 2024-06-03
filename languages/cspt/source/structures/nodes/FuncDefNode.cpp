@@ -1,7 +1,7 @@
 #include "FuncDefNode.hpp"
 
 FuncDefNode::FuncDefNode(const Token& _name_tok, std::vector<Token> _arg_name_toks, std::shared_ptr<Node> _body_node, bool _should_auto_return)
-: Node(NodeType::FUNC_DEF, name_tok.start, body_node->end), name_tok(_name_tok), arg_name_toks(_arg_name_toks), body_node(_body_node), should_auto_return(_should_auto_return) {}
+: Node(NodeType::FUNC_DEF, _name_tok.start, _body_node->end), name_tok(_name_tok), arg_name_toks(_arg_name_toks), body_node(_body_node), should_auto_return(_should_auto_return) {}
 
 std::string FuncDefNode::to_string(int depth)
 {

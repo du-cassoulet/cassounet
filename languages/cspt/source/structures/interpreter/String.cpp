@@ -11,100 +11,130 @@ bool String::is_true()
   return value != "";
 }
 
-std::shared_ptr<Value> String::to_positive()
+RTResult String::to_positive()
 {
-  throw std::runtime_error("Cannot convert string to positive");
+  return RTResult().failure(std::make_shared<RTError>("Cannot convert string to positive", start, end));
 }
 
-std::shared_ptr<Value> String::to_negative()
+RTResult String::to_negative()
 {
-  throw std::runtime_error("Cannot convert string to negative");
+  return RTResult().failure(std::make_shared<RTError>("Cannot convert string to negative", start, end));
 }
 
-std::shared_ptr<Value> String::to_not()
+RTResult String::to_not()
 {
-  throw std::runtime_error("Cannot convert string to not");
+  return RTResult().success(std::make_shared<Boolean>(value == "", start, end, context));
 }
 
-std::shared_ptr<Value> String::add(std::shared_ptr<Value> other)
+RTResult String::add(std::shared_ptr<Value> other)
 {
-  if (other == nullptr)
+  RTResult result = RTResult();
+
+  if (other->type != ValueType::STRING)
   {
-    throw std::runtime_error("Cannot add string to non-string");
+    return result.failure(std::make_shared<RTError>(
+      "Expected string",
+      start,
+      end
+    ));
   }
 
   String string = dynamic_cast<String&>(*other);
   
-  return std::make_shared<String>(value + string.value, start, end, context);
+  return result.success(std::make_shared<String>(value + string.value, start, end, context));
 }
 
-std::shared_ptr<Value> String::subtract(std::shared_ptr<Value> other)
+RTResult String::subtract(std::shared_ptr<Value> other)
 {
-  throw std::runtime_error("Cannot subtract string");
+  return RTResult().failure(std::make_shared<RTError>("Cannot subtract string", start, end));
 }
 
-std::shared_ptr<Value> String::multiply(std::shared_ptr<Value> other)
+RTResult String::multiply(std::shared_ptr<Value> other)
 {
-  throw std::runtime_error("Cannot multiply string");
+  return RTResult().failure(std::make_shared<RTError>("Cannot multiply string", start, end));
 }
 
-std::shared_ptr<Value> String::divide(std::shared_ptr<Value> other)
+RTResult String::divide(std::shared_ptr<Value> other)
 {
-  throw std::runtime_error("Cannot divide string");
+  return RTResult().failure(std::make_shared<RTError>("Cannot divide string", start, end));
 }
 
-std::shared_ptr<Value> String::modulo(std::shared_ptr<Value> other)
+RTResult String::modulo(std::shared_ptr<Value> other)
 {
-  throw std::runtime_error("Cannot modulo string");
+  return RTResult().failure(std::make_shared<RTError>("Cannot modulo string", start, end));
 }
 
-std::shared_ptr<Value> String::power(std::shared_ptr<Value> other)
+RTResult String::power(std::shared_ptr<Value> other)
 {
-  throw std::runtime_error("Cannot power string");
+  return RTResult().failure(std::make_shared<RTError>("Cannot power string", start, end));
 }
 
-std::shared_ptr<Value> String::equal(std::shared_ptr<Value> other)
+RTResult String::equal(std::shared_ptr<Value> other)
 {
-  throw std::runtime_error("Cannot compare string");
+  RTResult result = RTResult();
+
+  if (other->type != ValueType::STRING)
+  {
+    return result.failure(std::make_shared<RTError>(
+      "Expected string",
+      start,
+      end
+    ));
+  }
+
+  String string = dynamic_cast<String&>(*other);
+  return result.success(std::make_shared<Boolean>(value == string.value, start, end, context));
 }
 
-std::shared_ptr<Value> String::not_equal(std::shared_ptr<Value> other)
+RTResult String::not_equal(std::shared_ptr<Value> other)
 {
-  throw std::runtime_error("Cannot compare string");
+  RTResult result = RTResult();
+
+  if (other->type != ValueType::STRING)
+  {
+    return result.failure(std::make_shared<RTError>(
+      "Expected string",
+      start,
+      end
+    ));
+  }
+
+  String string = dynamic_cast<String&>(*other);
+  return result.success(std::make_shared<Boolean>(value != string.value, start, end, context));
 }
 
-std::shared_ptr<Value> String::greater_than(std::shared_ptr<Value> other)
+RTResult String::greater_than(std::shared_ptr<Value> other)
 {
-  throw std::runtime_error("Cannot compare string");
+  return RTResult().failure(std::make_shared<RTError>("Cannot compare string", start, end));
 }
 
-std::shared_ptr<Value> String::less_than(std::shared_ptr<Value> other)
+RTResult String::less_than(std::shared_ptr<Value> other)
 {
-  throw std::runtime_error("Cannot compare string");
+  return RTResult().failure(std::make_shared<RTError>("Cannot compare string", start, end));
 }
 
-std::shared_ptr<Value> String::greater_than_or_equal(std::shared_ptr<Value> other)
+RTResult String::greater_than_or_equal(std::shared_ptr<Value> other)
 {
-  throw std::runtime_error("Cannot compare string");
+  return RTResult().failure(std::make_shared<RTError>("Cannot compare string", start, end));
 }
 
-std::shared_ptr<Value> String::less_than_or_equal(std::shared_ptr<Value> other)
+RTResult String::less_than_or_equal(std::shared_ptr<Value> other)
 {
-  throw std::runtime_error("Cannot compare string");
+  return RTResult().failure(std::make_shared<RTError>("Cannot compare string", start, end));
 }
 
-std::shared_ptr<Value> String::and_op(std::shared_ptr<Value> other)
+RTResult String::and_op(std::shared_ptr<Value> other)
 {
-  throw std::runtime_error("Cannot and string");
+  return RTResult().success(std::make_shared<Boolean>(is_true() && other->is_true(), start, end, context));
 }
 
-std::shared_ptr<Value> String::or_op(std::shared_ptr<Value> other)
+RTResult String::or_op(std::shared_ptr<Value> other)
 {
-  throw std::runtime_error("Cannot or string");
+  return RTResult().success(std::make_shared<Boolean>(is_true() || other->is_true(), start, end, context));
 }
 
 std::string String::to_string(int depth)
 {
-  if (depth > 0) return "\033[0;32m\"" + value + "\"\033[0m";
+  if (depth > 0) return util::color::colorize("\"" + value + "\"", util::color::green);
   return value;
 }

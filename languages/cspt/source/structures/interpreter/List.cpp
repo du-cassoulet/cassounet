@@ -8,94 +8,156 @@ List::List(std::vector<std::shared_ptr<Value>> _values, Position _start, Positio
 
 bool List::is_true()
 {
-
   return values.size() != 0;
 }
 
-std::shared_ptr<Value> List::to_positive()
+RTResult List::to_positive()
 {
-  throw std::runtime_error("Cannot convert a list to a number");
+  return RTResult().failure(std::make_shared<RTError>(
+    "Cannot convert a list to a number",
+    start,
+    end
+  ));
 }
 
-std::shared_ptr<Value> List::to_negative()
+RTResult List::to_negative()
 {
-  throw std::runtime_error("Cannot convert a list to a number");
+  return RTResult().failure(std::make_shared<RTError>(
+    "Cannot convert a list to a number",
+    start,
+    end
+  ));
 }
 
-std::shared_ptr<Value> List::to_not()
+RTResult List::to_not()
 {
-  throw std::runtime_error("Cannot convert a list to a boolean");
+  return RTResult().success(std::make_shared<Boolean>(values.size() == 0, start, end, context));
 }
 
-std::shared_ptr<Value> List::add(std::shared_ptr<Value> other)
+RTResult List::add(std::shared_ptr<Value> other)
 {
   values.push_back(other);
-  return std::make_shared<List>(values, start, end, context);
+  return RTResult().success(std::make_shared<List>(values, start, end, context));
 }
 
-std::shared_ptr<Value> List::subtract(std::shared_ptr<Value> other)
+RTResult List::subtract(std::shared_ptr<Value> other)
 {
-  throw std::runtime_error("Cannot subtract a list");
+  RTResult result = RTResult();
+
+  if (other->type != ValueType::NUMBER)
+  {
+    return result.failure(std::make_shared<RTError>(
+      "Expected number",
+      start,
+      end
+    ));
+  }
+
+  Number number = dynamic_cast<Number&>(*other);
+
+  if (number.value < 0 || number.value >= values.size())
+  {
+    return result.failure(std::make_shared<RTError>(
+      "Index out of bounds",
+      start,
+      end
+    ));
+  }
+
+  values.erase(values.begin() + number.value);
+  return result.success(std::make_shared<List>(values, start, end, context));
 }
 
-std::shared_ptr<Value> List::multiply(std::shared_ptr<Value> other)
+RTResult List::multiply(std::shared_ptr<Value> other)
 {
-  throw std::runtime_error("Cannot multiply a list");
+  RTResult result = RTResult();
+
+  if (other->type != ValueType::NUMBER)
+  {
+    return result.failure(std::make_shared<RTError>(
+      "Expected number",
+      start,
+      end
+    ));
+  }
+
+  Number number = dynamic_cast<Number&>(*other);
+
+  if (number.value < 0)
+  {
+    return result.failure(std::make_shared<RTError>(
+      "Cannot multiply a list by a negative number",
+      start,
+      end
+    ));
+  }
+
+  std::vector<std::shared_ptr<Value>> new_values;
+
+  for (int i = 0; i < number.value; i++)
+  {
+    for (int j = 0; j < values.size(); j++)
+    {
+      new_values.push_back(values[j]);
+    }
+  }
+
+  return result.success(std::make_shared<List>(new_values, start, end, context));
 }
 
-std::shared_ptr<Value> List::divide(std::shared_ptr<Value> other)
+RTResult List::divide(std::shared_ptr<Value> other)
 {
-  throw std::runtime_error("Cannot divide a list");
+  return RTResult().failure(std::make_shared<RTError>("Cannot divide a list", start, end));
 }
 
-std::shared_ptr<Value> List::modulo(std::shared_ptr<Value> other)
+RTResult List::modulo(std::shared_ptr<Value> other)
 {
-  throw std::runtime_error("Cannot modulo a list");
+  return RTResult().failure(std::make_shared<RTError>("Cannot modulo a list", start, end));
 }
 
-std::shared_ptr<Value> List::power(std::shared_ptr<Value> other)
+RTResult List::power(std::shared_ptr<Value> other)
 {
-  throw std::runtime_error("Cannot power a list");
+  return RTResult().failure(std::make_shared<RTError>("Cannot power a list", start, end));
 }
 
-std::shared_ptr<Value> List::equal(std::shared_ptr<Value> other)
+RTResult List::equal(std::shared_ptr<Value> other)
 {
-  throw std::runtime_error("Cannot compare a list");
+  return RTResult().success(std::make_shared<Boolean>(values == dynamic_cast<List&>(*other).values, start, end, context));
 }
 
-std::shared_ptr<Value> List::not_equal(std::shared_ptr<Value> other)
+RTResult List::not_equal(std::shared_ptr<Value> other)
 {
-  throw std::runtime_error("Cannot compare a list");
+  return RTResult().success(std::make_shared<Boolean>(values != dynamic_cast<List&>(*other).values, start, end, context));
 }
 
-std::shared_ptr<Value> List::greater_than(std::shared_ptr<Value> other)
+RTResult List::greater_than(std::shared_ptr<Value> other)
 {
-  throw std::runtime_error("Cannot compare a list");
+  return RTResult().failure(std::make_shared<RTError>("Cannot compare a list", start, end));
 }
 
-std::shared_ptr<Value> List::less_than(std::shared_ptr<Value> other)
+RTResult List::less_than(std::shared_ptr<Value> other)
 {
-  throw std::runtime_error("Cannot compare a list");
+  return RTResult().failure(std::make_shared<RTError>("Cannot compare a list", start, end));
 }
 
-std::shared_ptr<Value> List::greater_than_or_equal(std::shared_ptr<Value> other)
+RTResult List::greater_than_or_equal(std::shared_ptr<Value> other)
 {
-  throw std::runtime_error("Cannot compare a list");
+  return RTResult().failure(std::make_shared<RTError>("Cannot compare a list", start, end));
 }
 
-std::shared_ptr<Value> List::less_than_or_equal(std::shared_ptr<Value> other)
+RTResult List::less_than_or_equal(std::shared_ptr<Value> other)
 {
-  throw std::runtime_error("Cannot compare a list");
+  return RTResult().failure(std::make_shared<RTError>("Cannot compare a list", start, end));
 }
 
-std::shared_ptr<Value> List::and_op(std::shared_ptr<Value> other)
+RTResult List::and_op(std::shared_ptr<Value> other)
 {
-  throw std::runtime_error("Cannot and a list");
+  return RTResult().success(std::make_shared<Boolean>(is_true() && other->is_true(), start, end, context));
 }
 
-std::shared_ptr<Value> List::or_op(std::shared_ptr<Value> other)
+RTResult List::or_op(std::shared_ptr<Value> other)
 {
-  throw std::runtime_error("Cannot or a list");
+  return RTResult().success(std::make_shared<Boolean>(is_true() || other->is_true(), start, end, context));
 }
 
 std::string List::to_string(int depth)
@@ -106,17 +168,23 @@ std::string List::to_string(int depth)
 
   if (size == 0)
   {
-    return "\033[0;30m[] (empty)\033[0m";
+    return util::color::colorize("[] (empty)", util::color::black);
   }
 
-  res += "\033[0;30m[\033[0m\n";
+  res +=  util::color::colorize("[", util::color::black);
 
   for (int i = 0; i < values.size(); i++)
   {
-    res += std::string(2, ' ') + "\033[0;33m" + std::to_string(i) + "\033[0;30m:\033[0m " + values[i]->to_string(depth) + "\033[0;30m,\033[0m\n";
+    res += std::string(2, ' ') +
+      util::color::colorize(std::to_string(i), util::color::yellow) +
+      util::color::colorize(":", util::color::black) +
+      " " +
+      values[i]->to_string(depth) +
+      util::color::colorize(",", util::color::black) +
+      "\n";
   }
 
-  res += "\033[0;30m] (" + std::to_string(size) + " element" + (size > 1 ? "s" : "") + ")\033[0m";
+  res += util::color::colorize("] (" + std::to_string(size) + " element" + (size > 1 ? "s" : "") + ")", util::color::black);
 
   return res;
 }

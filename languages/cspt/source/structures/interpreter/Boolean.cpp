@@ -11,96 +11,117 @@ bool Boolean::is_true()
   return value;
 }
 
-std::shared_ptr<Value> Boolean::to_positive()
+RTResult Boolean::to_positive()
 {
-  throw std::runtime_error("Cannot convert boolean to positive");
+  return RTResult().failure(std::make_shared<RTError>("Cannot convert boolean to positive", start, end));
 }
 
-std::shared_ptr<Value> Boolean::to_negative()
+RTResult Boolean::to_negative()
 {
-  throw std::runtime_error("Cannot convert boolean to negative");
+  return RTResult().failure(std::make_shared<RTError>("Cannot convert boolean to negative", start, end));
 }
 
-std::shared_ptr<Value> Boolean::to_not()
+RTResult Boolean::to_not()
 {
-  return std::make_shared<Boolean>(!value, start, end, context);
+  return RTResult().success(std::make_shared<Boolean>(!value, start, end, context));
 }
 
-std::shared_ptr<Value> Boolean::add(std::shared_ptr<Value> other)
+RTResult Boolean::add(std::shared_ptr<Value> other)
 {
-  throw std::runtime_error("Cannot add boolean");
+  return RTResult().failure(std::make_shared<RTError>("Cannot add boolean", start, end));
 }
 
-std::shared_ptr<Value> Boolean::subtract(std::shared_ptr<Value> other)
+RTResult Boolean::subtract(std::shared_ptr<Value> other)
 {
-  throw std::runtime_error("Cannot subtract boolean");
+  return RTResult().failure(std::make_shared<RTError>("Cannot subtract boolean", start, end));
 }
 
-std::shared_ptr<Value> Boolean::multiply(std::shared_ptr<Value> other)
+RTResult Boolean::multiply(std::shared_ptr<Value> other)
 {
-  throw std::runtime_error("Cannot multiply boolean");
+  return RTResult().failure(std::make_shared<RTError>("Cannot multiply boolean", start, end));
 }
 
-std::shared_ptr<Value> Boolean::divide(std::shared_ptr<Value> other)
+RTResult Boolean::divide(std::shared_ptr<Value> other)
 {
-  throw std::runtime_error("Cannot divide boolean");
+  return RTResult().failure(std::make_shared<RTError>("Cannot divide boolean", start, end));
 }
 
-std::shared_ptr<Value> Boolean::modulo(std::shared_ptr<Value> other)
+RTResult Boolean::modulo(std::shared_ptr<Value> other)
 {
-  throw std::runtime_error("Cannot modulo boolean");
+  return RTResult().failure(std::make_shared<RTError>("Cannot modulo boolean", start, end));
 }
 
-std::shared_ptr<Value> Boolean::power(std::shared_ptr<Value> other)
+RTResult Boolean::power(std::shared_ptr<Value> other)
 {
-  throw std::runtime_error("Cannot power boolean");
+  return RTResult().failure(std::make_shared<RTError>("Cannot power boolean", start, end));
 }
 
-std::shared_ptr<Value> Boolean::equal(std::shared_ptr<Value> other)
+RTResult Boolean::equal(std::shared_ptr<Value> other)
 {
+  RTResult result = RTResult();
+
+  if (other->type != ValueType::BOOLEAN)
+  {
+    return result.failure(std::make_shared<RTError>(
+      "Expected boolean",
+      start,
+      end,
+      context
+    ));
+  }
+
   Boolean boolean = dynamic_cast<Boolean&>(*other);
-  return std::make_shared<Boolean>(value == boolean.value, start, end, context);
+  return result.success(std::make_shared<Boolean>(value == boolean.value, start, end, context));
 }
 
-std::shared_ptr<Value> Boolean::not_equal(std::shared_ptr<Value> other)
+RTResult Boolean::not_equal(std::shared_ptr<Value> other)
 {
+  RTResult result = RTResult();
+
+  if (other->type != ValueType::BOOLEAN)
+  {
+    return result.failure(std::make_shared<RTError>(
+      "Expected boolean",
+      start,
+      end
+    ));
+  }
+
   Boolean boolean = dynamic_cast<Boolean&>(*other);
-  return std::make_shared<Boolean>(value != boolean.value, start, end, context);
+  return result.success(std::make_shared<Boolean>(value != boolean.value, start, end, context));
 }
 
-std::shared_ptr<Value> Boolean::greater_than(std::shared_ptr<Value> other)
+RTResult Boolean::greater_than(std::shared_ptr<Value> other)
 {
-  throw std::runtime_error("Cannot compare boolean");
+  return RTResult().failure(std::make_shared<RTError>("Cannot compare boolean", start, end));
 }
 
-std::shared_ptr<Value> Boolean::less_than(std::shared_ptr<Value> other)
+RTResult Boolean::less_than(std::shared_ptr<Value> other)
 {
-  throw std::runtime_error("Cannot compare boolean");
+  return RTResult().failure(std::make_shared<RTError>("Cannot compare boolean", start, end));
 }
 
-std::shared_ptr<Value> Boolean::greater_than_or_equal(std::shared_ptr<Value> other)
+RTResult Boolean::greater_than_or_equal(std::shared_ptr<Value> other)
 {
-  throw std::runtime_error("Cannot compare boolean");
+  return RTResult().failure(std::make_shared<RTError>("Cannot compare boolean", start, end));
 }
 
-std::shared_ptr<Value> Boolean::less_than_or_equal(std::shared_ptr<Value> other)
+RTResult Boolean::less_than_or_equal(std::shared_ptr<Value> other)
 {
-  throw std::runtime_error("Cannot compare boolean");
+  return RTResult().failure(std::make_shared<RTError>("Cannot compare boolean", start, end));
 }
 
-std::shared_ptr<Value> Boolean::and_op(std::shared_ptr<Value> other)
+RTResult Boolean::and_op(std::shared_ptr<Value> other)
 {
-  Boolean boolean = dynamic_cast<Boolean&>(*other);
-  return std::make_shared<Boolean>(value && boolean.value, start, end, context);
+  return RTResult().success(std::make_shared<Boolean>(value && other->is_true(), start, end, context));
 }
 
-std::shared_ptr<Value> Boolean::or_op(std::shared_ptr<Value> other)
+RTResult Boolean::or_op(std::shared_ptr<Value> other)
 {
-  Boolean boolean = dynamic_cast<Boolean&>(*other);
-  return std::make_shared<Boolean>(value || boolean.value, start, end, context);
+  return RTResult().success(std::make_shared<Boolean>(value || other->is_true(), start, end, context));
 }
 
 std::string Boolean::to_string(int depth)
 {
-  return value ? "\033[0;33mtrue\033[0m" : "\033[0;33mfalse\033[0m";
+  return util::color::colorize(value ? "true" : "false", util::color::yellow);
 }

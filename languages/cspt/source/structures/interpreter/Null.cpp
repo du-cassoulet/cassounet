@@ -8,97 +8,95 @@ Null::Null(Position _start, Position _end, Context* _context)
 
 bool Null::is_true()
 {
-
   return false;
 }
 
-std::shared_ptr<Value> Null::to_positive()
+RTResult Null::to_positive()
 {
-  throw std::runtime_error("Cannot convert null to a number");
+  return RTResult().failure(std::make_shared<RTError>("Cannot convert null to a number", start, end));
 }
 
-std::shared_ptr<Value> Null::to_negative()
+RTResult Null::to_negative()
 {
-  throw std::runtime_error("Cannot convert null to a number");
+  return RTResult().failure(std::make_shared<RTError>("Cannot convert null to a number", start, end));
 }
 
-std::shared_ptr<Value> Null::to_not()
+RTResult Null::to_not()
 {
-  throw std::runtime_error("Cannot convert null to a boolean");
+  return RTResult().success(std::make_shared<Boolean>(true, start, end, context));
 }
 
-std::shared_ptr<Value> Null::add(std::shared_ptr<Value> other)
+RTResult Null::add(std::shared_ptr<Value> other)
 {
-  throw std::runtime_error("Cannot add null");
+  return RTResult().failure(std::make_shared<RTError>("Cannot add null", start, end));
 }
 
-std::shared_ptr<Value> Null::subtract(std::shared_ptr<Value> other)
+RTResult Null::subtract(std::shared_ptr<Value> other)
 {
-  throw std::runtime_error("Cannot subtract null");
+  return RTResult().failure(std::make_shared<RTError>("Cannot subtract null", start, end));
 }
 
-std::shared_ptr<Value> Null::multiply(std::shared_ptr<Value> other)
+RTResult Null::multiply(std::shared_ptr<Value> other)
 {
-  throw std::runtime_error("Cannot multiply null");
+  return RTResult().failure(std::make_shared<RTError>("Cannot multiply null", start, end));
 }
 
-std::shared_ptr<Value> Null::divide(std::shared_ptr<Value> other)
+RTResult Null::divide(std::shared_ptr<Value> other)
 {
-  throw std::runtime_error("Cannot divide null");
+  return RTResult().failure(std::make_shared<RTError>("Cannot divide null", start, end));
 }
 
-std::shared_ptr<Value> Null::modulo(std::shared_ptr<Value> other)
+RTResult Null::modulo(std::shared_ptr<Value> other)
 {
-  throw std::runtime_error("Cannot modulo null");
+  return RTResult().failure(std::make_shared<RTError>("Cannot modulo null", start, end));
 }
 
-std::shared_ptr<Value> Null::power(std::shared_ptr<Value> other)
+RTResult Null::power(std::shared_ptr<Value> other)
 {
-  throw std::runtime_error("Cannot power null");
+  return RTResult().failure(std::make_shared<RTError>("Cannot power null", start, end));
 }
 
-std::shared_ptr<Value> Null::equal(std::shared_ptr<Value> other)
+RTResult Null::equal(std::shared_ptr<Value> other)
 {
-  throw std::runtime_error("Cannot compare null");
+  return RTResult().success(std::make_shared<Boolean>(other->type == ValueType::NULL_VALUE, start, end, context));
 }
 
-std::shared_ptr<Value> Null::not_equal(std::shared_ptr<Value> other)
+RTResult Null::not_equal(std::shared_ptr<Value> other)
 {
-  throw std::runtime_error("Cannot compare null");
+  return RTResult().success(std::make_shared<Boolean>(other->type != ValueType::NULL_VALUE, start, end, context));
 }
 
-std::shared_ptr<Value> Null::greater_than(std::shared_ptr<Value> other)
+RTResult Null::greater_than(std::shared_ptr<Value> other)
 {
-  throw std::runtime_error("Cannot compare null");
+  return RTResult().failure(std::make_shared<RTError>("Cannot compare null", start, end));
 }
 
-std::shared_ptr<Value> Null::less_than(std::shared_ptr<Value> other)
+RTResult Null::less_than(std::shared_ptr<Value> other)
 {
-  throw std::runtime_error("Cannot compare null");
+  return RTResult().failure(std::make_shared<RTError>("Cannot compare null", start, end));
 }
 
-std::shared_ptr<Value> Null::greater_than_or_equal(std::shared_ptr<Value> other)
+RTResult Null::greater_than_or_equal(std::shared_ptr<Value> other)
 {
-  throw std::runtime_error("Cannot compare null");
+  return RTResult().failure(std::make_shared<RTError>("Cannot compare null", start, end));
 }
 
-std::shared_ptr<Value> Null::less_than_or_equal(std::shared_ptr<Value> other)
+RTResult Null::less_than_or_equal(std::shared_ptr<Value> other)
 {
-  throw std::runtime_error("Cannot compare null");
+  return RTResult().failure(std::make_shared<RTError>("Cannot compare null", start, end));
 }
 
-std::shared_ptr<Value> Null::and_op(std::shared_ptr<Value> other)
+RTResult Null::and_op(std::shared_ptr<Value> other)
 {
-  throw std::runtime_error("Cannot and null");
+  return RTResult().success(std::make_shared<Boolean>(false, start, end, context));
 }
 
-std::shared_ptr<Value> Null::or_op(std::shared_ptr<Value> other)
+RTResult Null::or_op(std::shared_ptr<Value> other)
 {
-  throw std::runtime_error("Cannot or null");
+  return RTResult().success(std::make_shared<Boolean>(other->is_true(), start, end, context));
 }
 
 std::string Null::to_string(int depth)
 {
-
-  return "\033[0;30mnull\033[0m";
+  return util::color::colorize("null", util::color::black);
 }

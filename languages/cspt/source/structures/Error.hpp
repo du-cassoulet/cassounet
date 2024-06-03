@@ -3,6 +3,8 @@
 #include <string>
 
 #include "Position.hpp"
+#include "Context.hpp"
+#include "../util/color.hpp"
 
 struct Error
 {
@@ -13,23 +15,31 @@ struct Error
 
   Error(std::string _error_name, std::string _details, Position _start, Position _end);
 
-  std::string to_string();
+  virtual std::string to_string() = 0;
 };
 
-struct IllegalCharError : public Error
+struct IllegalCharError : public virtual Error
 {
   IllegalCharError(std::string _details, Position _start, Position _end);
   IllegalCharError(std::string _details, Position _pos);
+
+  std::string to_string() override;
 };
 
-struct InvalidSyntaxError : public Error
+struct InvalidSyntaxError : public virtual Error
 {
   InvalidSyntaxError(std::string _details, Position _start, Position _end);
   InvalidSyntaxError(std::string _details, Position _pos);
+
+  std::string to_string() override;
 };
 
-struct RTError : public Error
+struct RTError : public virtual Error
 {
-  RTError(std::string _details, Position _start, Position _end);
-  RTError(std::string _details, Position _pos);
+  Context* context = nullptr;
+
+  RTError(std::string _details, Position _start, Position _end, Context* _context = nullptr);
+  RTError(std::string _details, Position _pos, Context* _context = nullptr);
+
+  std::string to_string() override;
 };

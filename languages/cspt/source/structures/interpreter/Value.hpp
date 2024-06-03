@@ -5,9 +5,13 @@
 #include <memory>
 
 struct Context;
+struct RTResult;
 
 #include "../Position.hpp"
 #include "../Context.hpp"
+#include "../RTResult.hpp"
+#include "../Error.hpp"
+#include "../../util/color.hpp"
 
 enum class ValueType
 {
@@ -34,24 +38,24 @@ struct Value
 
   virtual bool is_true() = 0;
 
-  virtual std::shared_ptr<Value> to_positive() = 0;
-  virtual std::shared_ptr<Value> to_negative() = 0;
-  virtual std::shared_ptr<Value> to_not() = 0;
+  virtual RTResult to_positive() = 0;
+  virtual RTResult to_negative() = 0;
+  virtual RTResult to_not() = 0;
 
-  virtual std::shared_ptr<Value> add(std::shared_ptr<Value> other) = 0;
-  virtual std::shared_ptr<Value> subtract(std::shared_ptr<Value> other) = 0;
-  virtual std::shared_ptr<Value> multiply(std::shared_ptr<Value> other) = 0;
-  virtual std::shared_ptr<Value> divide(std::shared_ptr<Value> other) = 0;
-  virtual std::shared_ptr<Value> modulo(std::shared_ptr<Value> other) = 0;
-  virtual std::shared_ptr<Value> power(std::shared_ptr<Value> other) = 0;
-  virtual std::shared_ptr<Value> equal(std::shared_ptr<Value> other) = 0;
-  virtual std::shared_ptr<Value> not_equal(std::shared_ptr<Value> other) = 0;
-  virtual std::shared_ptr<Value> greater_than(std::shared_ptr<Value> other) = 0;
-  virtual std::shared_ptr<Value> less_than(std::shared_ptr<Value> other) = 0;
-  virtual std::shared_ptr<Value> greater_than_or_equal(std::shared_ptr<Value> other) = 0;
-  virtual std::shared_ptr<Value> less_than_or_equal(std::shared_ptr<Value> other) = 0;
-  virtual std::shared_ptr<Value> and_op(std::shared_ptr<Value> other) = 0;
-  virtual std::shared_ptr<Value> or_op(std::shared_ptr<Value> other) = 0;
+  virtual RTResult add(std::shared_ptr<Value> other) = 0;
+  virtual RTResult subtract(std::shared_ptr<Value> other) = 0;
+  virtual RTResult multiply(std::shared_ptr<Value> other) = 0;
+  virtual RTResult divide(std::shared_ptr<Value> other) = 0;
+  virtual RTResult modulo(std::shared_ptr<Value> other) = 0;
+  virtual RTResult power(std::shared_ptr<Value> other) = 0;
+  virtual RTResult equal(std::shared_ptr<Value> other) = 0;
+  virtual RTResult not_equal(std::shared_ptr<Value> other) = 0;
+  virtual RTResult greater_than(std::shared_ptr<Value> other) = 0;
+  virtual RTResult less_than(std::shared_ptr<Value> other) = 0;
+  virtual RTResult greater_than_or_equal(std::shared_ptr<Value> other) = 0;
+  virtual RTResult less_than_or_equal(std::shared_ptr<Value> other) = 0;
+  virtual RTResult and_op(std::shared_ptr<Value> other) = 0;
+  virtual RTResult or_op(std::shared_ptr<Value> other) = 0;
 
   virtual std::string to_string(int depth = 0) = 0;
 };

@@ -2,6 +2,9 @@
 
 #include <string>
 
+struct Value;
+struct Error;
+
 #include "interpreter/Value.hpp"
 #include "Error.hpp"
 

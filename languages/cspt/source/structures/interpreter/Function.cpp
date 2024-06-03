@@ -43,94 +43,94 @@ bool Function::is_true()
   return true;
 }
 
-std::shared_ptr<Value> Function::to_positive()
+RTResult Function::to_positive()
 {
-  throw std::runtime_error("Function '" + name + "' does not support this operation");
+  return RTResult().failure(std::make_shared<RTError>("Cannot convert function to positive", start, end));
 }
 
-std::shared_ptr<Value> Function::to_negative()
+RTResult Function::to_negative()
 {
-  throw std::runtime_error("Function '" + name + "' does not support this operation");
+  return RTResult().failure(std::make_shared<RTError>("Cannot convert function to negative", start, end));
 }
 
-std::shared_ptr<Value> Function::to_not()
+RTResult Function::to_not()
 {
-  throw std::runtime_error("Function '" + name + "' does not support this operation");
+  return RTResult().success(std::make_shared<Boolean>(false, start, end, context));
 }
 
-std::shared_ptr<Value> Function::add(std::shared_ptr<Value> other)
+RTResult Function::add(std::shared_ptr<Value> other)
 {
-  throw std::runtime_error("Function '" + name + "' does not support this operation");
+  return RTResult().failure(std::make_shared<RTError>("Cannot add function", start, end));
 }
 
-std::shared_ptr<Value> Function::subtract(std::shared_ptr<Value> other)
+RTResult Function::subtract(std::shared_ptr<Value> other)
 {
-  throw std::runtime_error("Function '" + name + "' does not support this operation");
+  return RTResult().failure(std::make_shared<RTError>("Cannot subtract function", start, end));
 }
 
-std::shared_ptr<Value> Function::multiply(std::shared_ptr<Value> other)
+RTResult Function::multiply(std::shared_ptr<Value> other)
 {
-  throw std::runtime_error("Function '" + name + "' does not support this operation");
+  return RTResult().failure(std::make_shared<RTError>("Cannot multiply function", start, end));
 }
 
-std::shared_ptr<Value> Function::divide(std::shared_ptr<Value> other)
+RTResult Function::divide(std::shared_ptr<Value> other)
 {
-  throw std::runtime_error("Function '" + name + "' does not support this operation");
+  return RTResult().failure(std::make_shared<RTError>("Cannot divide function", start, end));
 }
 
-std::shared_ptr<Value> Function::modulo(std::shared_ptr<Value> other)
+RTResult Function::modulo(std::shared_ptr<Value> other)
 {
-  throw std::runtime_error("Function '" + name + "' does not support this operation");
+  return RTResult().failure(std::make_shared<RTError>("Cannot modulo function", start, end));
 }
 
-std::shared_ptr<Value> Function::power(std::shared_ptr<Value> other)
+RTResult Function::power(std::shared_ptr<Value> other)
 {
-  throw std::runtime_error("Function '" + name + "' does not support this operation");
+  return RTResult().failure(std::make_shared<RTError>("Cannot power function", start, end));
 }
 
-std::shared_ptr<Value> Function::equal(std::shared_ptr<Value> other)
+RTResult Function::equal(std::shared_ptr<Value> other)
 {
-  throw std::runtime_error("Function '" + name + "' does not support this operation");
+  return RTResult().success(std::make_shared<Boolean>(false, start, end, context));
 }
 
-std::shared_ptr<Value> Function::not_equal(std::shared_ptr<Value> other)
+RTResult Function::not_equal(std::shared_ptr<Value> other)
 {
-  throw std::runtime_error("Function '" + name + "' does not support this operation");
+  return RTResult().success(std::make_shared<Boolean>(true, start, end, context));
 }
 
-std::shared_ptr<Value> Function::greater_than(std::shared_ptr<Value> other)
+RTResult Function::greater_than(std::shared_ptr<Value> other)
 {
-  throw std::runtime_error("Function '" + name + "' does not support this operation");
+  return RTResult().failure(std::make_shared<RTError>("Cannot compare function", start, end));
 }
 
-std::shared_ptr<Value> Function::less_than(std::shared_ptr<Value> other)
+RTResult Function::less_than(std::shared_ptr<Value> other)
 {
-  throw std::runtime_error("Function '" + name + "' does not support this operation");
+  return RTResult().failure(std::make_shared<RTError>("Cannot compare function", start, end));
 }
 
-std::shared_ptr<Value> Function::greater_than_or_equal(std::shared_ptr<Value> other)
+RTResult Function::greater_than_or_equal(std::shared_ptr<Value> other)
 {
-  throw std::runtime_error("Function '" + name + "' does not support this operation");
+  return RTResult().failure(std::make_shared<RTError>("Cannot compare function", start, end));
 }
 
-std::shared_ptr<Value> Function::less_than_or_equal(std::shared_ptr<Value> other)
+RTResult Function::less_than_or_equal(std::shared_ptr<Value> other)
 {
-  throw std::runtime_error("Function '" + name + "' does not support this operation");
+  return RTResult().failure(std::make_shared<RTError>("Cannot compare function", start, end));
 }
 
-std::shared_ptr<Value> Function::and_op(std::shared_ptr<Value> other)
+RTResult Function::and_op(std::shared_ptr<Value> other)
 {
-  throw std::runtime_error("Function '" + name + "' does not support this operation");
+  return RTResult().success(std::make_shared<Boolean>(false, start, end, context));
 }
 
-std::shared_ptr<Value> Function::or_op(std::shared_ptr<Value> other)
+RTResult Function::or_op(std::shared_ptr<Value> other)
 {
-  throw std::runtime_error("Function '" + name + "' does not support this operation");
+  return RTResult().success(std::make_shared<Boolean>(other->is_true(), start, end, context));
 }
 
 std::string Function::to_string(int depth)
 {
-  return "<function " + name + ">";
+  return util::color::colorize("<function " + name + ">", util::color::cyan);
 }
 
 Function Function::copy()

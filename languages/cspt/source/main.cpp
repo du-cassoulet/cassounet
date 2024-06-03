@@ -6,6 +6,7 @@
 #include <chrono>
 
 #include "lib.hpp"
+#include "util/color.hpp"
 #include "structures/Context.hpp"
 #include "structures/SymbolTable.hpp"
 #include "structures/Lexer.hpp"
@@ -70,7 +71,7 @@ ReturnValue run_code(const std::string& code, Context* context, bool verbose, co
 
   if (verbose)
   {
-    std::cout << "Lexing\033[0;30m:\033[0m \033[0;32mOK\033[0m" << std::endl;
+    std::cout << "Lexing" + util::color::colorize(":", util::color::black) + " " + util::color::colorize("OK", util::color::green) << std::endl;
   }
 
   if (illegal_char_error != nullptr)
@@ -88,7 +89,7 @@ ReturnValue run_code(const std::string& code, Context* context, bool verbose, co
 
   if (verbose)
   {
-    std::cout << "Parsing\033[0;30m:\033[0m \033[0;32mOK\033[0m" << std::endl;
+    std::cout << "Parsing" + util::color::colorize(":", util::color::black) + " " + util::color::colorize("OK", util::color::green) << std::endl;
   }
 
   if (result.error != nullptr)
@@ -101,7 +102,7 @@ ReturnValue run_code(const std::string& code, Context* context, bool verbose, co
 
   if (verbose)
   {
-    std::cout << "Interpreting\033[0;30m:\033[0m \033[0;32mOK\033[0m" << std::endl;
+    std::cout << "Interpreting" + util::color::colorize(":", util::color::black) + " " + util::color::colorize("OK", util::color::green) << std::endl;
   }
 
   return ReturnValue(return_value.value, return_value.error);
@@ -160,7 +161,7 @@ int main(int argc, char *argv[])
 
     bool verbose = std::find(exec_options.begin(), exec_options.end(), "--verbose") != exec_options.end() || std::find(exec_options.begin(), exec_options.end(), "-V") != exec_options.end();
 
-    Context global_context = Context("<global>", nullptr, nullptr);
+    Context global_context = Context("<global>");
     SymbolTable symbol_table = SymbolTable();
     symbol_table.set("log", std::make_shared<BuiltInFunction>("log", &global_context));
     symbol_table.set("ask", std::make_shared<BuiltInFunction>("ask", &global_context));
@@ -173,7 +174,7 @@ int main(int argc, char *argv[])
       while (true)
       {
         std::string code;
-        std::cout << "\033[0;30m>>>\033[0m ";
+        std::cout << util::color::colorize(">>> ", util::color::black);
 
         getline(std::cin, code, '\n');
 
@@ -229,7 +230,7 @@ int main(int argc, char *argv[])
         std::find(exec_options.begin(), exec_options.end(), "-t") != exec_options.end()
       )
       {
-        std::cout << "\033[0;30mExecution time: " + std::to_string(milliseconds) + "ms\033[0m" << std::endl;
+        std::cout << util::color::colorize("Execution time: " + std::to_string(milliseconds) + "ms", util::color::black) << std::endl;
       }
 
       if (
@@ -237,7 +238,7 @@ int main(int argc, char *argv[])
         std::find(exec_options.begin(), exec_options.end(), "-m") != exec_options.end()
       )
       {
-        std::cout << "\033[0;30mMemory usage: " + get_memory_usage() + "\033[0m" << std::endl;
+        std::cout << util::color::colorize("Memory usage: " + get_memory_usage(), util::color::black) << std::endl;
       }
 
       return 0;

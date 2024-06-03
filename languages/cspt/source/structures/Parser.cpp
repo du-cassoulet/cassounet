@@ -657,13 +657,6 @@ ParseResult Parser::expr()
         return result.failure(std::make_shared<InvalidSyntaxError>("Expected '{' or '->'", current_token->start, current_token->end));
       }
 
-      
-      std::cout << "C'EST JUSTE ICI LA SEGFAULT HEHEHEH" << std::endl;
-      FuncDefNode func_def_node = FuncDefNode(var_tok, args, body, should_auto_return);
-      std::cout << "C'EST JUSTE ICI LA SEGFAULT HEHEHEH" << std::endl;
-      std::cout << func_def_node.to_string() << std::endl;
-      std::cout << "C'EST JUSTE ICI LA SEGFAULT HEHEHEH" << std::endl;
-
       return result.success(std::make_shared<FuncDefNode>(var_tok, args, body, should_auto_return));
     }
     else if (current_token->match(TokenType::TT_ASSIGN))
@@ -779,8 +772,6 @@ void Parser::print_node(ParseResult* result)
 
 void Parser::advance()
 {
-  // std::cout << current_token->to_string() << std::endl;
-
   if (!current_token->match(TokenType::TT_EOF))
   {
     token_index++;

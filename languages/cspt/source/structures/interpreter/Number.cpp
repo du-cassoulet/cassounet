@@ -11,107 +11,246 @@ bool Number::is_true()
   return value != 0;
 }
 
-std::shared_ptr<Value> Number::to_positive()
+RTResult Number::to_positive()
 {
-  return std::make_shared<Number>(value, start, end, context);
+  return RTResult().success(std::make_shared<Number>(value, start, end, context));
 }
 
-std::shared_ptr<Value> Number::to_negative()
+RTResult Number::to_negative()
 {
-  return std::make_shared<Number>(-value, start, end, context);
+  return RTResult().success(std::make_shared<Number>(-value, start, end, context));
 }
 
-std::shared_ptr<Value> Number::to_not()
+RTResult Number::to_not()
 {
-  return std::make_shared<Boolean>(!value, start, end, context);
+  return RTResult().success(std::make_shared<Boolean>(!value, start, end, context));
 }
 
-std::shared_ptr<Value> Number::add(std::shared_ptr<Value> other)
+RTResult Number::add(std::shared_ptr<Value> other)
 {
+  RTResult result = RTResult();
+
+  if (other->type != ValueType::NUMBER)
+  {
+    return result.failure(std::make_shared<RTError>(
+      "Expected number",
+      start,
+      end
+    ));
+  }
+
   Number number = dynamic_cast<Number&>(*other);
-  return std::make_shared<Number>(value + number.value, start, end, context);
+  return result.success(std::make_shared<Number>(value + number.value, start, end, context));
 }
 
-std::shared_ptr<Value> Number::subtract(std::shared_ptr<Value> other)
+RTResult Number::subtract(std::shared_ptr<Value> other)
 {
+  RTResult result = RTResult();
+
+  if (other->type != ValueType::NUMBER)
+  {
+    return result.failure(std::make_shared<RTError>(
+      "Expected number",
+      start,
+      end
+    ));
+  }
+  
   Number number = dynamic_cast<Number&>(*other);
-  return std::make_shared<Number>(value - number.value, start, end, context);
+  return result.success(std::make_shared<Number>(value - number.value, start, end, context));
 }
 
-std::shared_ptr<Value> Number::multiply(std::shared_ptr<Value> other)
+RTResult Number::multiply(std::shared_ptr<Value> other)
 {
+  RTResult result = RTResult();
+
+  if (other->type != ValueType::NUMBER)
+  {
+    return result.failure(std::make_shared<RTError>(
+      "Expected number",
+      start,
+      end
+    ));
+  }
+  
   Number number = dynamic_cast<Number&>(*other);
-  return std::make_shared<Number>(value * number.value, start, end, context);
+  return result.success(std::make_shared<Number>(value * number.value, start, end, context));
 }
 
-std::shared_ptr<Value> Number::divide(std::shared_ptr<Value> other)
+RTResult Number::divide(std::shared_ptr<Value> other)
 {
+  RTResult result = RTResult();
+
+  if (other->type != ValueType::NUMBER)
+  {
+    return result.failure(std::make_shared<RTError>(
+      "Expected number",
+      start,
+      end
+    ));
+  }
+  
   Number number = dynamic_cast<Number&>(*other);
-  return std::make_shared<Number>(value / number.value, start, end, context);
+
+  if (number.value == 0)
+  {
+    return result.failure(std::make_shared<RTError>("Division by zero", start, end));
+  }
+
+  return result.success(std::make_shared<Number>(value / number.value, start, end, context));
 }
 
-std::shared_ptr<Value> Number::modulo(std::shared_ptr<Value> other)
+RTResult Number::modulo(std::shared_ptr<Value> other)
 {
+  RTResult result = RTResult();
+
+  if (other->type != ValueType::NUMBER)
+  {
+    return result.failure(std::make_shared<RTError>(
+      "Expected number",
+      start,
+      end
+    ));
+  }
+  
   Number number = dynamic_cast<Number&>(*other);
-  return std::make_shared<Number>(std::fmod(value, number.value), start, end, context);
+  return result.success(std::make_shared<Number>(std::fmod(value, number.value), start, end, context));
 }
 
-std::shared_ptr<Value> Number::power(std::shared_ptr<Value> other)
+RTResult Number::power(std::shared_ptr<Value> other)
 {
+  RTResult result = RTResult();
+
+  if (other->type != ValueType::NUMBER)
+  {
+    return result.failure(std::make_shared<RTError>(
+      "Expected number",
+      start,
+      end
+    ));
+  }
+  
   Number number = dynamic_cast<Number&>(*other);
-  return std::make_shared<Number>(std::pow(value, number.value), start, end, context);
+  return result.success(std::make_shared<Number>(std::pow(value, number.value), start, end, context));
 }
 
-std::shared_ptr<Value> Number::equal(std::shared_ptr<Value> other)
+RTResult Number::equal(std::shared_ptr<Value> other)
 {
+  RTResult result = RTResult();
+
+  if (other->type != ValueType::NUMBER)
+  {
+    return result.failure(std::make_shared<RTError>(
+      "Expected number",
+      start,
+      end
+    ));
+  }
+  
   Number number = dynamic_cast<Number&>(*other);
-  return std::make_shared<Boolean>(value == number.value, start, end, context);
+  return result.success(std::make_shared<Boolean>(value == number.value, start, end, context));
 }
 
-std::shared_ptr<Value> Number::not_equal(std::shared_ptr<Value> other)
+RTResult Number::not_equal(std::shared_ptr<Value> other)
 {
+  RTResult result = RTResult();
+
+  if (other->type != ValueType::NUMBER)
+  {
+    return result.failure(std::make_shared<RTError>(
+      "Expected number",
+      start,
+      end
+    ));
+  }
+  
   Number number = dynamic_cast<Number&>(*other);
-  return std::make_shared<Boolean>(value != number.value, start, end, context);
+  return result.success(std::make_shared<Boolean>(value != number.value, start, end, context));
 }
 
-std::shared_ptr<Value> Number::greater_than(std::shared_ptr<Value> other)
+RTResult Number::greater_than(std::shared_ptr<Value> other)
 {
+  RTResult result = RTResult();
+
+  if (other->type != ValueType::NUMBER)
+  {
+    return result.failure(std::make_shared<RTError>(
+      "Expected number",
+      start,
+      end
+    ));
+  }
+  
   Number number = dynamic_cast<Number&>(*other);
-  return std::make_shared<Boolean>(value > number.value, start, end, context);
+  return result.success(std::make_shared<Boolean>(value > number.value, start, end, context));
 }
 
-std::shared_ptr<Value> Number::less_than(std::shared_ptr<Value> other)
+RTResult Number::less_than(std::shared_ptr<Value> other)
 {
+  RTResult result = RTResult();
+
+  if (other->type != ValueType::NUMBER)
+  {
+    return result.failure(std::make_shared<RTError>(
+      "Expected number",
+      start,
+      end
+    ));
+  }
+  
   Number number = dynamic_cast<Number&>(*other);
-  return std::make_shared<Boolean>(value < number.value, start, end, context);
+  return result.success(std::make_shared<Boolean>(value < number.value, start, end, context));
 }
 
-std::shared_ptr<Value> Number::greater_than_or_equal(std::shared_ptr<Value> other)
+RTResult Number::greater_than_or_equal(std::shared_ptr<Value> other)
 {
+  RTResult result = RTResult();
+
+  if (other->type != ValueType::NUMBER)
+  {
+    return result.failure(std::make_shared<RTError>(
+      "Expected number",
+      start,
+      end
+    ));
+  }
+  
   Number number = dynamic_cast<Number&>(*other);
-  return std::make_shared<Boolean>(value >= number.value, start, end, context);
+  return result.success(std::make_shared<Boolean>(value >= number.value, start, end, context));
 }
 
-std::shared_ptr<Value> Number::less_than_or_equal(std::shared_ptr<Value> other)
+RTResult Number::less_than_or_equal(std::shared_ptr<Value> other)
 {
+  RTResult result = RTResult();
+
+  if (other->type != ValueType::NUMBER)
+  {
+    return result.failure(std::make_shared<RTError>(
+      "Expected number",
+      start,
+      end
+    ));
+  }
+  
   Number number = dynamic_cast<Number&>(*other);
-  return std::make_shared<Boolean>(value <= number.value, start, end, context);
+  return result.success(std::make_shared<Boolean>(value <= number.value, start, end, context));
 }
 
-std::shared_ptr<Value> Number::and_op(std::shared_ptr<Value> other)
+RTResult Number::and_op(std::shared_ptr<Value> other)
 {
-  throw std::runtime_error("Cannot perform and operation on number");
+  return RTResult().success(std::make_shared<Boolean>(is_true() && other->is_true(), start, end, context));
 }
 
-std::shared_ptr<Value> Number::or_op(std::shared_ptr<Value> other)
+RTResult Number::or_op(std::shared_ptr<Value> other)
 {
-  throw std::runtime_error("Cannot perform or operation on number");
+  return RTResult().success(std::make_shared<Boolean>(is_true() || other->is_true(), start, end, context));
 }
 
 std::string Number::to_string(int depth)
 {
-  std::string str = "\033[0;33m" + std::to_string(value);
+  std::string str = std::to_string(value);
   str.erase(str.find_last_not_of('0') + 1, std::string::npos);
   str.erase(str.find_last_not_of('.') + 1, std::string::npos);
-  return str + "\033[0m";
+  
+  return util::color::colorize(str, util::color::yellow);
 }

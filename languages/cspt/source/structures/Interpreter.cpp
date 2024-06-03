@@ -41,21 +41,31 @@ RTResult Interpreter::visit_unary_op(UnaryOpNode node, Context* context)
   RTResult result = RTResult();
 
   std::shared_ptr<Value> operand = result.register_result(visit(node.operand, context));
+  if (result.should_return()) return result;
+
+  std::shared_ptr<Value> value;
 
   switch (node.op_tok.type)
   {
     case TokenType::TT_PLUS:
-      return result.success(operand->to_positive());
+      value = result.register_result(operand->to_positive());
+      break;
 
     case TokenType::TT_MINUS:
-      return result.success(operand->to_negative());
+      value = result.register_result(operand->to_negative());
+      break;
 
     case TokenType::TT_NOT:
-      return result.success(operand->to_not());
+      value = result.register_result(operand->to_not());
+      break;
 
     default:
       throw std::invalid_argument("Invalid unary operator: " + node.op_tok.to_string_type());
   }
+
+  if (result.should_return()) return result;
+
+  return result.success(value);
 }
 
 RTResult Interpreter::visit_binary_op(BinaryOpNode node, Context* context)
@@ -63,52 +73,74 @@ RTResult Interpreter::visit_binary_op(BinaryOpNode node, Context* context)
   RTResult result = RTResult();
 
   std::shared_ptr<Value> left = result.register_result(visit(node.left, context));
+  if (result.should_return()) return result;
+
   std::shared_ptr<Value> right = result.register_result(visit(node.right, context));
+  if (result.should_return()) return result;
+
+  std::shared_ptr<Value> value;
 
   switch (node.op_tok.type)
   {
     case TokenType::TT_PLUS:
-      return result.success(left->add(right));
+      value = result.register_result(left->add(right));
+      break;
 
     case TokenType::TT_MINUS:
-      return result.success(left->subtract(right));
+      value = result.register_result(left->subtract(right));
+      break;
 
     case TokenType::TT_MUL:
-      return result.success(left->multiply(right));
+      value = result.register_result(left->multiply(right));
+      break;
 
     case TokenType::TT_DIV:
-      return result.success(left->divide(right));
+      value = result.register_result(left->divide(right));
+      break;
 
     case TokenType::TT_POW:
-      return result.success(left->power(right));
+      value = result.register_result(left->power(right));
+      break;
 
     case TokenType::TT_EQUALS:
-      return result.success(left->equal(right));
+      value = result.register_result(left->equal(right));
+      break;
 
     case TokenType::TT_NEQUALS:
-      return result.success(left->not_equal(right));
+      value = result.register_result(left->not_equal(right));
+      break;
 
     case TokenType::TT_LT:
-      return result.success(left->less_than(right));
+      value = result.register_result(left->less_than(right));
+      break;
 
     case TokenType::TT_GT:
-      return result.success(left->greater_than(right));
+      value = result.register_result(left->greater_than(right));
+      break;
 
     case TokenType::TT_LTE:
-      return result.success(left->less_than_or_equal(right));
+      value = result.register_result(left->less_than_or_equal(right));
+      break;
 
     case TokenType::TT_GTE:
-      return result.success(left->greater_than_or_equal(right));
+      value = result.register_result(left->greater_than_or_equal(right));
+      break;
 
     case TokenType::TT_AND:
-      return result.success(left->and_op(right));
+      value = result.register_result(left->and_op(right));
+      break;
 
     case TokenType::TT_OR:
-      return result.success(left->or_op(right));
+      value = result.register_result(left->or_op(right));
+      break;
 
     default:
       throw std::invalid_argument("Invalid binary operator: " + node.op_tok.to_string_type());
   }
+
+  if (result.should_return()) return result;
+
+  return result.success(value);
 }
 
 RTResult Interpreter::visit_var_assign(VarAssignNode node, Context* context)
@@ -377,32 +409,34 @@ RTResult Interpreter::visit_binary_op_assign(BinaryOpAssignNode node, Context* c
   switch (node.op_tok.type)
   {
     case TokenType::TT_ADD_ASSIGN:
-      value = value->add(right);
+      value = result.register_result(value->add(right));
       break;
 
     case TokenType::TT_SUB_ASSIGN:
-      value = value->subtract(right);
+      value = result.register_result(value->subtract(right));
       break;
 
     case TokenType::TT_MUL_ASSIGN:
-      value = value->multiply(right);
+      value = result.register_result(value->multiply(right));
       break;
 
     case TokenType::TT_DIV_ASSIGN:
-      value = value->divide(right);
+      value = result.register_result(value->divide(right));
       break;
 
     case TokenType::TT_MOD_ASSIGN:
-      value = value->modulo(right);
+      value = result.register_result(value->modulo(right));
       break;
 
     case TokenType::TT_POW_ASSIGN:
-      value = value->power(right);
+      value = result.register_result(value->power(right));
       break;
 
     default:
       throw std::invalid_argument("Invalid binary operator: " + node.op_tok.to_string_type());
   }
+
+  if (result.should_return()) return result;
 
   context->symbol_table->set(node.left.value, value);
 
@@ -428,16 +462,18 @@ RTResult Interpreter::visit_unary_op_assign(UnaryOpAssignNode node, Context* con
   switch (node.op_tok.type)
   {
     case TokenType::TT_INCR:
-      value = value->add(std::make_shared<Number>(1, node.start, node.end, context));
+      value = result.register_result(value->add(std::make_shared<Number>(1, node.start, node.end, context)));
       break;
 
     case TokenType::TT_DECR:
-      value = value->subtract(std::make_shared<Number>(1, node.start, node.end, context));
+      value = result.register_result(value->subtract(std::make_shared<Number>(1, node.start, node.end, context)));
       break;
 
     default:
       throw std::invalid_argument("Invalid unary operator: " + node.op_tok.to_string_type());
   }
+
+  if (result.should_return()) return result;
 
   context->symbol_table->set(node.var_name_tok.value, value);
 
