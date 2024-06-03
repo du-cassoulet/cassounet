@@ -103,7 +103,8 @@ std::shared_ptr<Value> String::or_op(std::shared_ptr<Value> other)
   throw std::runtime_error("Cannot or string");
 }
 
-std::string String::to_string()
+std::string String::to_string(int depth)
 {
+  if (depth > 0) return "\033[0;32m\"" + value + "\"\033[0m";
   return value;
 }

@@ -32,6 +32,8 @@
 #include "nodes/WhileNode.hpp"
 #include "nodes/ForNode.hpp"
 #include "nodes/FuncDefNode.hpp"
+#include "nodes/BinaryOpAssignNode.hpp"
+#include "nodes/UnaryOpAssignNode.hpp"
 
 struct Interpreter
 {
@@ -53,6 +55,8 @@ private:
   RTResult visit_while(WhileNode node, Context* context);
   RTResult visit_for(ForNode node, Context* context);
   RTResult visit_func_def(FuncDefNode node, Context* context);
+  RTResult visit_binary_op_assign(BinaryOpAssignNode node, Context* context);
+  RTResult visit_unary_op_assign(UnaryOpAssignNode node, Context* context);
 
 public:
   Context* context;

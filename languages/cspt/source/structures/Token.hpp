@@ -35,7 +35,15 @@ enum class TokenType
   TT_SEMICOLON,
   TT_LBRACKET,
   TT_RBRACKET,
-  TT_ARROW
+  TT_ARROW,
+  TT_INCR,
+  TT_DECR,
+  TT_ADD_ASSIGN,
+  TT_SUB_ASSIGN,
+  TT_MUL_ASSIGN,
+  TT_DIV_ASSIGN,
+  TT_MOD_ASSIGN,
+  TT_POW_ASSIGN,
 };
 
 struct Token

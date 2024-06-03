@@ -140,6 +140,30 @@ std::string Token::to_string_type()
     case TokenType::TT_ARROW:
       return "ARROW";
 
+    case TokenType::TT_INCR:
+      return "INCR";
+
+    case TokenType::TT_DECR:
+      return "DECR";
+
+    case TokenType::TT_ADD_ASSIGN:
+      return "ADD_ASSIGN";
+
+    case TokenType::TT_SUB_ASSIGN:
+      return "SUB_ASSIGN";
+
+    case TokenType::TT_MUL_ASSIGN:
+      return "MUL_ASSIGN";
+
+    case TokenType::TT_DIV_ASSIGN:
+      return "DIV_ASSIGN";
+
+    case TokenType::TT_MOD_ASSIGN:
+      return "MOD_ASSIGN";
+
+    case TokenType::TT_POW_ASSIGN:
+      return "POW_ASSIGN";
+
     default:
       throw std::invalid_argument("Invalid token type");
   }

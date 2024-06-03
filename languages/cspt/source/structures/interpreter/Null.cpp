@@ -97,7 +97,7 @@ std::shared_ptr<Value> Null::or_op(std::shared_ptr<Value> other)
   throw std::runtime_error("Cannot or null");
 }
 
-std::string Null::to_string()
+std::string Null::to_string(int depth)
 {
 
   return "\033[0;30mnull\033[0m";

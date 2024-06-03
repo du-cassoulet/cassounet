@@ -70,7 +70,7 @@ ReturnValue run_code(const std::string& code, Context* context, bool verbose, co
 
   if (verbose)
   {
-    std::cout << "Lexing: OK" << std::endl;
+    std::cout << "Lexing\033[0;30m:\033[0m \033[0;32mOK\033[0m" << std::endl;
   }
 
   if (illegal_char_error != nullptr)
@@ -88,7 +88,7 @@ ReturnValue run_code(const std::string& code, Context* context, bool verbose, co
 
   if (verbose)
   {
-    std::cout << "Parsing: OK" << std::endl;
+    std::cout << "Parsing\033[0;30m:\033[0m \033[0;32mOK\033[0m" << std::endl;
   }
 
   if (result.error != nullptr)
@@ -101,7 +101,7 @@ ReturnValue run_code(const std::string& code, Context* context, bool verbose, co
 
   if (verbose)
   {
-    std::cout << "Interpreting: OK" << std::endl;
+    std::cout << "Interpreting\033[0;30m:\033[0m \033[0;32mOK\033[0m" << std::endl;
   }
 
   return ReturnValue(return_value.value, return_value.error);
@@ -166,9 +166,9 @@ int main(int argc, char *argv[])
     symbol_table.set("ask", std::make_shared<BuiltInFunction>("ask", &global_context));
     global_context.set_symbol_table(&symbol_table);
 
-    if (option == "repo")
+    if (option == "repl")
     {
-      std::cout << "Type 'exit' to exit the repo." << std::endl;
+      std::cout << "Type 'exit' to exit the repl." << std::endl;
 
       while (true)
       {

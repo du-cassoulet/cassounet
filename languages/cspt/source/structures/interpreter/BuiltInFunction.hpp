@@ -42,6 +42,6 @@ public:
   std::shared_ptr<Value> and_op(std::shared_ptr<Value> other) override;
   std::shared_ptr<Value> or_op(std::shared_ptr<Value> other) override;
 
-  std::string to_string() override;
+  std::string to_string(int depth = 0) override;
   BuiltInFunction copy();
 };

@@ -22,7 +22,12 @@ private:
   std::shared_ptr<IllegalCharError> make_not();
   std::shared_ptr<IllegalCharError> make_lower_than();
   std::shared_ptr<IllegalCharError> make_greater_than_or_comment();
+  std::shared_ptr<IllegalCharError> make_plus();
   std::shared_ptr<IllegalCharError> make_arrow_or_minus();
+  std::shared_ptr<IllegalCharError> make_mul();
+  std::shared_ptr<IllegalCharError> make_div();
+  std::shared_ptr<IllegalCharError> make_mod();
+  std::shared_ptr<IllegalCharError> make_power();
 
 public:
   std::string input;

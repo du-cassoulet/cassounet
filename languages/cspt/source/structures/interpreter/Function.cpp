@@ -128,7 +128,7 @@ std::shared_ptr<Value> Function::or_op(std::shared_ptr<Value> other)
   throw std::runtime_error("Function '" + name + "' does not support this operation");
 }
 
-std::string Function::to_string()
+std::string Function::to_string(int depth)
 {
   return "<function " + name + ">";
 }

@@ -247,6 +247,29 @@ std::shared_ptr<IllegalCharError> Lexer::make_greater_than_or_comment()
   return nullptr;
 }
 
+std::shared_ptr<IllegalCharError> Lexer::make_plus()
+{
+  Position start = position.copy();
+  advance();
+
+  if (position.index < input.length() && input[position.index] == '=')
+  {
+    advance();
+    tokens.push_back(Token(TokenType::TT_ADD_ASSIGN, start, position.copy()));
+  }
+  else if (position.index < input.length() && input[position.index] == '+')
+  {
+    advance();
+    tokens.push_back(Token(TokenType::TT_INCR, start, position.copy()));
+  }
+  else
+  {
+    tokens.push_back(Token(TokenType::TT_PLUS, start, position.copy()));
+  }
+
+  return nullptr;
+}
+
 std::shared_ptr<IllegalCharError> Lexer::make_arrow_or_minus()
 {
   Position start = position.copy();
@@ -257,9 +280,91 @@ std::shared_ptr<IllegalCharError> Lexer::make_arrow_or_minus()
     advance();
     tokens.push_back(Token(TokenType::TT_ARROW, start, position.copy()));
   }
+  else if (position.index < input.length() && input[position.index] == '=')
+  {
+    advance();
+    tokens.push_back(Token(TokenType::TT_SUB_ASSIGN, start, position.copy()));
+  }
+  else if (position.index < input.length() && input[position.index] == '-')
+  {
+    advance();
+    tokens.push_back(Token(TokenType::TT_DECR, start, position.copy()));
+  }
   else
   {
     tokens.push_back(Token(TokenType::TT_MINUS, start, position.copy()));
+  }
+
+  return nullptr;
+}
+
+std::shared_ptr<IllegalCharError> Lexer::make_mul()
+{
+  Position start = position.copy();
+  advance();
+
+  if (position.index < input.length() && input[position.index] == '=')
+  {
+    advance();
+    tokens.push_back(Token(TokenType::TT_MUL_ASSIGN, start, position.copy()));
+  }
+  else
+  {
+    tokens.push_back(Token(TokenType::TT_MUL, start, position.copy()));
+  }
+
+  return nullptr;
+}
+
+std::shared_ptr<IllegalCharError> Lexer::make_div()
+{
+  Position start = position.copy();
+  advance();
+
+  if (position.index < input.length() && input[position.index] == '=')
+  {
+    advance();
+    tokens.push_back(Token(TokenType::TT_DIV_ASSIGN, start, position.copy()));
+  }
+  else
+  {
+    tokens.push_back(Token(TokenType::TT_DIV, start, position.copy()));
+  }
+
+  return nullptr;
+}
+
+std::shared_ptr<IllegalCharError> Lexer::make_mod()
+{
+  Position start = position.copy();
+  advance();
+
+  if (position.index < input.length() && input[position.index] == '=')
+  {
+    advance();
+    tokens.push_back(Token(TokenType::TT_MOD_ASSIGN, start, position.copy()));
+  }
+  else
+  {
+    tokens.push_back(Token(TokenType::TT_MOD, start, position.copy()));
+  }
+
+  return nullptr;
+}
+
+std::shared_ptr<IllegalCharError> Lexer::make_power()
+{
+  Position start = position.copy();
+  advance();
+
+  if (position.index < input.length() && input[position.index] == '=')
+  {
+    advance();
+    tokens.push_back(Token(TokenType::TT_POW_ASSIGN, start, position.copy()));
+  }
+  else
+  {
+    tokens.push_back(Token(TokenType::TT_POW, start, position.copy()));
   }
 
   return nullptr;
@@ -320,8 +425,8 @@ std::shared_ptr<IllegalCharError> Lexer::make_tokens()
     }
     else if (current_char == '+')
     {
-      tokens.push_back(Token(TokenType::TT_PLUS, position.copy()));
-      advance();
+      std::shared_ptr<IllegalCharError> error = make_plus();
+      if (error != nullptr) return error;
     }
     else if (current_char == '-')
     {
@@ -330,23 +435,23 @@ std::shared_ptr<IllegalCharError> Lexer::make_tokens()
     }
     else if (current_char == '*')
     {
-      tokens.push_back(Token(TokenType::TT_MUL, position.copy()));
-      advance();
+      std::shared_ptr<IllegalCharError> error = make_mul();
+      if (error != nullptr) return error;
     }
     else if (current_char == '/')
     {
-      tokens.push_back(Token(TokenType::TT_DIV, position.copy()));
-      advance();
+      std::shared_ptr<IllegalCharError> error = make_div();
+      if (error != nullptr) return error;
     }
     else if (current_char == '%')
     {
-      tokens.push_back(Token(TokenType::TT_MOD, position.copy()));
-      advance();
+      std::shared_ptr<IllegalCharError> error = make_mod();
+      if (error != nullptr) return error;
     }
     else if (current_char == '^')
     {
-      tokens.push_back(Token(TokenType::TT_POW, position.copy()));
-      advance();
+      std::shared_ptr<IllegalCharError> error = make_power();
+      if (error != nullptr) return error;
     }
     else if (current_char == '(')
     {

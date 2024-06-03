@@ -24,7 +24,9 @@ enum class NodeType
   NUM_LIST,
   BREAK,
   CONTINUE,
-  FUNC_DEF
+  FUNC_DEF,
+  BINARY_OP_ASSIGN,
+  UNARY_OP_ASSIGN
 };
 
 struct Node

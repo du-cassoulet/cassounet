@@ -172,7 +172,7 @@ std::shared_ptr<Value> BuiltInFunction::or_op(std::shared_ptr<Value> other)
   throw std::runtime_error("BuiltInFunction '" + name + "' does not support this operation");
 }
 
-std::string BuiltInFunction::to_string()
+std::string BuiltInFunction::to_string(int depth)
 {
   return "<built-in function " + name + ">";
 }

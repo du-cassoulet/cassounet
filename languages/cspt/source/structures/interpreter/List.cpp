@@ -29,7 +29,8 @@ std::shared_ptr<Value> List::to_not()
 
 std::shared_ptr<Value> List::add(std::shared_ptr<Value> other)
 {
-  throw std::runtime_error("Cannot add a list");
+  values.push_back(other);
+  return std::make_shared<List>(values, start, end, context);
 }
 
 std::shared_ptr<Value> List::subtract(std::shared_ptr<Value> other)
@@ -97,17 +98,25 @@ std::shared_ptr<Value> List::or_op(std::shared_ptr<Value> other)
   throw std::runtime_error("Cannot or a list");
 }
 
-std::string List::to_string()
+std::string List::to_string(int depth)
 {
+  depth++;
   std::string res = "";
+  int size =  values.size();
+
+  if (size == 0)
+  {
+    return "\033[0;30m[] (empty)\033[0m";
+  }
+
   res += "\033[0;30m[\033[0m\n";
 
   for (int i = 0; i < values.size(); i++)
   {
-    res += std::string(2, ' ') + "\033[0;33m" + std::to_string(i) + "\033[0;30m:\033[0m " + values[i]->to_string() + "\033[0;30m,\033[0m\n";
+    res += std::string(2, ' ') + "\033[0;33m" + std::to_string(i) + "\033[0;30m:\033[0m " + values[i]->to_string(depth) + "\033[0;30m,\033[0m\n";
   }
 
-  res += "\033[0;30m]\033[0m";
+  res += "\033[0;30m] (" + std::to_string(size) + " element" + (size > 1 ? "s" : "") + ")\033[0m";
 
   return res;
 }

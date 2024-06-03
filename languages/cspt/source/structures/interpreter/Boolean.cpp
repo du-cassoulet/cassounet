@@ -100,7 +100,7 @@ std::shared_ptr<Value> Boolean::or_op(std::shared_ptr<Value> other)
   return std::make_shared<Boolean>(value || boolean.value, start, end, context);
 }
 
-std::string Boolean::to_string()
+std::string Boolean::to_string(int depth)
 {
   return value ? "\033[0;33mtrue\033[0m" : "\033[0;33mfalse\033[0m";
 }

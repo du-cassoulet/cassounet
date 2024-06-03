@@ -53,5 +53,5 @@ struct Value
   virtual std::shared_ptr<Value> and_op(std::shared_ptr<Value> other) = 0;
   virtual std::shared_ptr<Value> or_op(std::shared_ptr<Value> other) = 0;
 
-  virtual std::string to_string() = 0;
+  virtual std::string to_string(int depth = 0) = 0;
 };

@@ -30,6 +30,8 @@
 #include "nodes/BreakNode.hpp"
 #include "nodes/ContinueNode.hpp"
 #include "nodes/FuncDefNode.hpp"
+#include "nodes/BinaryOpAssignNode.hpp"
+#include "nodes/UnaryOpAssignNode.hpp"
 
 enum class FunctionType
 {

@@ -77,6 +77,25 @@ ParseResult Parser::atom()
 
       return result.success(std::make_shared<VarReAssignNode>(var_tok, content));
     }
+    else if (current_token->match({TokenType::TT_ADD_ASSIGN,TokenType::TT_SUB_ASSIGN,TokenType::TT_DIV_ASSIGN,TokenType::TT_MUL_ASSIGN,TokenType::TT_MOD_ASSIGN,TokenType::TT_POW_ASSIGN}))
+    {
+      Token op_tok = current_token->copy();
+      result.register_advancement();
+      advance();
+
+      std::shared_ptr<Node> content = result.register_result(expr());
+      if (result.error != nullptr) return result;
+
+      return result.success(std::make_shared<BinaryOpAssignNode>(var_tok, op_tok, content));
+    }
+    else if (current_token->match({TokenType::TT_INCR,TokenType::TT_DECR}))
+    {
+      Token op_tok = current_token->copy();
+      result.register_advancement();
+      advance();
+
+      return result.success(std::make_shared<UnaryOpAssignNode>(op_tok, var_tok));
+    }
     
     return result.success(std::make_shared<VarAccessNode>(var_tok));
   }
@@ -580,7 +599,8 @@ ParseResult Parser::expr()
 
       if (!current_token->match(TokenType::TT_RPAREN))
       {
-        args.push_back(current_token->copy());
+        Token arg_tok = current_token->copy();
+        args.push_back(arg_tok);
         result.register_advancement();
         advance();
 
@@ -589,7 +609,8 @@ ParseResult Parser::expr()
           result.register_advancement();
           advance();
 
-          args.push_back(current_token->copy());
+          Token arg_tok = current_token->copy();
+          args.push_back(arg_tok);
           result.register_advancement();
           advance();
         }
@@ -636,6 +657,13 @@ ParseResult Parser::expr()
         return result.failure(std::make_shared<InvalidSyntaxError>("Expected '{' or '->'", current_token->start, current_token->end));
       }
 
+      
+      std::cout << "C'EST JUSTE ICI LA SEGFAULT HEHEHEH" << std::endl;
+      FuncDefNode func_def_node = FuncDefNode(var_tok, args, body, should_auto_return);
+      std::cout << "C'EST JUSTE ICI LA SEGFAULT HEHEHEH" << std::endl;
+      std::cout << func_def_node.to_string() << std::endl;
+      std::cout << "C'EST JUSTE ICI LA SEGFAULT HEHEHEH" << std::endl;
+
       return result.success(std::make_shared<FuncDefNode>(var_tok, args, body, should_auto_return));
     }
     else if (current_token->match(TokenType::TT_ASSIGN))
@@ -648,10 +676,8 @@ ParseResult Parser::expr()
 
       return result.success(std::make_shared<VarAssignNode>(var_tok, content));
     }
-    else
-    {
-      return result.failure(std::make_shared<InvalidSyntaxError>("Expected '=' or '('", current_token->start, current_token->end));
-    }
+
+    return result.failure(std::make_shared<InvalidSyntaxError>("Expected '(' or '='", current_token->start, current_token->end));
   }
 
   return bin_op(FunctionType::COMP_EXPR, {TokenType::TT_OR, TokenType::TT_AND}, FunctionType::COMP_EXPR);
@@ -681,18 +707,20 @@ ParseResult Parser::statement()
 
   if (current_token->match(TokenType::TT_KEYWORD, {"return"}))
   {
+    Position start = current_token->start.copy();
+
     result.register_advancement();
     advance();
 
     std::shared_ptr<Node> node = result.register_result(expr());
     if (result.error != nullptr) return result;
 
-    return result.success(std::make_shared<ReturnNode>(node));
+    return result.success(std::make_shared<ReturnNode>(start, node));
   }
 
   std::shared_ptr<Node> node = result.register_result(expr());
   if (result.error != nullptr) return result;
-
+  
   return result.success(node);
 }
 
@@ -703,26 +731,26 @@ ParseResult Parser::statements()
   Position start = current_token->start.copy();
 
   std::shared_ptr<Node> curr_statement = result.register_result(statement());
-  if (result.error) return result;
+  if (result.error != nullptr) return result;
   curr_statements.push_back(curr_statement);
   bool more_statements = true;
-
+  
   while (true)
   {
-    int new_line_count = 0;
+    int semicolon_count = 0;
 
     while (current_token->match({TokenType::TT_SEMICOLON}))
     {
       result.register_advancement();
       advance();
-      new_line_count++;
+      semicolon_count++;
     }
 
-    if (new_line_count == 0) more_statements = false;
+    if (semicolon_count == 0) more_statements = false;
     if (!more_statements) break;
 
     std::shared_ptr<Node> curr_statement = result.try_register(statement());
-    if (result.error) return result;
+    if (result.error != nullptr) return result;
 
     if (!curr_statement)
     {
@@ -751,6 +779,8 @@ void Parser::print_node(ParseResult* result)
 
 void Parser::advance()
 {
+  // std::cout << current_token->to_string() << std::endl;
+
   if (!current_token->match(TokenType::TT_EOF))
   {
     token_index++;

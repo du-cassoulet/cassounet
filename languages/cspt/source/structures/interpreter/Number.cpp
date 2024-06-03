@@ -108,7 +108,7 @@ std::shared_ptr<Value> Number::or_op(std::shared_ptr<Value> other)
   throw std::runtime_error("Cannot perform or operation on number");
 }
 
-std::string Number::to_string()
+std::string Number::to_string(int depth)
 {
   std::string str = "\033[0;33m" + std::to_string(value);
   str.erase(str.find_last_not_of('0') + 1, std::string::npos);

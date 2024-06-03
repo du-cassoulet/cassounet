@@ -361,6 +361,89 @@ RTResult Interpreter::visit_func_def(FuncDefNode node, Context* context)
   return result.success(std::make_shared<Function>(func_value));
 }
 
+RTResult Interpreter::visit_binary_op_assign(BinaryOpAssignNode node, Context* context)
+{
+  RTResult result = RTResult();
+
+  std::shared_ptr<Value> value = context->symbol_table->get(node.left.value);
+
+  if (value == nullptr)
+  {
+    return result.failure(std::make_shared<RTError>("Variable '" + node.left.value + "' is not defined", node.start, node.end));
+  }
+
+  std::shared_ptr<Value> right = result.register_result(visit(node.right, context));
+
+  switch (node.op_tok.type)
+  {
+    case TokenType::TT_ADD_ASSIGN:
+      value = value->add(right);
+      break;
+
+    case TokenType::TT_SUB_ASSIGN:
+      value = value->subtract(right);
+      break;
+
+    case TokenType::TT_MUL_ASSIGN:
+      value = value->multiply(right);
+      break;
+
+    case TokenType::TT_DIV_ASSIGN:
+      value = value->divide(right);
+      break;
+
+    case TokenType::TT_MOD_ASSIGN:
+      value = value->modulo(right);
+      break;
+
+    case TokenType::TT_POW_ASSIGN:
+      value = value->power(right);
+      break;
+
+    default:
+      throw std::invalid_argument("Invalid binary operator: " + node.op_tok.to_string_type());
+  }
+
+  context->symbol_table->set(node.left.value, value);
+
+  return result.success(value);
+}
+
+RTResult Interpreter::visit_unary_op_assign(UnaryOpAssignNode node, Context* context)
+{
+  RTResult result = RTResult();
+
+  std::shared_ptr<Value> value = context->symbol_table->get(node.var_name_tok.value);
+
+  if (value == nullptr)
+  {
+    return result.failure(std::make_shared<RTError>("Variable '" + node.var_name_tok.value + "' is not defined", node.start, node.end));
+  }
+
+  if (value->type != ValueType::NUMBER)
+  {
+    return result.failure(std::make_shared<RTError>("Variable '" + node.var_name_tok.value + "' is not a number", node.start, node.end));
+  }
+
+  switch (node.op_tok.type)
+  {
+    case TokenType::TT_INCR:
+      value = value->add(std::make_shared<Number>(1, node.start, node.end, context));
+      break;
+
+    case TokenType::TT_DECR:
+      value = value->subtract(std::make_shared<Number>(1, node.start, node.end, context));
+      break;
+
+    default:
+      throw std::invalid_argument("Invalid unary operator: " + node.op_tok.to_string_type());
+  }
+
+  context->symbol_table->set(node.var_name_tok.value, value);
+
+  return result.success(value);
+}
+
 RTResult Interpreter::visit(std::shared_ptr<Node> node, Context* context)
 {
   switch (node->type)
@@ -415,6 +498,12 @@ RTResult Interpreter::visit(std::shared_ptr<Node> node, Context* context)
 
     case NodeType::FUNC_DEF:
       return visit_func_def(dynamic_cast<FuncDefNode&>(*node), context);
+
+    case NodeType::BINARY_OP_ASSIGN:
+      return visit_binary_op_assign(dynamic_cast<BinaryOpAssignNode&>(*node), context);
+
+    case NodeType::UNARY_OP_ASSIGN:
+      return visit_unary_op_assign(dynamic_cast<UnaryOpAssignNode&>(*node), context);
 
     case NodeType::BREAK:
       return RTResult().success_break();
