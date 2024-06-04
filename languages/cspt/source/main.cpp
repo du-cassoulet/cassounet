@@ -41,6 +41,12 @@ std::string global_file_path(std::string filename)
   return path; 
 }
 
+std::string dir_name() {
+  std::string path = fs::current_path().string();
+  std::string name = path.substr(path.find_last_of("/\\") + 1);
+  return name;
+}
+
 std::string get_memory_usage()
 {
   std::string line;
@@ -86,6 +92,8 @@ ReturnValue run_code(const std::string& code, Context* context, bool verbose, co
 
   Parser parser = Parser(lexer.tokens);
   ParseResult result = parser.parse();
+
+  parser.print_node(&result);
 
   if (verbose)
   {
@@ -148,6 +156,70 @@ int main(int argc, char *argv[])
   else if (option == "--help" || option == "-h")
   {
     std::cout << "Usage: " << argv[0] << " <filename>" << std::endl;
+    return 0;
+  }
+  else if (option == "init")
+  {
+    bool auto_create = false;
+
+    if (argc > 2)
+    {
+      if (std::string(argv[2]) == "--auto" || std::string(argv[2]) == "-a")
+      {
+        auto_create = true;
+      }
+    }
+
+    std::ofstream file(global_file_path("main.cspt"));
+
+    if (!file.is_open())
+    {
+      std::cerr << "Could not create the file" << std::endl;
+      return 1;
+    }
+
+    std::ofstream project_file(global_file_path("project.csd"));
+
+    if (!project_file.is_open())
+    {
+      std::cerr << "Could not create the file" << std::endl;
+      return 1;
+    }
+
+    file << "log(\"Hello, World!\")" << std::endl;
+    file.close();
+
+    std::string name = dir_name();
+    std::string version = "1.0.0";
+    std::string author = "";
+    std::string entry_file = "main.cspt";
+
+    if (!auto_create)
+    {
+      std::cout << "Enter the project name (" + name + "): ";
+      getline(std::cin, name, '\n');
+      if (name.empty()) name = dir_name();
+
+      std::cout << "Enter the project version (" + version + "): ";
+      getline(std::cin, version, '\n');
+      if (version.empty()) version = "1.0.0";
+
+      std::cout << "Enter the project author: ";
+      getline(std::cin, author, '\n');
+
+      std::cout << "Enter the entry file (" + entry_file + "): ";
+      getline(std::cin, entry_file, '\n');
+      if (entry_file.empty()) entry_file = "main.cspt";
+    }
+
+    project_file << "\"name\" => \"" << name << "\"" << std::endl;
+    project_file << "\"version\" => \"" << version << "\"" << std::endl;
+    project_file << "\"author\" => \"" << author << "\"" << std::endl;
+    project_file << "\"entry_file\" => \"" << entry_file << "\"" << std::endl;
+
+    project_file.close();
+
+    std::cout << "Initialized a new project" << std::endl;
     return 0;
   }
   else

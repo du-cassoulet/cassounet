@@ -18,6 +18,7 @@ enum class NodeType
   CALL,
   RETURN,
   LIST,
+  MAP,
   IF,
   WHILE,
   FOR,
@@ -26,7 +27,8 @@ enum class NodeType
   CONTINUE,
   FUNC_DEF,
   BINARY_OP_ASSIGN,
-  UNARY_OP_ASSIGN
+  UNARY_OP_ASSIGN,
+  ACCESS
 };
 
 struct Node

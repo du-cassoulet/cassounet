@@ -1,7 +1,12 @@
 #include "CallNode.hpp"
 
 CallNode::CallNode(std::shared_ptr<Node> _func_name, std::vector<std::shared_ptr<Node>> _args)
-: Node(NodeType::CALL, _func_name->start, _args.back()->end), func_name(_func_name), args(_args) {}
+: Node(NodeType::CALL, _func_name->start, _func_name->end), func_name(_func_name), args(_args) {
+  if (args.size() > 0)
+  {
+    end = _args.back()->end;
+  }
+}
 
 std::string CallNode::to_string(int depth)
 {

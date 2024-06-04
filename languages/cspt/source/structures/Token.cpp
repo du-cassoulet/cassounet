@@ -164,6 +164,15 @@ std::string Token::to_string_type()
     case TokenType::TT_POW_ASSIGN:
       return "POW_ASSIGN";
 
+    case TokenType::TT_LSQUARE:
+      return "LSQUARE";
+
+    case TokenType::TT_RSQUARE:
+      return "RSQUARE";
+
+    case TokenType::TT_BARROW:
+      return "BARROW";
+
     default:
       throw std::invalid_argument("Invalid token type");
   }

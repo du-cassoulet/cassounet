@@ -3,9 +3,12 @@
 #include <string>
 #include <memory>
 #include <cmath>
+#include <vector>
 
 #include "Value.hpp"
 #include "Boolean.hpp"
+#include "List.hpp"
+#include "String.hpp"
 #include "../Position.hpp"
 #include "../SymbolTable.hpp"
 #include "../RTResult.hpp"

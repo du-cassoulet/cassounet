@@ -1,19 +1,16 @@
 #pragma once
 
 #include <string>
-#include <memory>
+#include <map>
 
 #include "Value.hpp"
 #include "Boolean.hpp"
-#include "Number.hpp"
-#include "../SymbolTable.hpp"
-#include "../RTResult.hpp"
 
-struct String : public virtual Value
+struct Map : public virtual Value
 {
-  std::string value;
+  std::map<std::string, std::shared_ptr<Value>> values = {};
 
-  String(std::string _value, Position _start, Position _end, Context* _context);
+  Map(std::map<std::string, std::shared_ptr<Value>> _values, Position _start, Position _end, Context* _context);
 
   bool is_true() override;
 

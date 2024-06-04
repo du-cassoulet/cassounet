@@ -44,6 +44,9 @@ enum class TokenType
   TT_DIV_ASSIGN,
   TT_MOD_ASSIGN,
   TT_POW_ASSIGN,
+  TT_LSQUARE,
+  TT_RSQUARE,
+  TT_BARROW
 };
 
 struct Token

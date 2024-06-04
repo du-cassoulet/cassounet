@@ -3,4 +3,5 @@
 *.exe
 
 languages/cspt/*.cspt
+languages/cspt/*.csd
 languages/cml/*.cml

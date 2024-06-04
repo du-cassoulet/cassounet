@@ -64,17 +64,54 @@ RTResult Number::multiply(std::shared_ptr<Value> other)
 {
   RTResult result = RTResult();
 
-  if (other->type != ValueType::NUMBER)
+  if (other->type == ValueType::NUMBER)
   {
-    return result.failure(std::make_shared<RTError>(
-      "Expected number",
-      start,
-      end
-    ));
+    Number number = dynamic_cast<Number&>(*other);
+    return result.success(std::make_shared<Number>(value * number.value, start, end, context));
   }
-  
-  Number number = dynamic_cast<Number&>(*other);
-  return result.success(std::make_shared<Number>(value * number.value, start, end, context));
+  else if (other->type == ValueType::STRING)
+  {
+    std::string content = "";
+    String string = dynamic_cast<String&>(*other);
+
+    for (int i = 0; i < value; i++)
+    {
+      content += string.value;
+    }
+
+    return result.success(std::make_shared<String>(content, start, end, context));
+  }
+  else if (other->type == ValueType::LIST)
+  {
+    List list = dynamic_cast<List&>(*other);
+
+    if (value < 0)
+    {
+      return result.failure(std::make_shared<RTError>(
+        "Cannot multiply a list by a negative number",
+        start,
+        end
+      ));
+    }
+
+    std::vector<std::shared_ptr<Value>> new_values;
+
+    for (int i = 0; i < value; i++)
+    {
+      for (int j = 0; j < list.values.size(); j++)
+      {
+        new_values.push_back(list.values[j]);
+      }
+    }
+
+    return result.success(std::make_shared<List>(new_values, start, end, context));
+  }
+
+  return result.failure(std::make_shared<RTError>(
+    "Expected number, string or list",
+    start,
+    end
+  ));
 }
 
 RTResult Number::divide(std::shared_ptr<Value> other)

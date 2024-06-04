@@ -137,6 +137,11 @@ std::shared_ptr<IllegalCharError> Lexer::make_equals()
     advance();
     tokens.push_back(Token(TokenType::TT_EQUALS, start, position.copy()));
   }
+  else if (position.index < input.length() && input[position.index] == '>')
+  {
+    advance();
+    tokens.push_back(Token(TokenType::TT_BARROW, start, position.copy()));
+  }
   else
   {
     tokens.push_back(Token(TokenType::TT_ASSIGN, start, position.copy()));
@@ -182,7 +187,6 @@ std::shared_ptr<IllegalCharError> Lexer::make_and()
 }
 
 std::shared_ptr<IllegalCharError> Lexer::make_not()
-
 {
   Position start = position.copy();
   advance();
@@ -471,6 +475,16 @@ std::shared_ptr<IllegalCharError> Lexer::make_tokens()
     else if (current_char == '}')
     {
       tokens.push_back(Token(TokenType::TT_RBRACKET, position.copy()));
+      advance();
+    }
+    else if (current_char == '[')
+    {
+      tokens.push_back(Token(TokenType::TT_LSQUARE, position.copy()));
+      advance();
+    }
+    else if (current_char == ']')
+    {
+      tokens.push_back(Token(TokenType::TT_RSQUARE, position.copy()));
       advance();
     }
     else if (current_char == ',')

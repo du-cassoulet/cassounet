@@ -23,6 +23,7 @@
 #include "nodes/CallNode.hpp"
 #include "nodes/ReturnNode.hpp"
 #include "nodes/ListNode.hpp"
+#include "nodes/MapNode.hpp"
 #include "nodes/IfNode.hpp"
 #include "nodes/NumListNode.hpp"
 #include "nodes/WhileNode.hpp"
@@ -32,6 +33,7 @@
 #include "nodes/FuncDefNode.hpp"
 #include "nodes/BinaryOpAssignNode.hpp"
 #include "nodes/UnaryOpAssignNode.hpp"
+#include "nodes/AccessNode.hpp"
 
 enum class FunctionType
 {
@@ -41,13 +43,15 @@ enum class FunctionType
   TERM,
   ARITH_EXPR,
   COMP_EXPR,
-  CALL
+  CALL,
+  CRAWL
 };
 
 struct Parser
 {
 private:
   ParseResult atom();
+  ParseResult crawl();
   ParseResult call();
   ParseResult power();
   ParseResult factor();
@@ -58,7 +62,9 @@ private:
   ParseResult if_expr();
   ParseResult for_expr();
   ParseResult while_expr();
+  ParseResult list_expr();
   ParseResult num_list_expr();
+  ParseResult map_expr();
   ParseResult expr();
   ParseResult statement();
   ParseResult statements();

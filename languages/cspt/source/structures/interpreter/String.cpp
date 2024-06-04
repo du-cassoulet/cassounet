@@ -51,7 +51,26 @@ RTResult String::subtract(std::shared_ptr<Value> other)
 
 RTResult String::multiply(std::shared_ptr<Value> other)
 {
-  return RTResult().failure(std::make_shared<RTError>("Cannot multiply string", start, end));
+  RTResult result = RTResult();
+
+  if (other->type != ValueType::NUMBER)
+  {
+    return result.failure(std::make_shared<RTError>(
+      "Expected number",
+      start,
+      end
+    ));
+  }
+
+  std::string content = "";
+  Number number = dynamic_cast<Number&>(*other);
+
+  for (int i = 0; i < number.value; i++)
+  {
+    content += value;
+  }
+
+  return result.success(std::make_shared<String>(content, start, end, context));
 }
 
 RTResult String::divide(std::shared_ptr<Value> other)

@@ -99,6 +99,18 @@ ParseResult Parser::atom()
     
     return result.success(std::make_shared<VarAccessNode>(var_tok));
   }
+  else if (current_token->match(TokenType::TT_LSQUARE))
+  {
+    std::shared_ptr<Node> node = result.register_result(list_expr());
+    if (result.error != nullptr) return result;
+    return result.success(node);
+  }
+  else if (current_token->match(TokenType::TT_LBRACKET))
+  {
+    std::shared_ptr<Node> node = result.register_result(map_expr());
+    if (result.error != nullptr) return result;
+    return result.success(node);
+  }
   else if (current_token->match(TokenType::TT_KEYWORD, {"if"}))
   {
     std::shared_ptr<Node> expression = result.register_result(if_expr());
@@ -129,11 +141,40 @@ ParseResult Parser::atom()
   }
 }
 
-ParseResult Parser::call()
+ParseResult Parser::crawl()
 {
   ParseResult result = ParseResult();
 
   std::shared_ptr<Node> node = result.register_result(atom());
+  if (result.error != nullptr) return result;
+
+  if (current_token->match(TokenType::TT_LSQUARE))
+  {
+    result.register_advancement();
+    advance();
+
+    std::shared_ptr<Node> index = result.register_result(expr());
+    if (result.error != nullptr) return result;
+
+    if (!current_token->match(TokenType::TT_RSQUARE))
+    {
+      return result.failure(std::make_shared<InvalidSyntaxError>("Expected ']'", current_token->start, current_token->end));
+    }
+
+    result.register_advancement();
+    advance();
+
+    return result.success(std::make_shared<AccessNode>(node, index));
+  }
+
+  return result.success(node);
+}
+
+ParseResult Parser::call()
+{
+  ParseResult result = ParseResult();
+
+  std::shared_ptr<Node> node = result.register_result(crawl());
   if (result.error != nullptr) return result;
 
   if (current_token->match(TokenType::TT_LPAREN))
@@ -245,37 +286,37 @@ ParseResult Parser::bin_op(FunctionType funca, std::list<TokenType> ops, Functio
   {
     case FunctionType::ATOM:
       left = result.register_result(atom());
-      if (result.error != nullptr) return result;
+      break;
+
+    case FunctionType::CRAWL:
+      left = result.register_result(crawl());
       break;
 
     case FunctionType::CALL:
       left = result.register_result(call());
-      if (result.error != nullptr) return result;
       break;
 
     case FunctionType::FACTOR:
       left = result.register_result(factor());
-      if (result.error != nullptr) return result;
       break;
 
     case FunctionType::TERM:
       left = result.register_result(term());
-      if (result.error != nullptr) return result;
       break;
 
     case FunctionType::ARITH_EXPR:
       left = result.register_result(arith_expr());
-      if (result.error != nullptr) return result;
       break;
 
     case FunctionType::COMP_EXPR:
       left = result.register_result(comp_expr());
-      if (result.error != nullptr) return result;
       break;
 
     default:
       throw std::invalid_argument("Invalid function");
   }
+
+  if (result.error != nullptr) return result;
 
   while (std::find(ops.begin(), ops.end(), current_token->type) != ops.end())
   {
@@ -289,37 +330,38 @@ ParseResult Parser::bin_op(FunctionType funca, std::list<TokenType> ops, Functio
     {
       case FunctionType::ATOM:
         right = result.register_result(atom());
-        if (result.error != nullptr) return result;
-        left = std::make_shared<BinaryOpNode>(left, op_tok, right);
+        break;
+
+      case FunctionType::CRAWL:
+        right = result.register_result(crawl());
+        break;
+
+      case FunctionType::CALL:
+        right = result.register_result(call());
         break;
 
       case FunctionType::FACTOR:
         right = result.register_result(factor());
-        if (result.error != nullptr) return result;
-        left = std::make_shared<BinaryOpNode>(left, op_tok, right);
         break;
 
       case FunctionType::TERM:
         right = result.register_result(term());
-        if (result.error != nullptr) return result;
-        left = std::make_shared<BinaryOpNode>(left, op_tok, right);
         break;
 
       case FunctionType::ARITH_EXPR:
         right = result.register_result(arith_expr());
-        if (result.error != nullptr) return result;
-        left = std::make_shared<BinaryOpNode>(left, op_tok, right);
         break;
 
       case FunctionType::COMP_EXPR:
         right = result.register_result(comp_expr());
-        if (result.error != nullptr) return result;
-        left = std::make_shared<BinaryOpNode>(left, op_tok, right);
         break;
 
       default:
         throw std::invalid_argument("Invalid function");
     }
+
+    if (result.error != nullptr) return result;
+    left = std::make_shared<BinaryOpNode>(left, op_tok, right);
   }
 
   return result.success(left);
@@ -537,6 +579,51 @@ ParseResult Parser::while_expr()
   return result.success(std::make_shared<WhileNode>(condition, body, should_return_null));
 }
 
+ParseResult Parser::list_expr()
+{
+  ParseResult result = ParseResult();
+
+  if (!current_token->match(TokenType::TT_LSQUARE))
+  {
+    return result.failure(std::make_shared<InvalidSyntaxError>("Expected '['", current_token->start, current_token->end));
+  }
+
+  Position start = current_token->start.copy();
+  result.register_advancement();
+  advance();
+
+  std::vector<std::shared_ptr<Node>> elements = {};
+
+  if (!current_token->match(TokenType::TT_RSQUARE))
+  {
+    std::shared_ptr<Node> element = result.register_result(expr());
+    if (result.error != nullptr) return result;
+
+    elements.push_back(element);
+
+    while (current_token->match(TokenType::TT_COMMA))
+    {
+      result.register_advancement();
+      advance();
+
+      element = result.register_result(expr());
+      if (result.error != nullptr) return result;
+
+      elements.push_back(element);
+    }
+
+    if (!current_token->match(TokenType::TT_RSQUARE))
+    {
+      return result.failure(std::make_shared<InvalidSyntaxError>("Expected ']'", current_token->start, current_token->end));
+    }
+  }
+
+  result.register_advancement();
+  advance();
+
+  return result.success(std::make_shared<ListNode>(elements, start, current_token->end.copy()));
+}
+
 ParseResult Parser::num_list_expr()
 {
   ParseResult result = ParseResult();
@@ -575,6 +662,73 @@ ParseResult Parser::num_list_expr()
   }
 
   return result.success(std::make_shared<NumListNode>(start, end, step));
+}
+
+ParseResult Parser::map_expr()
+{
+  ParseResult result = ParseResult();
+
+  if (!current_token->match(TokenType::TT_LBRACKET))
+  {
+    return result.failure(std::make_shared<InvalidSyntaxError>("Expected '{'", current_token->start, current_token->end));
+  }
+
+  Position start = current_token->start.copy();
+  result.register_advancement();
+  advance();
+
+  std::map<std::shared_ptr<Node>, std::shared_ptr<Node>> elements = {};
+
+  if (!current_token->match(TokenType::TT_RBRACKET))
+  {
+    std::shared_ptr<Node> key = result.register_result(expr());
+    if (result.error != nullptr) return result;
+
+    if (!current_token->match(TokenType::TT_BARROW))
+    {
+      return result.failure(std::make_shared<InvalidSyntaxError>("Expected '=>'", current_token->start, current_token->end));
+    }
+
+    result.register_advancement();
+    advance();
+
+    std::shared_ptr<Node> value = result.register_result(expr());
+    if (result.error != nullptr) return result;
+
+    elements[key] = value;
+
+    while (current_token->match(TokenType::TT_COMMA))
+    {
+      result.register_advancement();
+      advance();
+
+      key = result.register_result(expr());
+      if (result.error != nullptr) return result;
+
+      if (!current_token->match(TokenType::TT_BARROW))
+      {
+        return result.failure(std::make_shared<InvalidSyntaxError>("Expected '=>'", current_token->start, current_token->end));
+      }
+
+      result.register_advancement();
+      advance();
+
+      value = result.register_result(expr());
+      if (result.error != nullptr) return result;
+
+      elements[key] = value;
+    }
+
+    if (!current_token->match(TokenType::TT_RBRACKET))
+    {
+      return result.failure(std::make_shared<InvalidSyntaxError>("Expected '}'", current_token->start, current_token->end));
+    }
+  }
+
+  result.register_advancement();
+  advance();
+
+  return result.success(std::make_shared<MapNode>(elements, start, current_token->end.copy()));
 }
 
 ParseResult Parser::expr()

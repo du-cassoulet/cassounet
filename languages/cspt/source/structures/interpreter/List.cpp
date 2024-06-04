@@ -164,18 +164,18 @@ std::string List::to_string(int depth)
 {
   depth++;
   std::string res = "";
-  int size =  values.size();
+  int size = values.size();
 
   if (size == 0)
   {
     return util::color::colorize("[] (empty)", util::color::black);
   }
 
-  res +=  util::color::colorize("[", util::color::black);
+  res += util::color::colorize("[\n", util::color::black);
 
   for (int i = 0; i < values.size(); i++)
   {
-    res += std::string(2, ' ') +
+    res += std::string(2 * depth, ' ') +
       util::color::colorize(std::to_string(i), util::color::yellow) +
       util::color::colorize(":", util::color::black) +
       " " +
@@ -184,7 +184,8 @@ std::string List::to_string(int depth)
       "\n";
   }
 
-  res += util::color::colorize("] (" + std::to_string(size) + " element" + (size > 1 ? "s" : "") + ")", util::color::black);
+  res += std::string(2 * (depth - 1), ' ') +
+    util::color::colorize("] (" + std::to_string(size) + " element" + (size > 1 ? "s" : "") + ")", util::color::black);
 
   return res;
 }

@@ -31,6 +31,30 @@ RTResult Interpreter::visit_list(ListNode node, Context* context)
   return result.success(std::make_shared<List>(values, node.start, node.end, context));
 }
 
+RTResult Interpreter::visit_map(MapNode node, Context* context)
+{
+  RTResult result = RTResult();
+  std::map<std::string, std::shared_ptr<Value>> values = {};
+
+  for (auto& pair : node.pairs)
+  {
+    std::shared_ptr<Value> key = result.register_result(visit(pair.first, context));
+    if (result.should_return()) return result;
+
+    if (key->type != ValueType::STRING)
+    {
+      return result.failure(std::make_shared<RTError>("Map key must be a string", pair.first->start, pair.first->end));
+    }
+
+    std::shared_ptr<Value> value = result.register_result(visit(pair.second, context));
+    if (result.should_return()) return result;
+
+    values[dynamic_cast<String&>(*key).value] = value;
+  }
+
+  return result.success(std::make_shared<Map>(values, node.start, node.end, context));
+}
+
 RTResult Interpreter::visit_null(NullNode node, Context* context)
 {
   return RTResult().success(std::make_shared<Null>(node.start, node.end, context));
@@ -189,6 +213,57 @@ RTResult Interpreter::visit_var_access(VarAccessNode node, Context* context)
   }
 
   return result.success(value);
+}
+
+RTResult Interpreter::visit_access(AccessNode node, Context* context)
+{
+  RTResult result = RTResult();
+
+  std::shared_ptr<Value> var = result.register_result(visit(node.var_node, context));
+  if (result.should_return()) return result;
+
+  if (var->type == ValueType::LIST)
+  {
+    List list = dynamic_cast<List&>(*var);
+    std::shared_ptr<Value> index = result.register_result(visit(node.index_node, context));
+    if (result.should_return()) return result;
+
+    if (index->type != ValueType::NUMBER)
+    {
+      return result.failure(std::make_shared<RTError>("Index must be a number", node.index_node->start, node.index_node->end));
+    }
+
+    int idx = dynamic_cast<Number&>(*index).value;
+
+    if (idx < 0 || idx >= list.values.size())
+    {
+      return result.failure(std::make_shared<RTError>("Index out of bounds", node.index_node->start, node.index_node->end));
+    }
+
+    return result.success(list.values[idx]);
+  }
+  else if (var->type == ValueType::MAP)
+  {
+    Map map = dynamic_cast<Map&>(*var);
+    std::shared_ptr<Value> key = result.register_result(visit(node.index_node, context));
+    if (result.should_return()) return result;
+
+    if (key->type != ValueType::STRING)
+    {
+      return result.failure(std::make_shared<RTError>("Key must be a string", node.index_node->start, node.index_node->end));
+    }
+
+    std::string key_str = dynamic_cast<String&>(*key).value;
+
+    if (map.values.find(key_str) == map.values.end())
+    {
+      return result.failure(std::make_shared<RTError>("Key not found", node.index_node->start, node.index_node->end));
+    }
+
+    return result.success(map.values[key_str]);
+  }
+
+  return result.failure(std::make_shared<RTError>("Invalid access", node.start, node.end));
 }
 
 RTResult Interpreter::visit_call(CallNode node, Context* context)
@@ -496,6 +571,9 @@ RTResult Interpreter::visit(std::shared_ptr<Node> node, Context* context)
     case NodeType::LIST:
       return visit_list(dynamic_cast<ListNode&>(*node), context);
 
+    case NodeType::MAP:
+      return visit_map(dynamic_cast<MapNode&>(*node), context);
+
     case NodeType::NULL_NODE:
       return visit_null(dynamic_cast<NullNode&>(*node), context);
 
@@ -516,6 +594,9 @@ RTResult Interpreter::visit(std::shared_ptr<Node> node, Context* context)
 
     case NodeType::CALL:
       return visit_call(dynamic_cast<CallNode&>(*node), context);
+
+    case NodeType::ACCESS:
+      return visit_access(dynamic_cast<AccessNode&>(*node), context);
 
     case NodeType::RETURN:
       return visit_return(dynamic_cast<ReturnNode&>(*node), context);

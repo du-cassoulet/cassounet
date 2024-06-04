@@ -21,6 +21,7 @@ enum class ValueType
   FUNCTION,
   BUILTIN_FUNCTION,
   LIST,
+  MAP,
   NULL_VALUE
 };
 
