@@ -13,12 +13,12 @@ bool Null::is_true()
 
 RTResult Null::to_positive()
 {
-  return RTResult().failure(std::make_shared<RTError>("Cannot convert null to a number", start, end));
+  return RTResult().failure(std::make_shared<RTError>("Cannot convert null to a number", start, end, context));
 }
 
 RTResult Null::to_negative()
 {
-  return RTResult().failure(std::make_shared<RTError>("Cannot convert null to a number", start, end));
+  return RTResult().failure(std::make_shared<RTError>("Cannot convert null to a number", start, end, context));
 }
 
 RTResult Null::to_not()
@@ -28,32 +28,32 @@ RTResult Null::to_not()
 
 RTResult Null::add(std::shared_ptr<Value> other)
 {
-  return RTResult().failure(std::make_shared<RTError>("Cannot add null", start, end));
+  return RTResult().failure(std::make_shared<RTError>("Cannot add null", start, end, context));
 }
 
 RTResult Null::subtract(std::shared_ptr<Value> other)
 {
-  return RTResult().failure(std::make_shared<RTError>("Cannot subtract null", start, end));
+  return RTResult().failure(std::make_shared<RTError>("Cannot subtract null", start, end, context));
 }
 
 RTResult Null::multiply(std::shared_ptr<Value> other)
 {
-  return RTResult().failure(std::make_shared<RTError>("Cannot multiply null", start, end));
+  return RTResult().failure(std::make_shared<RTError>("Cannot multiply null", start, end, context));
 }
 
 RTResult Null::divide(std::shared_ptr<Value> other)
 {
-  return RTResult().failure(std::make_shared<RTError>("Cannot divide null", start, end));
+  return RTResult().failure(std::make_shared<RTError>("Cannot divide null", start, end, context));
 }
 
 RTResult Null::modulo(std::shared_ptr<Value> other)
 {
-  return RTResult().failure(std::make_shared<RTError>("Cannot modulo null", start, end));
+  return RTResult().failure(std::make_shared<RTError>("Cannot modulo null", start, end, context));
 }
 
 RTResult Null::power(std::shared_ptr<Value> other)
 {
-  return RTResult().failure(std::make_shared<RTError>("Cannot power null", start, end));
+  return RTResult().failure(std::make_shared<RTError>("Cannot power null", start, end, context));
 }
 
 RTResult Null::equal(std::shared_ptr<Value> other)
@@ -68,22 +68,22 @@ RTResult Null::not_equal(std::shared_ptr<Value> other)
 
 RTResult Null::greater_than(std::shared_ptr<Value> other)
 {
-  return RTResult().failure(std::make_shared<RTError>("Cannot compare null", start, end));
+  return RTResult().failure(std::make_shared<RTError>("Cannot compare null", start, end, context));
 }
 
 RTResult Null::less_than(std::shared_ptr<Value> other)
 {
-  return RTResult().failure(std::make_shared<RTError>("Cannot compare null", start, end));
+  return RTResult().failure(std::make_shared<RTError>("Cannot compare null", start, end, context));
 }
 
 RTResult Null::greater_than_or_equal(std::shared_ptr<Value> other)
 {
-  return RTResult().failure(std::make_shared<RTError>("Cannot compare null", start, end));
+  return RTResult().failure(std::make_shared<RTError>("Cannot compare null", start, end, context));
 }
 
 RTResult Null::less_than_or_equal(std::shared_ptr<Value> other)
 {
-  return RTResult().failure(std::make_shared<RTError>("Cannot compare null", start, end));
+  return RTResult().failure(std::make_shared<RTError>("Cannot compare null", start, end, context));
 }
 
 RTResult Null::and_op(std::shared_ptr<Value> other)

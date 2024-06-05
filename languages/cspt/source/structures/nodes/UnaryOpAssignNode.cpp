@@ -1,7 +1,7 @@
 #include "UnaryOpAssignNode.hpp"
 
-UnaryOpAssignNode::UnaryOpAssignNode(const Token& _op_tok, const Token& _var_name_tok)
-: Node(NodeType::UNARY_OP_ASSIGN, _var_name_tok.start, _op_tok.end), op_tok(_op_tok), var_name_tok(_var_name_tok) {}
+UnaryOpAssignNode::UnaryOpAssignNode(const Token& _op_tok, std::vector<std::shared_ptr<Node>> _path, const Token& _var_name_tok)
+: Node(NodeType::UNARY_OP_ASSIGN, _var_name_tok.start, _op_tok.end), op_tok(_op_tok), path(_path), var_name_tok(_var_name_tok) {}
 
 std::string UnaryOpAssignNode::to_string(int depth)
 {

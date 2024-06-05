@@ -148,7 +148,7 @@ ParseResult Parser::crawl()
   std::shared_ptr<Node> node = result.register_result(atom());
   if (result.error != nullptr) return result;
 
-  if (current_token->match(TokenType::TT_LSQUARE))
+  while (current_token->match(TokenType::TT_LSQUARE))
   {
     result.register_advancement();
     advance();
@@ -164,7 +164,7 @@ ParseResult Parser::crawl()
     result.register_advancement();
     advance();
 
-    return result.success(std::make_shared<AccessNode>(node, index));
+    node = std::make_shared<AccessNode>(node, index);
   }
 
   return result.success(node);

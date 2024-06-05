@@ -35,7 +35,8 @@ RTResult Number::add(std::shared_ptr<Value> other)
     return result.failure(std::make_shared<RTError>(
       "Expected number",
       start,
-      end
+      end,
+      context
     ));
   }
 
@@ -52,7 +53,8 @@ RTResult Number::subtract(std::shared_ptr<Value> other)
     return result.failure(std::make_shared<RTError>(
       "Expected number",
       start,
-      end
+      end,
+      context
     ));
   }
   
@@ -90,7 +92,8 @@ RTResult Number::multiply(std::shared_ptr<Value> other)
       return result.failure(std::make_shared<RTError>(
         "Cannot multiply a list by a negative number",
         start,
-        end
+        end,
+        context
       ));
     }
 
@@ -110,7 +113,8 @@ RTResult Number::multiply(std::shared_ptr<Value> other)
   return result.failure(std::make_shared<RTError>(
     "Expected number, string or list",
     start,
-    end
+    end,
+    context
   ));
 }
 
@@ -123,7 +127,8 @@ RTResult Number::divide(std::shared_ptr<Value> other)
     return result.failure(std::make_shared<RTError>(
       "Expected number",
       start,
-      end
+      end,
+      context
     ));
   }
   
@@ -131,7 +136,7 @@ RTResult Number::divide(std::shared_ptr<Value> other)
 
   if (number.value == 0)
   {
-    return result.failure(std::make_shared<RTError>("Division by zero", start, end));
+    return result.failure(std::make_shared<RTError>("Division by zero", start, end, context));
   }
 
   return result.success(std::make_shared<Number>(value / number.value, start, end, context));
@@ -146,7 +151,8 @@ RTResult Number::modulo(std::shared_ptr<Value> other)
     return result.failure(std::make_shared<RTError>(
       "Expected number",
       start,
-      end
+      end,
+      context
     ));
   }
   
@@ -163,7 +169,8 @@ RTResult Number::power(std::shared_ptr<Value> other)
     return result.failure(std::make_shared<RTError>(
       "Expected number",
       start,
-      end
+      end,
+      context
     ));
   }
   
@@ -180,7 +187,8 @@ RTResult Number::equal(std::shared_ptr<Value> other)
     return result.failure(std::make_shared<RTError>(
       "Expected number",
       start,
-      end
+      end,
+      context
     ));
   }
   
@@ -197,7 +205,8 @@ RTResult Number::not_equal(std::shared_ptr<Value> other)
     return result.failure(std::make_shared<RTError>(
       "Expected number",
       start,
-      end
+      end,
+      context
     ));
   }
   
@@ -214,7 +223,8 @@ RTResult Number::greater_than(std::shared_ptr<Value> other)
     return result.failure(std::make_shared<RTError>(
       "Expected number",
       start,
-      end
+      end,
+      context
     ));
   }
   
@@ -231,7 +241,8 @@ RTResult Number::less_than(std::shared_ptr<Value> other)
     return result.failure(std::make_shared<RTError>(
       "Expected number",
       start,
-      end
+      end,
+      context
     ));
   }
   
@@ -248,7 +259,8 @@ RTResult Number::greater_than_or_equal(std::shared_ptr<Value> other)
     return result.failure(std::make_shared<RTError>(
       "Expected number",
       start,
-      end
+      end,
+      context
     ));
   }
   
@@ -265,7 +277,8 @@ RTResult Number::less_than_or_equal(std::shared_ptr<Value> other)
     return result.failure(std::make_shared<RTError>(
       "Expected number",
       start,
-      end
+      end,
+      context
     ));
   }
   

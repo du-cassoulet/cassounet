@@ -1,7 +1,7 @@
 #include "BinaryOpAssignNode.hpp"
 
-BinaryOpAssignNode::BinaryOpAssignNode(const Token& _left, const Token& _op_tok, std::shared_ptr<Node> _right)
-: Node(NodeType::BINARY_OP_ASSIGN, _left.start, _right->end), op_tok(_op_tok), left(_left), right(_right) {}
+BinaryOpAssignNode::BinaryOpAssignNode(const Token& _left, std::vector<std::shared_ptr<Node>> _path, const Token& _op_tok, std::shared_ptr<Node> _right)
+: Node(NodeType::BINARY_OP_ASSIGN, _left.start, _right->end), op_tok(_op_tok), left(_left), right(_right), path(_path) {}
 
 std::string BinaryOpAssignNode::to_string(int depth)
 {

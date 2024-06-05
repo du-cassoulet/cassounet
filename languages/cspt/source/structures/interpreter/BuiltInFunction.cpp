@@ -41,7 +41,8 @@ RTResult BuiltInFunction::execute(std::vector<std::shared_ptr<Value>> args)
     return result.failure(std::make_shared<RTError>(
       "Built-in function '" + name + "' is not defined",
       start,
-      end
+      end,
+      context
     ));
   }
 
@@ -68,7 +69,8 @@ RTResult BuiltInFunction::ask(Context* context)
     return result.failure(std::make_shared<RTError>(
       "Expected string",
       start,
-      end
+      end,
+      context
     ));
   }
 
@@ -89,12 +91,12 @@ bool BuiltInFunction::is_true()
 
 RTResult BuiltInFunction::to_positive()
 {
-  return RTResult().failure(std::make_shared<RTError>("Cannot convert function to positive", start, end));
+  return RTResult().failure(std::make_shared<RTError>("Cannot convert function to positive", start, end, context));
 }
 
 RTResult BuiltInFunction::to_negative()
 {
-  return RTResult().failure(std::make_shared<RTError>("Cannot convert function to negative", start, end));
+  return RTResult().failure(std::make_shared<RTError>("Cannot convert function to negative", start, end, context));
 }
 
 RTResult BuiltInFunction::to_not()
@@ -104,32 +106,32 @@ RTResult BuiltInFunction::to_not()
 
 RTResult BuiltInFunction::add(std::shared_ptr<Value> other)
 {
-  return RTResult().failure(std::make_shared<RTError>("Cannot add function", start, end));
+  return RTResult().failure(std::make_shared<RTError>("Cannot add function", start, end, context));
 }
 
 RTResult BuiltInFunction::subtract(std::shared_ptr<Value> other)
 {
-  return RTResult().failure(std::make_shared<RTError>("Cannot subtract function", start, end));
+  return RTResult().failure(std::make_shared<RTError>("Cannot subtract function", start, end, context));
 }
 
 RTResult BuiltInFunction::multiply(std::shared_ptr<Value> other)
 {
-  return RTResult().failure(std::make_shared<RTError>("Cannot multiply function", start, end));
+  return RTResult().failure(std::make_shared<RTError>("Cannot multiply function", start, end, context));
 }
 
 RTResult BuiltInFunction::divide(std::shared_ptr<Value> other)
 {
-  return RTResult().failure(std::make_shared<RTError>("Cannot divide function", start, end));
+  return RTResult().failure(std::make_shared<RTError>("Cannot divide function", start, end, context));
 }
 
 RTResult BuiltInFunction::modulo(std::shared_ptr<Value> other)
 {
-  return RTResult().failure(std::make_shared<RTError>("Cannot modulo function", start, end));
+  return RTResult().failure(std::make_shared<RTError>("Cannot modulo function", start, end, context));
 }
 
 RTResult BuiltInFunction::power(std::shared_ptr<Value> other)
 {
-  return RTResult().failure(std::make_shared<RTError>("Cannot power function", start, end));
+  return RTResult().failure(std::make_shared<RTError>("Cannot power function", start, end, context));
 }
 
 RTResult BuiltInFunction::equal(std::shared_ptr<Value> other)
@@ -144,22 +146,22 @@ RTResult BuiltInFunction::not_equal(std::shared_ptr<Value> other)
 
 RTResult BuiltInFunction::greater_than(std::shared_ptr<Value> other)
 {
-  return RTResult().failure(std::make_shared<RTError>("Cannot compare function", start, end));
+  return RTResult().failure(std::make_shared<RTError>("Cannot compare function", start, end, context));
 }
 
 RTResult BuiltInFunction::less_than(std::shared_ptr<Value> other)
 {
-  return RTResult().failure(std::make_shared<RTError>("Cannot compare function", start, end));
+  return RTResult().failure(std::make_shared<RTError>("Cannot compare function", start, end, context));
 }
 
 RTResult BuiltInFunction::greater_than_or_equal(std::shared_ptr<Value> other)
 {
-  return RTResult().failure(std::make_shared<RTError>("Cannot compare function", start, end));
+  return RTResult().failure(std::make_shared<RTError>("Cannot compare function", start, end, context));
 }
 
 RTResult BuiltInFunction::less_than_or_equal(std::shared_ptr<Value> other)
 {
-  return RTResult().failure(std::make_shared<RTError>("Cannot compare function", start, end));
+  return RTResult().failure(std::make_shared<RTError>("Cannot compare function", start, end, context));
 }
 
 RTResult BuiltInFunction::and_op(std::shared_ptr<Value> other)

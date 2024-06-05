@@ -2,9 +2,11 @@
 
 #include <string>
 #include <memory>
+#include <vector>
 
 #include "RTResult.hpp"
 #include "SymbolTable.hpp"
+#include "Token.hpp"
 #include "nodes/Node.hpp"
 #include "interpreter/Value.hpp"
 #include "interpreter/Number.hpp"

@@ -9,6 +9,7 @@
 #include "../Position.hpp"
 #include "../SymbolTable.hpp"
 #include "../RTResult.hpp"
+#include "../../util/terminal.hpp"
 
 struct List : public virtual Value
 {
@@ -39,3 +40,5 @@ struct List : public virtual Value
 
   std::string to_string(int depth = 0) override;
 };
+
+int calculate_line_size(std::vector<std::shared_ptr<Value>> values, int depth);

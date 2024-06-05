@@ -93,8 +93,6 @@ ReturnValue run_code(const std::string& code, Context* context, bool verbose, co
   Parser parser = Parser(lexer.tokens);
   ParseResult result = parser.parse();
 
-  parser.print_node(&result);
-
   if (verbose)
   {
     std::cout << "Parsing" + util::color::colorize(":", util::color::black) + " " + util::color::colorize("OK", util::color::green) << std::endl;

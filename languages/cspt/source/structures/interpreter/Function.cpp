@@ -45,12 +45,12 @@ bool Function::is_true()
 
 RTResult Function::to_positive()
 {
-  return RTResult().failure(std::make_shared<RTError>("Cannot convert function to positive", start, end));
+  return RTResult().failure(std::make_shared<RTError>("Cannot convert function to positive", start, end, context));
 }
 
 RTResult Function::to_negative()
 {
-  return RTResult().failure(std::make_shared<RTError>("Cannot convert function to negative", start, end));
+  return RTResult().failure(std::make_shared<RTError>("Cannot convert function to negative", start, end, context));
 }
 
 RTResult Function::to_not()
@@ -60,32 +60,32 @@ RTResult Function::to_not()
 
 RTResult Function::add(std::shared_ptr<Value> other)
 {
-  return RTResult().failure(std::make_shared<RTError>("Cannot add function", start, end));
+  return RTResult().failure(std::make_shared<RTError>("Cannot add function", start, end, context));
 }
 
 RTResult Function::subtract(std::shared_ptr<Value> other)
 {
-  return RTResult().failure(std::make_shared<RTError>("Cannot subtract function", start, end));
+  return RTResult().failure(std::make_shared<RTError>("Cannot subtract function", start, end, context));
 }
 
 RTResult Function::multiply(std::shared_ptr<Value> other)
 {
-  return RTResult().failure(std::make_shared<RTError>("Cannot multiply function", start, end));
+  return RTResult().failure(std::make_shared<RTError>("Cannot multiply function", start, end, context));
 }
 
 RTResult Function::divide(std::shared_ptr<Value> other)
 {
-  return RTResult().failure(std::make_shared<RTError>("Cannot divide function", start, end));
+  return RTResult().failure(std::make_shared<RTError>("Cannot divide function", start, end, context));
 }
 
 RTResult Function::modulo(std::shared_ptr<Value> other)
 {
-  return RTResult().failure(std::make_shared<RTError>("Cannot modulo function", start, end));
+  return RTResult().failure(std::make_shared<RTError>("Cannot modulo function", start, end, context));
 }
 
 RTResult Function::power(std::shared_ptr<Value> other)
 {
-  return RTResult().failure(std::make_shared<RTError>("Cannot power function", start, end));
+  return RTResult().failure(std::make_shared<RTError>("Cannot power function", start, end, context));
 }
 
 RTResult Function::equal(std::shared_ptr<Value> other)
@@ -100,22 +100,22 @@ RTResult Function::not_equal(std::shared_ptr<Value> other)
 
 RTResult Function::greater_than(std::shared_ptr<Value> other)
 {
-  return RTResult().failure(std::make_shared<RTError>("Cannot compare function", start, end));
+  return RTResult().failure(std::make_shared<RTError>("Cannot compare function", start, end, context));
 }
 
 RTResult Function::less_than(std::shared_ptr<Value> other)
 {
-  return RTResult().failure(std::make_shared<RTError>("Cannot compare function", start, end));
+  return RTResult().failure(std::make_shared<RTError>("Cannot compare function", start, end, context));
 }
 
 RTResult Function::greater_than_or_equal(std::shared_ptr<Value> other)
 {
-  return RTResult().failure(std::make_shared<RTError>("Cannot compare function", start, end));
+  return RTResult().failure(std::make_shared<RTError>("Cannot compare function", start, end, context));
 }
 
 RTResult Function::less_than_or_equal(std::shared_ptr<Value> other)
 {
-  return RTResult().failure(std::make_shared<RTError>("Cannot compare function", start, end));
+  return RTResult().failure(std::make_shared<RTError>("Cannot compare function", start, end, context));
 }
 
 RTResult Function::and_op(std::shared_ptr<Value> other)

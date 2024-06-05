@@ -1,5 +1,12 @@
 #include "Interpreter.hpp"
 
+RTResult Interpreter::crawl(std::shared_ptr<Node> node, std::vector<std::shared_ptr<Node>> path, Context* context)
+{
+  RTResult result = RTResult();
+
+  
+}
+
 RTResult Interpreter::visit_number(NumberNode node, Context* context)
 {
   return RTResult().success(std::make_shared<Number>(std::stod(node.value_tok.value), node.start, node.end, context));
@@ -43,7 +50,7 @@ RTResult Interpreter::visit_map(MapNode node, Context* context)
 
     if (key->type != ValueType::STRING)
     {
-      return result.failure(std::make_shared<RTError>("Map key must be a string", pair.first->start, pair.first->end));
+      return result.failure(std::make_shared<RTError>("Map key must be a string", pair.first->start, pair.first->end, context));
     }
 
     std::shared_ptr<Value> value = result.register_result(visit(pair.second, context));
@@ -176,7 +183,7 @@ RTResult Interpreter::visit_var_assign(VarAssignNode node, Context* context)
 
   if (context->symbol_table->contains(var_name))
   {
-    return result.failure(std::make_shared<RTError>("Variable '" + var_name + "' is already defined", node.start, node.end));
+    return result.failure(std::make_shared<RTError>("Variable '" + var_name + "' is already defined", node.start, node.end, context));
   }
 
   context->symbol_table->set(var_name, value);
@@ -193,7 +200,7 @@ RTResult Interpreter::visit_var_reassign(VarReAssignNode node, Context* context)
 
   if (!context->symbol_table->contains(var_name))
   {
-    result.failure(std::make_shared<RTError>("Variable '" + var_name + "' is not defined", node.start, node.end));
+    result.failure(std::make_shared<RTError>("Variable '" + var_name + "' is not defined", node.start, node.end, context));
   }
 
   context->symbol_table->set(var_name, value);
@@ -209,7 +216,7 @@ RTResult Interpreter::visit_var_access(VarAccessNode node, Context* context)
 
   if (value == nullptr)
   {
-    return result.failure(std::make_shared<RTError>("Variable '" + var_name + "' is not defined", node.start, node.end));
+    return result.failure(std::make_shared<RTError>("Variable '" + var_name + "' is not defined", node.start, node.end, context));
   }
 
   return result.success(value);
@@ -230,14 +237,14 @@ RTResult Interpreter::visit_access(AccessNode node, Context* context)
 
     if (index->type != ValueType::NUMBER)
     {
-      return result.failure(std::make_shared<RTError>("Index must be a number", node.index_node->start, node.index_node->end));
+      return result.failure(std::make_shared<RTError>("Index must be a number", node.index_node->start, node.index_node->end, context));
     }
 
     int idx = dynamic_cast<Number&>(*index).value;
 
     if (idx < 0 || idx >= list.values.size())
     {
-      return result.failure(std::make_shared<RTError>("Index out of bounds", node.index_node->start, node.index_node->end));
+      return result.failure(std::make_shared<RTError>("Index out of bounds", node.index_node->start, node.index_node->end, context));
     }
 
     return result.success(list.values[idx]);
@@ -250,20 +257,20 @@ RTResult Interpreter::visit_access(AccessNode node, Context* context)
 
     if (key->type != ValueType::STRING)
     {
-      return result.failure(std::make_shared<RTError>("Key must be a string", node.index_node->start, node.index_node->end));
+      return result.failure(std::make_shared<RTError>("Key must be a string", node.index_node->start, node.index_node->end, context));
     }
 
     std::string key_str = dynamic_cast<String&>(*key).value;
 
     if (map.values.find(key_str) == map.values.end())
     {
-      return result.failure(std::make_shared<RTError>("Key not found", node.index_node->start, node.index_node->end));
+      return result.failure(std::make_shared<RTError>("Key not found", node.index_node->start, node.index_node->end, context));
     }
 
     return result.success(map.values[key_str]);
   }
 
-  return result.failure(std::make_shared<RTError>("Invalid access", node.start, node.end));
+  return result.failure(std::make_shared<RTError>("Invalid access", node.start, node.end, context));
 }
 
 RTResult Interpreter::visit_call(CallNode node, Context* context)
@@ -294,7 +301,7 @@ RTResult Interpreter::visit_call(CallNode node, Context* context)
   }
   else
   {
-    return result.failure(std::make_shared<RTError>("Variable '" + func_name->to_string() + "' is not function", node.func_name->start, node.func_name->end));
+    return result.failure(std::make_shared<RTError>("Variable '" + func_name->to_string() + "' is not function", node.func_name->start, node.func_name->end, context));
   }
 
   if (result.should_return()) return result;
@@ -408,7 +415,7 @@ RTResult Interpreter::visit_for(ForNode node, Context* context)
 
   if (node.iterable->type != NodeType::NUM_LIST && node.iterable->type != NodeType::LIST)
   {
-    return result.failure(std::make_shared<RTError>("Expected a list", node.iterable->start, node.iterable->end));
+    return result.failure(std::make_shared<RTError>("Expected a list", node.iterable->start, node.iterable->end, context));
   }
 
   std::shared_ptr<Value> iterable = result.register_result(visit(node.iterable, context));
@@ -416,7 +423,7 @@ RTResult Interpreter::visit_for(ForNode node, Context* context)
 
   if (iterable->type != ValueType::LIST)
   {
-    return result.failure(std::make_shared<RTError>("Expected a list", node.iterable->start, node.iterable->end));
+    return result.failure(std::make_shared<RTError>("Expected a list", node.iterable->start, node.iterable->end, context));
   }
 
   Context new_context = Context("<for-loop>", context, &node.start);
@@ -476,7 +483,7 @@ RTResult Interpreter::visit_binary_op_assign(BinaryOpAssignNode node, Context* c
 
   if (value == nullptr)
   {
-    return result.failure(std::make_shared<RTError>("Variable '" + node.left.value + "' is not defined", node.start, node.end));
+    return result.failure(std::make_shared<RTError>("Variable '" + node.left.value + "' is not defined", node.start, node.end, context));
   }
 
   std::shared_ptr<Value> right = result.register_result(visit(node.right, context));
@@ -526,12 +533,12 @@ RTResult Interpreter::visit_unary_op_assign(UnaryOpAssignNode node, Context* con
 
   if (value == nullptr)
   {
-    return result.failure(std::make_shared<RTError>("Variable '" + node.var_name_tok.value + "' is not defined", node.start, node.end));
+    return result.failure(std::make_shared<RTError>("Variable '" + node.var_name_tok.value + "' is not defined", node.start, node.end, context));
   }
 
   if (value->type != ValueType::NUMBER)
   {
-    return result.failure(std::make_shared<RTError>("Variable '" + node.var_name_tok.value + "' is not a number", node.start, node.end));
+    return result.failure(std::make_shared<RTError>("Variable '" + node.var_name_tok.value + "' is not a number", node.start, node.end, context));
   }
 
   switch (node.op_tok.type)

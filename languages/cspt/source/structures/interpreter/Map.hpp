@@ -5,6 +5,7 @@
 
 #include "Value.hpp"
 #include "Boolean.hpp"
+#include "../../util/terminal.hpp"
 
 struct Map : public virtual Value
 {
@@ -35,3 +36,5 @@ struct Map : public virtual Value
 
   std::string to_string(int depth = 0) override;
 };
+
+int calculate_line_size(std::map<std::string, std::shared_ptr<Value>> values, int depth);

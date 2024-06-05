@@ -1,5 +1,7 @@
 #include "List.hpp"
 
+#define MAX_WIDTH_LIST 80
+
 List::List(std::vector<std::shared_ptr<Value>> _values, Position _start, Position _end, Context* _context)
 : Value(ValueType::LIST, _start, _end), values(_values)
 {
@@ -16,7 +18,8 @@ RTResult List::to_positive()
   return RTResult().failure(std::make_shared<RTError>(
     "Cannot convert a list to a number",
     start,
-    end
+    end,
+    context
   ));
 }
 
@@ -25,7 +28,8 @@ RTResult List::to_negative()
   return RTResult().failure(std::make_shared<RTError>(
     "Cannot convert a list to a number",
     start,
-    end
+    end,
+    context
   ));
 }
 
@@ -49,7 +53,8 @@ RTResult List::subtract(std::shared_ptr<Value> other)
     return result.failure(std::make_shared<RTError>(
       "Expected number",
       start,
-      end
+      end,
+      context
     ));
   }
 
@@ -60,7 +65,8 @@ RTResult List::subtract(std::shared_ptr<Value> other)
     return result.failure(std::make_shared<RTError>(
       "Index out of bounds",
       start,
-      end
+      end,
+      context
     ));
   }
 
@@ -77,7 +83,8 @@ RTResult List::multiply(std::shared_ptr<Value> other)
     return result.failure(std::make_shared<RTError>(
       "Expected number",
       start,
-      end
+      end,
+      context
     ));
   }
 
@@ -88,7 +95,8 @@ RTResult List::multiply(std::shared_ptr<Value> other)
     return result.failure(std::make_shared<RTError>(
       "Cannot multiply a list by a negative number",
       start,
-      end
+      end,
+      context
     ));
   }
 
@@ -107,17 +115,17 @@ RTResult List::multiply(std::shared_ptr<Value> other)
 
 RTResult List::divide(std::shared_ptr<Value> other)
 {
-  return RTResult().failure(std::make_shared<RTError>("Cannot divide a list", start, end));
+  return RTResult().failure(std::make_shared<RTError>("Cannot divide a list", start, end, context));
 }
 
 RTResult List::modulo(std::shared_ptr<Value> other)
 {
-  return RTResult().failure(std::make_shared<RTError>("Cannot modulo a list", start, end));
+  return RTResult().failure(std::make_shared<RTError>("Cannot modulo a list", start, end, context));
 }
 
 RTResult List::power(std::shared_ptr<Value> other)
 {
-  return RTResult().failure(std::make_shared<RTError>("Cannot power a list", start, end));
+  return RTResult().failure(std::make_shared<RTError>("Cannot power a list", start, end, context));
 }
 
 RTResult List::equal(std::shared_ptr<Value> other)
@@ -132,22 +140,22 @@ RTResult List::not_equal(std::shared_ptr<Value> other)
 
 RTResult List::greater_than(std::shared_ptr<Value> other)
 {
-  return RTResult().failure(std::make_shared<RTError>("Cannot compare a list", start, end));
+  return RTResult().failure(std::make_shared<RTError>("Cannot compare a list", start, end, context));
 }
 
 RTResult List::less_than(std::shared_ptr<Value> other)
 {
-  return RTResult().failure(std::make_shared<RTError>("Cannot compare a list", start, end));
+  return RTResult().failure(std::make_shared<RTError>("Cannot compare a list", start, end, context));
 }
 
 RTResult List::greater_than_or_equal(std::shared_ptr<Value> other)
 {
-  return RTResult().failure(std::make_shared<RTError>("Cannot compare a list", start, end));
+  return RTResult().failure(std::make_shared<RTError>("Cannot compare a list", start, end, context));
 }
 
 RTResult List::less_than_or_equal(std::shared_ptr<Value> other)
 {
-  return RTResult().failure(std::make_shared<RTError>("Cannot compare a list", start, end));
+  return RTResult().failure(std::make_shared<RTError>("Cannot compare a list", start, end, context));
 }
 
 RTResult List::and_op(std::shared_ptr<Value> other)
@@ -160,6 +168,18 @@ RTResult List::or_op(std::shared_ptr<Value> other)
   return RTResult().success(std::make_shared<Boolean>(is_true() || other->is_true(), start, end, context));
 }
 
+int calculate_line_size(std::vector<std::shared_ptr<Value>> values, int depth)
+{
+  int size = 2 * depth + 2 * values.size() + 1;
+
+  for (int i = 0; i < values.size(); i++)
+  {
+    size += values[i]->to_string(depth).size();
+  }
+
+  return size;
+}
+
 std::string List::to_string(int depth)
 {
   depth++;
@@ -168,24 +188,36 @@ std::string List::to_string(int depth)
 
   if (size == 0)
   {
-    return util::color::colorize("[] (empty)", util::color::black);
+    return util::color::colorize("[]", util::color::black);
   }
 
-  res += util::color::colorize("[\n", util::color::black);
-
-  for (int i = 0; i < values.size(); i++)
+  if (calculate_line_size(values, depth) < (util::getTerminalWidth() < 80 ? util::getTerminalWidth() : MAX_WIDTH_LIST))
   {
-    res += std::string(2 * depth, ' ') +
-      util::color::colorize(std::to_string(i), util::color::yellow) +
-      util::color::colorize(":", util::color::black) +
-      " " +
-      values[i]->to_string(depth) +
-      util::color::colorize(",", util::color::black) +
-      "\n";
-  }
+    res += util::color::colorize("[", util::color::black) + " ";
 
-  res += std::string(2 * (depth - 1), ' ') +
-    util::color::colorize("] (" + std::to_string(size) + " element" + (size > 1 ? "s" : "") + ")", util::color::black);
+    for (int i = 0; i < values.size(); i++)
+    {
+      res += values[i]->to_string(depth) +
+        (i < values.size() - 1 ? util::color::colorize(", ", util::color::black) : "");
+    }
+
+    res += " " + util::color::colorize("]", util::color::black);
+  }
+  else
+  {
+    res += util::color::colorize("[\n", util::color::black);
+
+    for (int i = 0; i < values.size(); i++)
+    {
+      res += std::string(2 * depth, ' ') +
+        values[i]->to_string(depth) +
+        (i < values.size() - 1 ? util::color::colorize(",", util::color::black) : "") +
+        "\n";
+    }
+
+    res += std::string(2 * (depth - 1), ' ') +
+      util::color::colorize("]", util::color::black);
+  }
 
   return res;
 }

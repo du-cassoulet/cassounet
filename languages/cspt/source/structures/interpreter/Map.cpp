@@ -1,5 +1,7 @@
 #include "Map.hpp"
 
+#define MAX_WIDTH_LIST 80
+
 Map::Map(std::map<std::string, std::shared_ptr<Value>> _values, Position _start, Position _end, Context* _context)
 : Value(ValueType::MAP, _start, _end), values(_values)
 {
@@ -16,7 +18,8 @@ RTResult Map::to_positive()
   return RTResult().failure(std::make_shared<RTError>(
     "Cannot convert a map to a number",
     start,
-    end
+    end,
+    context
   ));
 }
 
@@ -25,7 +28,8 @@ RTResult Map::to_negative()
   return RTResult().failure(std::make_shared<RTError>(
     "Cannot convert a map to a number",
     start,
-    end
+    end,
+    context
   ));
 }
 
@@ -39,7 +43,8 @@ RTResult Map::add(std::shared_ptr<Value> other)
   return RTResult().failure(std::make_shared<RTError>(
     "Cannot add to a map",
     start,
-    end
+    end,
+    context
   ));
 }
 
@@ -48,7 +53,8 @@ RTResult Map::subtract(std::shared_ptr<Value> other)
   return RTResult().failure(std::make_shared<RTError>(
     "Cannot subtract from a map",
     start,
-    end
+    end,
+    context
   ));
 }
 
@@ -57,7 +63,8 @@ RTResult Map::multiply(std::shared_ptr<Value> other)
   return RTResult().failure(std::make_shared<RTError>(
     "Cannot multiply a map",
     start,
-    end
+    end,
+    context
   ));
 }
 
@@ -66,7 +73,8 @@ RTResult Map::divide(std::shared_ptr<Value> other)
   return RTResult().failure(std::make_shared<RTError>(
     "Cannot divide a map",
     start,
-    end
+    end,
+    context
   ));
 }
 
@@ -75,7 +83,8 @@ RTResult Map::modulo(std::shared_ptr<Value> other)
   return RTResult().failure(std::make_shared<RTError>(
     "Cannot modulo a map",
     start,
-    end
+    end,
+    context
   ));
 }
 
@@ -84,7 +93,8 @@ RTResult Map::power(std::shared_ptr<Value> other)
   return RTResult().failure(std::make_shared<RTError>(
     "Cannot power a map",
     start,
-    end
+    end,
+    context
   ));
 }
 
@@ -113,7 +123,8 @@ RTResult Map::greater_than(std::shared_ptr<Value> other)
   return RTResult().failure(std::make_shared<RTError>(
     "Cannot compare a map",
     start,
-    end
+    end,
+    context
   ));
 }
 
@@ -122,7 +133,8 @@ RTResult Map::less_than(std::shared_ptr<Value> other)
   return RTResult().failure(std::make_shared<RTError>(
     "Cannot compare a map",
     start,
-    end
+    end,
+    context
   ));
 }
 
@@ -131,7 +143,8 @@ RTResult Map::greater_than_or_equal(std::shared_ptr<Value> other)
   return RTResult().failure(std::make_shared<RTError>(
     "Cannot compare a map",
     start,
-    end
+    end,
+    context
   ));
 }
 
@@ -140,7 +153,8 @@ RTResult Map::less_than_or_equal(std::shared_ptr<Value> other)
   return RTResult().failure(std::make_shared<RTError>(
     "Cannot compare a map",
     start,
-    end
+    end,
+    context
   ));
 }
 
@@ -164,6 +178,19 @@ RTResult Map::or_op(std::shared_ptr<Value> other)
   ));
 }
 
+int calculate_line_size(std::map<std::string, std::shared_ptr<Value>> values, int depth)
+{
+  int size = 2 * depth + 6 * values.size() + 1;
+
+  for (int i = 0; i < values.size(); i++)
+  {
+    auto [key, value] = *std::next(values.begin(), i);
+    size += key.size() + value->to_string(depth).size();
+  }
+
+  return size;
+}
+
 std::string Map::to_string(int depth)
 {
   depth++;
@@ -172,25 +199,49 @@ std::string Map::to_string(int depth)
 
   if (size == 0)
   {
-    return util::color::colorize("{} (empty)", util::color::black);
+    return util::color::colorize("{}", util::color::black);
   }
 
-  res += util::color::colorize("{\n", util::color::black);
-
-  for (auto& [key, value] : values)
+  if (calculate_line_size(values, depth) < (util::getTerminalWidth() < 80 ? util::getTerminalWidth() : MAX_WIDTH_LIST))
   {
-    res += std::string(2 * depth, ' ') +
-      util::color::colorize("\"" + key + "\"", util::color::green) +
-      " " +
-      util::color::colorize("=>", util::color::black) +
-      " " +
-      value->to_string(depth) +
-      util::color::colorize(", ", util::color::black) +
-      "\n";
-  }
+    res += util::color::colorize("{", util::color::black) + " ";
 
-  res += std::string(2 * (depth - 1), ' ') +
-    util::color::colorize("} (" + std::to_string(size) + " element" + (size > 1 ? "s" : "") + ")", util::color::black);
+    for (int i = 0; i < values.size(); i++)
+    {
+      auto [key, value] = *std::next(values.begin(), i);
+
+      res += util::color::colorize("\"" + key + "\"", util::color::green) +
+        " " +
+        util::color::colorize("=>", util::color::black) +
+        " " +
+        value->to_string(depth) +
+        (i < values.size() - 1 ? util::color::colorize(",", util::color::black) : "") +
+        " ";
+    }
+
+    res += util::color::colorize("}", util::color::black);
+  }
+  else
+  {
+    res += util::color::colorize("{\n", util::color::black);
+
+    for (int i = 0; i < values.size(); i++)
+    {
+      auto [key, value] = *std::next(values.begin(), i);
+
+      res += std::string(2 * depth, ' ') +
+        util::color::colorize("\"" + key + "\"", util::color::green) +
+        " " +
+        util::color::colorize("=>", util::color::black) +
+        " " +
+        value->to_string(depth) +
+        (i < values.size() - 1 ? util::color::colorize(",", util::color::black) : "") +
+        "\n";
+    }
+
+    res += std::string(2 * (depth - 1), ' ') +
+      util::color::colorize("}", util::color::black);
+  }
   
   return res;
 }

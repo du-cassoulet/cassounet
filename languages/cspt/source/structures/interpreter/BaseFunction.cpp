@@ -32,7 +32,8 @@ RTResult BaseFunction::check_arg_count(std::vector<std::string> arg_names, std::
     return result.failure(std::make_shared<RTError>(
       "Expected " + std::to_string(arg_names.size()) + " arguments, got " + std::to_string(args.size()),
       start,
-      end
+      end,
+      context
     ));
   }
 

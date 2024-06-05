@@ -13,12 +13,12 @@ bool String::is_true()
 
 RTResult String::to_positive()
 {
-  return RTResult().failure(std::make_shared<RTError>("Cannot convert string to positive", start, end));
+  return RTResult().failure(std::make_shared<RTError>("Cannot convert string to positive", start, end, context));
 }
 
 RTResult String::to_negative()
 {
-  return RTResult().failure(std::make_shared<RTError>("Cannot convert string to negative", start, end));
+  return RTResult().failure(std::make_shared<RTError>("Cannot convert string to negative", start, end, context));
 }
 
 RTResult String::to_not()
@@ -35,7 +35,8 @@ RTResult String::add(std::shared_ptr<Value> other)
     return result.failure(std::make_shared<RTError>(
       "Expected string",
       start,
-      end
+      end,
+      context
     ));
   }
 
@@ -46,7 +47,7 @@ RTResult String::add(std::shared_ptr<Value> other)
 
 RTResult String::subtract(std::shared_ptr<Value> other)
 {
-  return RTResult().failure(std::make_shared<RTError>("Cannot subtract string", start, end));
+  return RTResult().failure(std::make_shared<RTError>("Cannot subtract string", start, end, context));
 }
 
 RTResult String::multiply(std::shared_ptr<Value> other)
@@ -58,7 +59,8 @@ RTResult String::multiply(std::shared_ptr<Value> other)
     return result.failure(std::make_shared<RTError>(
       "Expected number",
       start,
-      end
+      end,
+      context
     ));
   }
 
@@ -75,17 +77,17 @@ RTResult String::multiply(std::shared_ptr<Value> other)
 
 RTResult String::divide(std::shared_ptr<Value> other)
 {
-  return RTResult().failure(std::make_shared<RTError>("Cannot divide string", start, end));
+  return RTResult().failure(std::make_shared<RTError>("Cannot divide string", start, end, context));
 }
 
 RTResult String::modulo(std::shared_ptr<Value> other)
 {
-  return RTResult().failure(std::make_shared<RTError>("Cannot modulo string", start, end));
+  return RTResult().failure(std::make_shared<RTError>("Cannot modulo string", start, end, context));
 }
 
 RTResult String::power(std::shared_ptr<Value> other)
 {
-  return RTResult().failure(std::make_shared<RTError>("Cannot power string", start, end));
+  return RTResult().failure(std::make_shared<RTError>("Cannot power string", start, end, context));
 }
 
 RTResult String::equal(std::shared_ptr<Value> other)
@@ -97,7 +99,8 @@ RTResult String::equal(std::shared_ptr<Value> other)
     return result.failure(std::make_shared<RTError>(
       "Expected string",
       start,
-      end
+      end,
+      context
     ));
   }
 
@@ -114,7 +117,8 @@ RTResult String::not_equal(std::shared_ptr<Value> other)
     return result.failure(std::make_shared<RTError>(
       "Expected string",
       start,
-      end
+      end,
+      context
     ));
   }
 
@@ -124,22 +128,22 @@ RTResult String::not_equal(std::shared_ptr<Value> other)
 
 RTResult String::greater_than(std::shared_ptr<Value> other)
 {
-  return RTResult().failure(std::make_shared<RTError>("Cannot compare string", start, end));
+  return RTResult().failure(std::make_shared<RTError>("Cannot compare string", start, end, context));
 }
 
 RTResult String::less_than(std::shared_ptr<Value> other)
 {
-  return RTResult().failure(std::make_shared<RTError>("Cannot compare string", start, end));
+  return RTResult().failure(std::make_shared<RTError>("Cannot compare string", start, end, context));
 }
 
 RTResult String::greater_than_or_equal(std::shared_ptr<Value> other)
 {
-  return RTResult().failure(std::make_shared<RTError>("Cannot compare string", start, end));
+  return RTResult().failure(std::make_shared<RTError>("Cannot compare string", start, end, context));
 }
 
 RTResult String::less_than_or_equal(std::shared_ptr<Value> other)
 {
-  return RTResult().failure(std::make_shared<RTError>("Cannot compare string", start, end));
+  return RTResult().failure(std::make_shared<RTError>("Cannot compare string", start, end, context));
 }
 
 RTResult String::and_op(std::shared_ptr<Value> other)
